@@ -1,0 +1,19 @@
+<h2 class="dialog-title" mat-dialog-title>Connexion</h2>
+
+<mat-dialog-content class="dialog-content">
+  <mat-form-field class="full-width-input">
+    <input #usernameInput (keyup.enter)="focusPasswordInput()" [(ngModel)]="email" matInput
+           placeholder="Nom d'utilisateur">
+  </mat-form-field>
+  <mat-form-field class="full-width-input">
+    <input #passwordInput (keyup.enter)="login()" [(ngModel)]="password" [disabled]="isLoading" matInput
+           placeholder="Mot de passe"
+           type="password">
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button (click)="onNoClick()" mat-button>Annuler</button>
+  <button (click)="openRegisterDialog()" mat-button>S'inscrire</button>
+  <button (click)="login()" [disabled]="isLoading" color="primary" mat-button>Connexion</button>
+</mat-dialog-actions>

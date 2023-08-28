@@ -1,0 +1,48 @@
+<div
+  class="flex h-40 overflow-hidden flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 px-4 sm:px-8">
+  <div class="w-full max-w-md p-4 bg-white dark:bg-gray-800 rounded-md shadow-md mt-8 sm:mt-12">
+    <h2 class="text-2xl font-semibold text-center text-gray-800 dark:text-gray-100">Profil Utilisateur</h2>
+
+    <div class="mt-6 flex items-center justify-center">
+      <div class="relative w-24 h-24 transition duration-300 transform hover:scale-105">
+        <ng-container *ngIf="userInfo?.pictureUrl; else defaultImage">
+          <img [src]="userInfo?.pictureUrl" alt="Avatar" class="object-scale-down w-full h-full rounded-full"/>
+        </ng-container>
+        <ng-template #defaultImage>
+          <img alt="Default Avatar" class="object-scale-down w-full h-full rounded-full"
+               src="../../../../assets/ppdefault.png"/>
+        </ng-template>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <label class="cursor-pointer">
+            <input (change)="onFileSelected($event)" class="hidden" type="file"/>
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                 xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 6v6m0 0v6m0-6h6m-6 0H6" stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="2"></path>
+            </svg>
+          </label>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="mt-12">
+      <mat-form-field appearance="fill" class="full-width-input">
+        <mat-label>Username</mat-label>
+        <input (ngModelChange)="updateUsername($event)" [ngModel]="updatedUsername ?? userInfo?.username" matInput>
+      </mat-form-field>
+      <mat-form-field appearance="fill" class="full-width-input">
+        <mat-label>Email</mat-label>
+        <input (ngModelChange)="updateEmail($event)" [ngModel]="updatedEmail ?? userInfo?.email" matInput>
+      </mat-form-field>
+    </div>
+
+    <div>
+      <mat-dialog-actions class="justify-center">
+        <button (click)="updateProfile()" color="primary" mat-raised-button>Mettre à jour le profil</button>
+      </mat-dialog-actions>
+    </div>
+
+
+  </div>
+</div>

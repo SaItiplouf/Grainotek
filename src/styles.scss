@@ -1,10 +1,14 @@
-/* You can add global styles to this file, and also import other style files */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@import 'node_modules/ngx-toastr/toastr.css';
+
 
 @import './styles/fonts.scss';
+@import './styles/loginModal';
+@import './styles/feed.scss';
+
 
 a {
   cursor: pointer;
@@ -12,4 +16,23 @@ a {
 
 body {
   background-color: #1f2937;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+#user-menu-button {
+  display: none;
+  pointer-events: none;
+}
+
+.user-logged-in #user-menu-button {
+  display: block;
+  pointer-events: auto;
 }

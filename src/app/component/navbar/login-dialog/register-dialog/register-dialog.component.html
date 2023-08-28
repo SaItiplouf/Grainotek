@@ -1,0 +1,18 @@
+<h2 class="dialog-title" mat-dialog-title>Register</h2>
+
+<mat-dialog-content class="dialog-content">
+  <mat-form-field class="full-width-input">
+    <input #usernameInput (keyup.enter)="focusPasswordInput()" [(ngModel)]="email" matInput
+           placeholder="Nom d'utilisateur">
+  </mat-form-field>
+  <mat-form-field class="full-width-input">
+    <input #passwordInput (keyup.enter)="register()" [(ngModel)]="password" [disabled]="isLoading" matInput
+           placeholder="Mot de passe"
+           type="password">
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button (click)="onNoClick()" mat-button>Annuler</button>
+  <button (click)="register()" [disabled]="isLoading" mat-button>S'inscrire</button>
+</mat-dialog-actions>
