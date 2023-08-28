@@ -1,0 +1,54 @@
+<section class="bg-green-500 py-6 px-4 md:px-8">
+  <div class="container mx-auto flex flex-col md:flex-row items-center justify-between">
+    <!-- Logo ou titre de la page -->
+    <div class="text-white text-2xl font-bold mb-4 md:mb-0">
+      PAGE N°1
+    </div>
+
+    <!-- Bouton d'action ou de navigation -->
+    <button class="bg-white text-green-500 hover:bg-green-100 text-sm font-bold py-2 px-4 rounded">
+      S'abonner
+    </button>
+  </div>
+</section>
+
+
+<div class="bg-gray-900 min-h-screen py-6">
+  <div class="container mx-auto mt-6 flex flex-col-reverse md:flex-row h-full">
+    <!-- Utilisateurs connectés à gauche (colonne 1/5) -->
+    <div class="w-full md:w-1/5 px-4 mb-4 md:mb-0">
+      <div class="bg-gray-800 p-4 rounded shadow">
+        <h2 class="text-gray-400 font-bold mb-4">Utilisateurs connectés</h2>
+        <!-- Liste d'utilisateurs connectés -->
+        <ul>
+          <li class="flex items-center space-x-2">
+            <img alt="Utilisateur" class="w-8 h-8 rounded-full" src="lien_vers_image">
+            <span class="text-gray-400">Nom d'utilisateur</span>
+          </li>
+          <!-- Ajoutez d'autres utilisateurs connectés ici -->
+        </ul>
+      </div>
+    </div>
+
+    <!-- Zone principale (colonne 3/5) -->
+    <div class="w-full md:w-3/5 px-4">
+      <app-feed></app-feed>
+      <!-- Contenu principal, peut-être votre fil d'actualité -->
+    </div>
+
+    <!-- Suggestions à droite (colonne 1/5) -->
+    <div class="w-full md:w-1/5 px-4">
+      <div class="bg-gray-800 p-4 rounded shadow">
+        <h2 class="text-gray-400 font-bold mb-4">Suggestions</h2>
+        <!-- Liste de suggestions -->
+        <ul>
+          <li class="flex items-center space-x-2">
+            <img alt="Utilisateur" class="w-8 h-8 rounded-full" src="lien_vers_image">
+            <span class="text-gray-400">Nom d'utilisateur</span>
+          </li>
+          <!-- Ajoutez d'autres éléments de suggestion ici -->
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
