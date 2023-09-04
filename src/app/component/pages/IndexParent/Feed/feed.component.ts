@@ -36,10 +36,27 @@ export class FeedComponent implements OnInit {
   ngOnInit(): void {
     this.PostService.getPostsFromApi(1).subscribe(posts => {
       this.store.dispatch(postsLoaded({posts}));
+      console.log(posts)
     });
     this.store.select((state: any) => state.state).subscribe((state: State) => {
       this.posts = state.posts;
     });
+  }
+
+  formatTimeSince(time: string): string {
+    const now = new Date();
+    const createdAt = new Date(time);
+    const diffInSeconds = Math.floor((now.getTime() - createdAt.getTime()) / 1000);
+
+    if (diffInSeconds < 60) {
+      return `${diffInSeconds} secondes passées`;
+    } else if (diffInSeconds < 3600) {
+      return `${Math.floor(diffInSeconds / 60)} minutes passées`;
+    } else if (diffInSeconds < 86400) {
+      return `${Math.floor(diffInSeconds / 3600)} heures passées`;
+    } else {
+      return `${Math.floor(diffInSeconds / 86400)} jours passés`;
+    }
   }
 
   isUserLoggedIn(): boolean {
@@ -53,10 +70,10 @@ export class FeedComponent implements OnInit {
   }
 
   openPostDialog(post: IPost): void {
+    const formattedTime = this.formatTimeSince(post.createdAt);
     this.dialog.open(ShowpostComponent, {
-      data: {post},
-      width: "80%",
-      height: "50%"
+      data: {post, formattedTime},
+      width: "60%",
     });
   }
 }

@@ -1,10 +1,69 @@
-<div class="p-4">
-  <h2 class="text-2xl font-bold mb-2">{{ post.name }}</h2>
-  <p class="text-gray-700">{{ post.content }}</p>
-  <p class="text-sm text-gray-500 mt-4">{{ post.user.email }}</p>
-  <p class="text-sm text-gray-500">{{ post.createdAt | date:'medium' }}</p>
-  <div class="mt-4">
-    <img *ngIf="post.images.length > 0" [src]="post.images[0].contentUrl" alt="Post Image"
-         class="w-full object-scale-down h-64">
+<div class="bg-white rounded-lg shadow-lg p-8 overflow-hidden">
+  <div class="flex justify-between items-center mb-2">
+    <!-- User Info -->
+    <div class="flex items-center">
+      <img alt="Profile Image" class="w-10 h-10 rounded-full mr-2" src="{{ post.user.pictureUrl }}">
+      <div>
+        <p class="text-sm font-semibold">{{ post.user.email }}</p>
+        <p class="text-xs text-gray-500 mt-n1">{{ formattedTime }}</p>
+      </div>
+    </div>
+
+    <!-- Close Button -->
+    <button (click)="close()" mat-icon-button>
+      <mat-icon color="warn">close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Post Name -->
+  <h2 class="text-2xl font-semibold mb-2">{{ post.name }}</h2>
+
+  <div class="flex mt-4">
+    <!-- Image -->
+    <div *ngIf="post.images.length > 0" class="w-1/2 mr-4 bg-gray-100">
+      <img class="w-full h-48 object-contain rounded" src="{{ post.images[0].contentUrl }}">
+    </div>
+
+    <!-- Post Content -->
+    <div class="w-1/2 bg-gray-100 p-4 rounded-lg">
+      <p class="w-full h-full p-2 rounded text-gray-600" readonly>{{ post.content }}</p>
+    </div>
+  </div>
+
+
+  <!-- Google Maps Section -->
+  <div class="h-40 mt-4" id="map">
+    <div class="w-full h-full bg-gray-200 rounded overflow-hidden">
+      <!-- Google Map or placeholder -->
+    </div>
+  </div>
+
+  <div *ngIf="isUserLoggedIn()" class="mt-4 flex justify-end">
+    <button (click)="onButtonClick($event)"
+            class="pt-2 relative flex items-center overflow-hidden text-white font-bold py-1 px-4 rounded transition duration-300 ease-in-out transform active:scale-95 "
+            color="primary" id="trade-btn" mat-raised-button>
+      Trade
+      <mat-icon [@iconAnimation]="iconState" class="tick-icon ml-2">check_circle</mat-icon>
+    </button>
+  </div>
+
+  <!-- Comment Section -->
+  <div class="relative mt-4">
+    <button aria-label="Toggle Comments" class="flex items-center space-x-1 text-gray-600" id="commentToggle">
+      <mat-icon>insert_comment</mat-icon>
+      <span>Comment</span>
+    </button>
+    <div class="absolute hidden bg-white rounded-lg shadow-md p-2 mt-1 right-0 w-40" id="commentSection">
+      <div class="mb-2">
+        <input aria-label="Add a comment" class="border rounded w-full px-2 py-1" placeholder="Add a comment"
+               type="text">
+      </div>
+      <div class="max-h-20 overflow-auto">
+        <!-- Comment section content here -->
+        <div class="mb-2">
+          <p class="text-sm text-gray-600">Username: This is a comment.</p>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

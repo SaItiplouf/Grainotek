@@ -14,7 +14,7 @@ export class PostService {
   }
 
   getPostsFromApi(page: number): Observable<IPost[]> {
-    return this.http.get<any[]>(environnement.BASE_URL + `api/posts?page=${page}`).pipe(
+    return this.http.get<any[]>(environnement.BASE_URL + `api/posts?page=${page}&order%5BcreatedAt%5D=desc`).pipe(
       map(data => this.mapToIPost(data))
     );
   }

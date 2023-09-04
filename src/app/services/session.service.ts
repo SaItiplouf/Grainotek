@@ -70,6 +70,7 @@ export class SessionService {
     return false;
   }
 
+// FROM TOKEN
   getUserInfo(): IUser | null {
     const decodedToken: any = this.decodeToken();
     if (decodedToken) {
@@ -119,6 +120,18 @@ export class SessionService {
     if (userInfo) {
       this.store.dispatch(setUser({user: userInfo}));
     }
+  }
+
+  getSetLocalUserToClass(): User | null {
+    const localUser = localStorage.getItem('localUser');
+
+    if (localUser) {
+      const parsedLocalUser = JSON.parse(localUser);
+      const user = new User(parsedLocalUser);
+      return user;
+    }
+
+    return null;
   }
 
   isUserLoggedIn(): boolean {

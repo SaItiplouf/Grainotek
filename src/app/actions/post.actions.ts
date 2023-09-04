@@ -2,7 +2,6 @@ import {createAction, props} from '@ngrx/store';
 import {IPost} from '../models/post.model';
 import {IUser} from "../models/user.model";
 
-export const loadPosts = createAction('[Post] Load Posts');
 export const postsLoaded = createAction('[Post] Posts Loaded', props<{ posts: IPost[] }>());
 
 // SYSTEME ENREGISTREMENT DU USER EN LOCAL

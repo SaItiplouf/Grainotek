@@ -16,6 +16,7 @@ export class NavbarComponent implements OnInit {
   jwtUserInfo: IUser | null = null;
   userInfo: IUser | null = null;
 
+
   constructor(private router: Router, public dialog: MatDialog, private sessionService: SessionService, private store: Store<{
     state: State
   }>) {
@@ -27,6 +28,7 @@ export class NavbarComponent implements OnInit {
       console.log(state.user)
       this.userInfo = state.user;
     });
+    console.log("C CE LOG TA MRERE", this.isUserLoggedIn())
   }
 
   // async initializeUserInfo() {
@@ -52,16 +54,23 @@ export class NavbarComponent implements OnInit {
   }
 
   navigateToIndex() {
-    this.router.navigate(['']);
+    this.router.navigate(['']).then(() => {
+      console.log("Navigate Success")
+    });
   }
 
   navigateToSecondary() {
-    this.router.navigate(['secondary']);
+    this.router.navigate(['secondary']).then(() => {
+      console.log("Navigate Success")
+    });
   }
 
   navigateToDash() {
-    this.router.navigate(['profile-dashboard']);
+    this.router.navigate(['profile-dashboard']).then(() => {
+      console.log("Navigate Success")
+    });
   }
+
 
   openLoginDialog(): void {
     this.dialog.open(LoginDialogComponent, {});

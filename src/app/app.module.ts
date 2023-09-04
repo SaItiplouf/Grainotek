@@ -31,11 +31,12 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatCardModule} from '@angular/material/card';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatOptionModule} from '@angular/material/core';
-
+import {MatMenuModule} from '@angular/material/menu';
 
 import {ProfileDashboardComponent} from './component/pages/Profile-dashboard/profile-dashboard.component';
 import {ShowpostComponent} from './component/pages/IndexParent/Feed/showpost/showpost.component';
 import {InfiniteScrollModule} from "ngx-infinite-scroll";
+import {ChatParentComponent} from './component/pages/ChatParent/chat-parent.component';
 
 
 @NgModule({
@@ -50,6 +51,7 @@ import {InfiniteScrollModule} from "ngx-infinite-scroll";
     CreatePostComponent,
     ProfileDashboardComponent,
     ShowpostComponent,
+    ChatParentComponent,
   ],
   imports: [
     BrowserModule,
@@ -71,7 +73,8 @@ import {InfiniteScrollModule} from "ngx-infinite-scroll";
     MatAutocompleteModule,
     MatOptionModule,
     GoogleMapsModule,
-    NgOptimizedImage
+    NgOptimizedImage,
+    MatMenuModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptorInterceptor, multi: true},
