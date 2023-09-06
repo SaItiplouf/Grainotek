@@ -29,7 +29,7 @@
   <!-- Zone de chat -->
   <div class="w-3/4 bg-white rounded-lg flex flex-col shadow-lg">
     <!-- Messages -->
-    <div class="flex-1 p-4 overflow-y-scroll">
+    <div #messageList class="flex-1 p-4 overflow-y-scroll">
       <div *ngFor="let message of selectedRoom?.messages">
         <div [ngClass]="message.user.id === currentUser!.id ? 'justify-end' : 'justify-start'"
              class="flex items-end mb-4">
@@ -59,12 +59,14 @@
       <div class="flex items-center">
         <input (keyup.enter)="sendMessage()"
                [(ngModel)]="newMessageContent"
-               class="flex-grow p-2 rounded-l border border-gray-300"
+               class="flex-grow p-3 rounded-l border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                placeholder="Écrivez un message..."
                type="text">
-        <button (click)="sendMessage()" class="bg-blue-500 text-white p-2 rounded-r">
+        <button (click)="sendMessage()"
+                class="bg-blue-500 text-white p-3 rounded-full hover:bg-blue-600 transition-colors">
           Envoyer
         </button>
+
       </div>
     </div>
   </div>
