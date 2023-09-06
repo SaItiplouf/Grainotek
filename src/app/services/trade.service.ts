@@ -38,6 +38,7 @@ export class TradeService {
   }
 
   private mapToIRoom(data: any[]): Room[] {
+    console.log('Attempting to map to IRoom with data:', data);
     if (!data) {
       console.error('Data is undefined!');
       return [];
@@ -45,12 +46,15 @@ export class TradeService {
     console.log('Raw data:', data);  // Logs raw data received
 
     const mappedRooms = data.map(roomData => {
-      data.forEach(roomData => this.isLoading[roomData.id] = true);
+      this.isLoading[roomData.id] = true;
+      roomData.unreadCount = roomData.unreadCount || 0;
       const room = new Room(roomData);
-      console.log('Mapped Room:', room);  // Logs each Room after mapping
       return room;
     });
 
     return mappedRooms;
+  }
+  markMessagesAsReadForUser(room: IRoom, user: IUser): Observable<void> {
+    return this.http.get<void>(environnement.BASE_URL + `api/rooms/${room.id}/users/${user.id}/mark-as-read`, {});
   }
 }

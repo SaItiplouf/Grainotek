@@ -5,7 +5,7 @@ import {IRoom} from "./room.model";
 
 export interface ITrade {
   id: number;
-  applicatant: IUser;
+  applicant: IUser;
   userPostOwner: IUser;
   post: IPost;
   statut: string;

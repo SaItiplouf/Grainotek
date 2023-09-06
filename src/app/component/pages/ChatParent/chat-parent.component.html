@@ -5,8 +5,9 @@
       <input class="w-full p-2 rounded border border-gray-300" placeholder="Recherche..." type="text">
     </div>
     <div (click)="selectRoom(room)" *ngFor="let room of rooms"
-         [ngClass]="{'bg-gray-200 cursor-not-allowed': selectedRoom?.id === room.id}"
+         [ngClass]="{'bg-gray-200 cursor-not-allowed': selectedRoom?.id === room.id, 'unread-room': room.unreadCount && room.unreadCount > 0 }"
          class="p-4 cursor-pointer hover:bg-gray-100">
+      <span *ngIf="room.unreadCount && room.unreadCount > 0" class="unread-count">{{ room.unreadCount }}</span>
       <div class="flex items-center">
         <div *ngIf="isLoading[room.id]" class="h-10 w-10">
           <div class="loader"></div>
@@ -20,7 +21,7 @@
 
         <div class="ml-4">
           <h4 class="text-lg">{{ room.name }}</h4>
-          <p class="text-sm text-gray-500">{{ room.messages[0].message }}</p>
+          <p class="text-sm text-gray-500">{{ getLastMessage(room)?.message }}</p>
         </div>
       </div>
     </div>
@@ -29,7 +30,7 @@
   <!-- Zone de chat -->
   <div class="w-3/4 bg-white rounded-lg flex flex-col shadow-lg">
     <!-- Messages -->
-    <div class="flex-1 p-4 overflow-y-scroll">
+    <div #messageList class="flex-1 p-4 overflow-y-scroll">
       <div *ngFor="let message of selectedRoom?.messages">
         <div [ngClass]="message.user.id === currentUser!.id ? 'justify-end' : 'justify-start'"
              class="flex items-end mb-4">
@@ -59,12 +60,14 @@
       <div class="flex items-center">
         <input (keyup.enter)="sendMessage()"
                [(ngModel)]="newMessageContent"
-               class="flex-grow p-2 rounded-l border border-gray-300"
+               class="flex-grow p-3 rounded-l border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                placeholder="Écrivez un message..."
                type="text">
-        <button (click)="sendMessage()" class="bg-blue-500 text-white p-2 rounded-r">
+        <button (click)="sendMessage()"
+                class="bg-blue-500 text-white p-3 rounded-full hover:bg-blue-600 transition-colors">
           Envoyer
         </button>
+
       </div>
     </div>
   </div>
