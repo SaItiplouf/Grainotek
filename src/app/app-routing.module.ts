@@ -6,6 +6,7 @@ import {IndexParentComponent} from "./component/pages/IndexParent/index-parent.c
 import {SecondaryParentComponent} from "./component/pages/SecondaryParent/secondary-parent.component";
 import {ProfileDashboardComponent} from "./component/pages/Profile-dashboard/profile-dashboard.component";
 import {ChatParentComponent} from "./component/pages/ChatParent/chat-parent.component";
+import {ProfileParentComponent} from "./component/pages/Profile/profile-parent/profile-parent.component";
 
 
 const routes: Routes = [
@@ -13,6 +14,7 @@ const routes: Routes = [
   {path: 'secondary', component: SecondaryParentComponent},
   {path: 'profile-dashboard', component: ProfileDashboardComponent},
   {path: 'pm', component: ChatParentComponent},
+  {path: 'profile/:userId', component: ProfileParentComponent},
 
 ];
 

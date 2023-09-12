@@ -37,6 +37,10 @@ import {ProfileDashboardComponent} from './component/pages/Profile-dashboard/pro
 import {ShowpostComponent} from './component/pages/IndexParent/Feed/showpost/showpost.component';
 import {InfiniteScrollModule} from "ngx-infinite-scroll";
 import {ChatParentComponent} from './component/pages/ChatParent/chat-parent.component';
+import {MatTableModule} from "@angular/material/table";
+import {MatTooltipModule} from "@angular/material/tooltip";
+import {ProfileParentComponent} from './component/pages/Profile/profile-parent/profile-parent.component';
+import {CarouselModule} from "ngx-owl-carousel-o";
 
 
 @NgModule({
@@ -52,6 +56,7 @@ import {ChatParentComponent} from './component/pages/ChatParent/chat-parent.comp
     ProfileDashboardComponent,
     ShowpostComponent,
     ChatParentComponent,
+    ProfileParentComponent,
   ],
   imports: [
     BrowserModule,
@@ -74,7 +79,10 @@ import {ChatParentComponent} from './component/pages/ChatParent/chat-parent.comp
     MatOptionModule,
     GoogleMapsModule,
     NgOptimizedImage,
-    MatMenuModule
+    MatMenuModule,
+    MatTableModule,
+    MatTooltipModule,
+    CarouselModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptorInterceptor, multi: true},

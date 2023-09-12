@@ -5,6 +5,12 @@ import {animate, keyframes, state, style, transition, trigger} from '@angular/an
 import {SessionService} from "../../../../../services/session.service";
 import {TradeService} from "../../../../../services/trade.service";
 import {ToastrService} from "ngx-toastr";
+import {Router} from "@angular/router";
+import * as CryptoJS from 'crypto-js';
+import {Loader} from "@googlemaps/js-api-loader";
+import {OwlOptions} from 'ngx-owl-carousel-o';
+import {IUser} from "../../../../../models/user.model";
+import {environnement} from "../../../../../../../environnement";
 
 @Component({
   selector: 'app-showpost',
@@ -34,6 +40,33 @@ export class ShowpostComponent implements OnInit {
   public post: IPost;
   public location: { lat: number; lng: number } | undefined;
   public formattedTime: string;
+  ConnectedUser!: IUser;
+
+  customOptions: OwlOptions = {
+    loop: true,
+    autoplay: true,
+    mouseDrag: true,
+    touchDrag: false,
+    pullDrag: false,
+    dots: true,
+    navSpeed: 700,
+    navText: ['', ''],
+    responsive: {
+      0: {
+        items: 1
+      },
+      400: {
+        items: 1
+      },
+      740: {
+        items: 1
+      },
+      940: {
+        items: 1
+      }
+    },
+    nav: false
+  };
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { post: IPost, formattedTime: string },
@@ -42,12 +75,12 @@ export class ShowpostComponent implements OnInit {
     private renderer: Renderer2,
     private sessionService: SessionService,
     private toastr: ToastrService,
-    private tradeService: TradeService
+    private tradeService: TradeService,
+    private router: Router
   ) {
     this.post = data.post;
     this.formattedTime = data.formattedTime;
   }
-
 
   ngOnInit(): void {
     if (this.post.location) {
@@ -57,6 +90,16 @@ export class ShowpostComponent implements OnInit {
         lng: parseFloat(lngStr)
       };
       this.initMap();
+    }
+    this.getConnectedUserInformationViaToken()
+  }
+
+  getConnectedUserInformationViaToken() {
+    const ConnectedUser = this.sessionService.getUserInfo();
+    if (ConnectedUser) {
+      this.ConnectedUser = ConnectedUser;
+    } else {
+      return
     }
   }
 
@@ -103,9 +146,28 @@ export class ShowpostComponent implements OnInit {
     });
   }
 
-  initMap(): void {
+  redirectToProfile(userId: number): void {
+    this.close();
+    const userIdString = userId.toString();
+
+    const encryptedId = CryptoJS.AES.encrypt(userIdString, 'clé secrète').toString();
+
+    const encodedEncryptedId = encodeURIComponent(encryptedId);
+
+    this.router.navigate([`/profile/${encodedEncryptedId}`]);
+  }
+
+  async initMap(): Promise<void> {
     const mapElement = document.getElementById('map');
     if (mapElement && this.location) {
+
+      const loader = new Loader({
+        apiKey: environnement.GOOGLE_API_KEY,
+        version: 'weekly'
+      });
+
+      await loader.load();
+
       const map = new google.maps.Map(mapElement, {
         center: {lat: this.location.lat, lng: this.location.lng},
         zoom: 12
@@ -142,3 +204,5 @@ export class ShowpostComponent implements OnInit {
     });
   }
 }
+
+

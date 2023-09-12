@@ -6,9 +6,10 @@ import {CreatePostComponent} from "./createpost/createpost.component";
 import {SessionService} from "../../../../services/session.service";
 import {Store} from "@ngrx/store";
 import {State} from "../../../../Reducers/app.reducer";
-import {ShowpostComponent} from "./showpost/showpost.component";
 import {PostService} from "../../../../services/post.service";
 import {postsLoaded} from "../../../../actions/post.actions";
+import {Router} from "@angular/router";
+import {IUser} from "../../../../models/user.model";
 
 @Component({
   selector: 'app-feed',
@@ -19,10 +20,11 @@ export class FeedComponent implements OnInit {
   posts: IPost[] = [];
   selector: string = ".main-panel";
   currentPage: number = 1;
+  ConnectedUser!: IUser;
 
   constructor(private store: Store<{
     state: State
-  }>, private PostService: PostService, private service: AppService, public dialog: MatDialog, private sessionService: SessionService) {
+  }>, private PostService: PostService, private router: Router, private service: AppService, public dialog: MatDialog, private sessionService: SessionService) {
   }
 
   onScroll() {
@@ -41,40 +43,37 @@ export class FeedComponent implements OnInit {
     this.store.select((state: any) => state.state).subscribe((state: State) => {
       this.posts = state.posts;
     });
+    this.getConnectedUserInformationViaToken()
   }
 
-  formatTimeSince(time: string): string {
-    const now = new Date();
-    const createdAt = new Date(time);
-    const diffInSeconds = Math.floor((now.getTime() - createdAt.getTime()) / 1000);
-
-    if (diffInSeconds < 60) {
-      return `${diffInSeconds} secondes passées`;
-    } else if (diffInSeconds < 3600) {
-      return `${Math.floor(diffInSeconds / 60)} minutes passées`;
-    } else if (diffInSeconds < 86400) {
-      return `${Math.floor(diffInSeconds / 3600)} heures passées`;
+  getConnectedUserInformationViaToken() {
+    const ConnectedUser = this.sessionService.getUserInfo();
+    if (ConnectedUser) {
+      this.ConnectedUser = ConnectedUser;
     } else {
-      return `${Math.floor(diffInSeconds / 86400)} jours passés`;
+      return
     }
   }
+
 
   isUserLoggedIn(): boolean {
     return this.sessionService.isUserLoggedIn();
   }
 
   openDialog(): void {
+    window.scrollTo(0, 0);
     this.dialog.open(CreatePostComponent, {
       width: "500px",
     });
   }
 
   openPostDialog(post: IPost): void {
-    const formattedTime = this.formatTimeSince(post.createdAt);
-    this.dialog.open(ShowpostComponent, {
-      data: {post, formattedTime},
-      width: "60%",
-    });
+    this.PostService.DisplayPostModal(post)
   }
+
+  formatTime(post: IPost): any {
+    return this.PostService.formatTimeSince(post.createdAt);
+  }
+
 }
 

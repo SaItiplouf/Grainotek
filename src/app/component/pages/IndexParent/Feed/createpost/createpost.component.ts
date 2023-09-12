@@ -8,12 +8,15 @@ import {addPost} from "../../../../../actions/post.actions";
 import {Store} from "@ngrx/store";
 import {State} from "../../../../../Reducers/app.reducer";
 import {concatMap, map, Observable} from "rxjs";
+import {Loader} from "@googlemaps/js-api-loader";
+import {environnement} from "../../../../../../../environnement";
 
 @Component({
   selector: 'app-createpost',
   templateUrl: './createpost.component.html',
   styleUrls: ['./createpost.component.scss']
 })
+
 export class CreatePostComponent implements OnInit {
   @ViewChild('imageInput', {static: false}) imageInput!: ElementRef;
   tweetText: string = '';
@@ -27,11 +30,23 @@ export class CreatePostComponent implements OnInit {
   }>) {
   }
 
-  ngOnInit() {
-    this.initAutocomplete();
+  ngOnInit(): void {
+    this.loadGoogleMapsAPI().then(() => {
+      this.initAutocomplete();
+    });
+  }
+
+  async loadGoogleMapsAPI() {
+    const loader = new Loader({
+      apiKey: environnement.GOOGLE_API_KEY,
+      version: "weekly",
+      libraries: ["places"]
+    });
+    await loader.load();
   }
 
   initAutocomplete() {
+
     const input = document.getElementById('location') as HTMLInputElement;
     const autocomplete = new google.maps.places.Autocomplete(input);
 

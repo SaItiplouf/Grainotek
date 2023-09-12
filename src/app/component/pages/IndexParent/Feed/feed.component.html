@@ -17,11 +17,14 @@
             <div class="w-1/4 bg-gray-200">
               <img *ngIf="post.images.length > 0" [src]="post.images[0].contentUrl" alt="Post Image"
                    class="object-contain h-80 w-80 p-4">
+              <img *ngIf="post.images.length === 0" alt="Placeholder Image" class="object-cover h-80 w-80"
+                   src="../../../../../assets/placeholderPost.png">
             </div>
             <div class="w-3/4 p-4 flex flex-col">
               <div class="flex justify-between items-start"> <!-- Change this line -->
                 <div class="flex items-center">
-                  <img [src]="post.user.pictureUrl" alt="User Picture"
+                  <img [src]="post.user.pictureUrl"
+                       alt="User Picture"
                        class="h-10 w-10 object-contain rounded-full mr-2">
                   <div class="flex flex-col">
                     <span class="text-xs">{{ post.user.email }}</span>
@@ -35,7 +38,7 @@
                     </div>
                   </div>
                 </div>
-                <p class="text-xs text-gray-500">{{ formatTimeSince((post.createdAt)) }}</p> <!-- Move this line -->
+                <p class="text-xs text-gray-500">{{ formatTime(post) }}</p>
               </div>
               <h2 class="text-md font-semibold text-gray-800 mb-1">{{ post.name }}</h2>
               <p
@@ -46,7 +49,6 @@
               <button (click)="openPostDialog(post)" class="text-xs" color="primary" mat-button>Ouvrir</button>
             </div>
           </div>
-
         </mat-card>
       </div>
     </div>

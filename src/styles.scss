@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+@import 'ngx-owl-carousel-o/lib/styles/scss/owl.carousel';
+@import 'ngx-owl-carousel-o/lib/styles/scss/owl.theme.default';
+
 @import 'node_modules/ngx-toastr/toastr.css';
 
 
@@ -13,6 +16,7 @@
 a {
   cursor: pointer;
 }
+
 
 body {
   background-color: #1f2937;

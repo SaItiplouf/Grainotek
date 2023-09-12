@@ -7,6 +7,8 @@ import {environnement} from "../../../environnement";
 import {Store} from "@ngrx/store";
 import {setUser} from "../actions/post.actions";
 import {State} from "../Reducers/app.reducer";
+import {ToastrService} from "ngx-toastr";
+import {Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
@@ -19,9 +21,16 @@ export class SessionService {
   userLoggedOut = new Subject<void>();
   userLoggedIn = new Subject<void>();
 
-  constructor(private HttpClient: HttpClient, private store: Store<{
+  constructor(private HttpClient: HttpClient, private toastr: ToastrService, private router: Router, private http: HttpClient, private store: Store<{
     state: State
   }>) {
+  }
+
+  checkUserAuthentication() {
+    if (!this.isTokenValid() || localStorage.getItem('jwt') === null) {
+      this.router.navigate(['/']);
+      this.toastr.error('Veuillez vous connecter', 'Erreur');
+    }
   }
 
   async getUserInfoFromAPI(user: IUser) {
@@ -144,6 +153,7 @@ export class SessionService {
 
     this.userLoggedOut.next();
   }
+
 
   private decodeToken(): any {
     const token = localStorage.getItem('jwt');

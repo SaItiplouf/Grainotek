@@ -29,18 +29,12 @@ export class ProfileDashboardComponent implements OnInit {
       console.log(state.user)
       this.userInfo = state.user;
     });
-    this.checkUserAuthentication();
+    this.sessionService.checkUserAuthentication();
     this.sessionService.userLoggedOut.subscribe(() => {
-      this.checkUserAuthentication();
+      this.sessionService.checkUserAuthentication();
     });
   }
 
-  checkUserAuthentication() {
-    if (!this.sessionService.isTokenValid() || localStorage.getItem('jwt') === null) {
-      this.router.navigate(['/']);
-      this.toastr.error('Veuillez vous connecter', 'Erreur');
-    }
-  }
 
   // async initializeUserInfo() {
   //   this.jwtUserInfo = this.sessionService.getUserInfo();

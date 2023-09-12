@@ -36,9 +36,11 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
   get isLoading() {
     return this.tradeService.isLoading;
   }
+
   getLastMessage(room: IRoom): Message | null {
     return room.messages.length > 0 ? room.messages[room.messages.length - 1] : null;
   }
+
   ngAfterViewChecked() {
     this.scrollToBottom();
   }
@@ -62,6 +64,7 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
     console.log(`Image loaded for room ${room.id}`);
     this.isLoading[room.id] = false;
   }
+
 
   sendMessage(): void {
     if (this.newMessageContent.trim() && this.selectedRoom && this.currentUser) {
@@ -92,6 +95,70 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
       );
     }
   }
+
+  handleImageStatus(room: IRoom, status: 'error' | 'load'): void {
+    console.log(`Image ${status} for room ${room.id}`);
+    this.isLoading[room.id] = false;
+  }
+
+  ngOnInit(): void {
+    this.currentUser = this.sessionService.getSetLocalUserToClass();
+    this.loadRoomsForCurrentUser();
+    this.subscribeToRoomChanges()
+    this.sessionService.checkUserAuthentication();
+    this.sessionService.userLoggedOut.subscribe(() => {
+      this.sessionService.checkUserAuthentication();
+    });
+  }
+
+  ngOnDestroy(): void {
+    // Fermez la connexion lors de la destruction du composant.
+    if (this.eventSource) {
+      this.eventSource.close();
+    }
+  }
+
+  getRecipient(room: IRoom): IUser | null {
+    return room.users.find(user => user.id !== this.currentUser?.id) || null;
+  }
+
+  updateRoomMessages(updatedRoom: Room): void {
+    if (!updatedRoom || !updatedRoom.id) return;
+
+    const roomIndex = this.rooms.findIndex(room => room.id === updatedRoom.id);
+    if (roomIndex === -1) return;
+
+    const roomToUpdate = {...this.rooms[roomIndex]};
+
+    // Fusion des messages existants avec les nouveaux
+    const currentRoomMessages = roomToUpdate.messages || [];
+    const newMessages = updatedRoom.messages.filter(
+      updatedMsg => !currentRoomMessages.some(currMsg => currMsg.id === updatedMsg.id)
+    );
+
+    roomToUpdate.messages = [...currentRoomMessages, ...newMessages];
+
+    // Compter les messages non lus
+    roomToUpdate.unreadCount = roomToUpdate.messages.reduce((count, message) =>
+        count + (message.hasNewMessage && message.user.id !== this.currentUser?.id ? 1 : 0),
+      0
+    );
+
+    // Update rooms without direct mutation
+    this.rooms = this.rooms.map((room, index) => index === roomIndex ? roomToUpdate : room);
+
+    // Mise à jour de la salle sélectionnée si nécessaire
+    if (this.selectedRoom && this.selectedRoom.id === updatedRoom.id) {
+      this.selectedRoom = {
+        ...this.selectedRoom,
+        messages: this.rooms[roomIndex].messages,
+        unreadCount: roomToUpdate.unreadCount
+      };
+    }
+
+    console.log(this.rooms);
+  }
+
   private updateLocalRoomState(updatedRoom: IRoom): void {
     const roomIndex = this.rooms.findIndex(room => room.id === updatedRoom.id);
     if (roomIndex === -1) return;
@@ -103,34 +170,9 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
       this.selectedRoom = updatedRoom;
     }
   }
-  handleImageStatus(room: IRoom, status: 'error' | 'load'): void {
-    console.log(`Image ${status} for room ${room.id}`);
-    this.isLoading[room.id] = false;
-  }
-
-  ngOnInit(): void {
-    this.currentUser = this.sessionService.getSetLocalUserToClass();
-    this.loadRoomsForCurrentUser();
-    this.subscribeToRoomChanges();
-  }
-
-  ngOnDestroy(): void {
-    // Fermez la connexion lors de la destruction du composant.
-    if (this.eventSource) {
-      this.eventSource.close();
-    }
-  }
-
-
-  getRecipient(room: IRoom): IUser | null {
-    return room.users.find(user => user.id !== this.currentUser?.id) || null;
-  }
-
-
-
 
   private initializeMercureSubscription(): void {
-    const mercureHubUrl = 'http://88.120.198.111:56666/.well-known/mercure?topic=' + `https://polocovoitapi.projets.garage404.com/api/users/${this.currentUser?.id}/rooms`;
+    const mercureHubUrl = 'http://mercure-hub-polo.freeboxos.fr:56666/.well-known/mercure?topic=' + `https://polocovoitapi.projets.garage404.com/api/users/${this.currentUser?.id}/rooms`;
 
     this.eventSource = new EventSource(mercureHubUrl);
 
@@ -182,45 +224,6 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
       });
     };
   }
-
-
-  updateRoomMessages(updatedRoom: Room): void {
-    if (!updatedRoom || !updatedRoom.id) return;
-
-    const roomIndex = this.rooms.findIndex(room => room.id === updatedRoom.id);
-    if (roomIndex === -1) return;
-
-    const roomToUpdate = { ...this.rooms[roomIndex] };
-
-    // Fusion des messages existants avec les nouveaux
-    const currentRoomMessages = roomToUpdate.messages || [];
-    const newMessages = updatedRoom.messages.filter(
-      updatedMsg => !currentRoomMessages.some(currMsg => currMsg.id === updatedMsg.id)
-    );
-
-    roomToUpdate.messages = [...currentRoomMessages, ...newMessages];
-
-    // Compter les messages non lus
-    roomToUpdate.unreadCount = roomToUpdate.messages.reduce((count, message) =>
-        count + (message.hasNewMessage && message.user.id !== this.currentUser?.id ? 1 : 0),
-      0
-    );
-
-    // Update rooms without direct mutation
-    this.rooms = this.rooms.map((room, index) => index === roomIndex ? roomToUpdate : room);
-
-    // Mise à jour de la salle sélectionnée si nécessaire
-    if (this.selectedRoom && this.selectedRoom.id === updatedRoom.id) {
-      this.selectedRoom = {
-        ...this.selectedRoom,
-        messages: this.rooms[roomIndex].messages,
-        unreadCount: roomToUpdate.unreadCount
-      };
-    }
-
-    console.log(this.rooms);
-  }
-
 
   private loadRoomsForCurrentUser(): void {
     const user = this.sessionService.getSetLocalUserToClass();

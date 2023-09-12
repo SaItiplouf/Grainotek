@@ -7,6 +7,7 @@ import {State} from "../Reducers/app.reducer";
 import {tap} from 'rxjs/operators';
 import {setUser} from "../actions/post.actions";
 import {IUser, User} from "../models/user.model";
+import {IPost} from "../models/post.model";
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,13 @@ export class AppService {
     // setitem to localstorage
   }
 
+  getInformationAboutAUser(decryptedId: string): Observable<void> {
+    return this.http.get<void>(environnement.BASE_URL + `api/users/${decryptedId}`, {});
+  }
+
+  getAllPostAboutAUser(decryptedId: string): Observable<IPost[]> {
+    return this.http.get<IPost[]>(environnement.BASE_URL + `api/users/${decryptedId}/posts`);
+  }
 
   updateUserInfo(userId: number, data: any): Observable<void> {
     return this.http.patch(environnement.BASE_URL + `api/users/${userId}`, data).pipe(

@@ -22,3 +22,92 @@
     transform: rotate(360deg);
   }
 }
+
+@keyframes lightSweep {
+  0% {
+    background-position: -200% 50%;
+  }
+  50% {
+    background-position: 200% 50%;
+  }
+  100% {
+    background-position: -200% 50%;
+  }
+}
+
+
+img.effectOnHover {
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+  z-index: 1;
+  overflow: hidden;
+}
+
+img.effectOnHover:hover {
+  filter: brightness(1.15);
+  animation: lightSweep 3s infinite;
+  background-image: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+}
+
+@keyframes goldenGlow {
+  0% {
+    box-shadow: 0 0 5px #FFD700, inset 0 0 5px #FFD700;
+  }
+  50% {
+    box-shadow: 0 0 10px #FFD700, inset 0 0 10px #FFD700;
+  }
+  100% {
+    box-shadow: 0 0 5px #FFD700, inset 0 0 5px #FFD700;
+  }
+}
+
+.golden-border {
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease-in-out;
+  border-radius: 10px;
+  border: 2px solid #FFD700;
+  background: linear-gradient(45deg, #FFD700 25%, transparent 25%, transparent 50%, #FFD700 50%, #FFD700 75%, transparent 75%, transparent); /* Crée un motif de ligne dorée */
+  background-size: 10px 10px;
+}
+
+/* Ajoute une ombre douce pour un effet de relief */
+.golden-border::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  z-index: -1;
+  border: 5px solid rgba(255, 215, 0, 0.5);
+  border-radius: 15px;
+}
+
+.golden-border:hover {
+  animation: goldenGlow 1.5s infinite alternate;
+}
+
+
+.fade-in {
+  animation: fadeIn 1s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  transition: all 0.3s ease;
+}
+
+.card-hover {
+  transition: all 0.3s ease;
+}

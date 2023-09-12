@@ -29,11 +29,12 @@
   <div class="grid grid-cols-2 gap-4 mb-4 w-full">
     <ng-container *ngFor="let image of images; let i = index" class="pt-2">
       <div
-        class="relative image-container hover:shadow-lg transform hover:scale-105 transition-transform duration-300 ease-in-out group">
-        <img [src]="getImageUrl(image)" class="w-full h-24 rounded-md object-cover pt-2 shadow-sm">
+        [ngClass]="{'golden-border': i === 0}"
+        class="relative image-container hover:shadow-lg rounded-lg shadow-sm transform hover:scale-105 transition-transform duration-300 ease-in-out group">
+        <img [src]="getImageUrl(image)" class="w-full h-24 rounded-lg object-cover">
         <button (click)="removeImage(i)"
                 class="delete-button absolute top-0 right-0 transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100">
-          <mat-icon class="text-gray-500 hover:text-red-500">delete</mat-icon>
+          <mat-icon class="text-gray-400 hover:text-red-700">delete</mat-icon>
         </button>
       </div>
     </ng-container>
