@@ -1,0 +1,25 @@
+<!-- Liste des messages -->
+  <div class="p-4 border-b border-gray-200">
+    <input class="w-full p-2 rounded border border-gray-300" [(ngModel)]="searchTerm" placeholder="Recherche..." type="text">
+  </div>
+<div (click)="selectRoom(room)" *ngFor="let room of filteredRooms"
+     [ngClass]="{'bg-gray-200 cursor-not-allowed': selectedRoom?.id === room.id, 'unread-room': room.unreadCount && room.unreadCount > 0 }"
+     class="p-4 cursor-pointer hover:bg-gray-100">
+<span *ngIf="room.unreadCount && room.unreadCount > 0" class="unread-count">{{ room.unreadCount }}</span>
+    <div class="flex items-center">
+      <div *ngIf="isLoading[room.id]" class="h-10 w-10">
+        <div class="loader"></div>
+      </div>
+      <img (error)="handleImageError(room)"
+           (load)="handleImageLoad(room)"
+           [hidden]="isLoading[room.id]"
+           [src]="getRecipient(room)?.pictureUrl || 'https://via.placeholder.com/50'"
+           alt="User Image"
+           class="h-10 w-10 rounded-full">
+
+      <div class="ml-4">
+        <h4 class="text-lg">{{ room.name }}</h4>
+        <p class="text-sm text-gray-500">{{ getLastMessage(room)?.message }}</p>
+      </div>
+    </div>
+  </div>

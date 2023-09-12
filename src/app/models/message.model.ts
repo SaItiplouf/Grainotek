@@ -7,7 +7,7 @@ export interface IMessage {
   user: IUser;
   message: string;
   createdAt: string;
-  hasNewMessage: boolean;
+  readed: boolean;
 }
 
 export class Message {
@@ -16,7 +16,7 @@ export class Message {
   user!: IUser;
   message!: string;
   createdAt!: string;
-  hasNewMessage!: boolean;
+  readed!: boolean;
 
   constructor(data: any) {
     if (!data) {
@@ -28,7 +28,7 @@ export class Message {
     this.room = new Room(data.room);
     this.message = data.message;
     this.createdAt = data.createdAt;
-    this.hasNewMessage = data.hasNewMessage;
+    this.readed = data.readed;
   }
 
 }

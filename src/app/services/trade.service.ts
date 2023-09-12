@@ -55,7 +55,12 @@ export class TradeService {
   }
 
   markMessagesAsReadForUser(room: IRoom, user: IUser): Observable<void> {
-    return this.http.get<void>(environnement.BASE_URL + `api/rooms/${room.id}/users/${user.id}/mark-as-read`, {});
+    const data = {
+      room: room,
+      user: user
+    };
+    console.log("data retourné :" , data)
+    return this.http.post<void>(environnement.BASE_URL + `api/messages/mark-messages-as-read`, data);
   }
 
   private mapToIRoom(data: any[]): Room[] {

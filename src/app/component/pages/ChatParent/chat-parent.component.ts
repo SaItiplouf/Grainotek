@@ -1,4 +1,4 @@
-import {AfterViewChecked, Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewChecked, Component, ElementRef, Input, NgZone, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {State} from "../../../Reducers/app.reducer";
 import {Store} from "@ngrx/store";
 import {AppService} from "../../../services/app.service";
@@ -15,15 +15,15 @@ import {Message} from "../../../models/message.model";
   styleUrls: ['./chat-parent.component.scss']
 })
 export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked {
-  rooms: IRoom[] = [];
+  @Input() selectedRoom: IRoom | null = null;
+  @Input() currentUser!: User | null;
+  @Input() rooms: IRoom[] = [];
   selector: string = ".main-panel";
   currentPage: number = 1;
-  currentUser!: User | null;
-  selectedRoom: IRoom | null = null;
   newMessageContent: string = '';
   private eventSource: EventSource | null = null;
   @ViewChild('messageList') private messageListRef!: ElementRef;
-
+  isSending = false;
 
   constructor(
     private store: Store<{ state: State }>,
@@ -31,74 +31,6 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
     private ngZone: NgZone,
     private appService: AppService,
     private sessionService: SessionService) {
-  }
-
-  get isLoading() {
-    return this.tradeService.isLoading;
-  }
-
-  getLastMessage(room: IRoom): Message | null {
-    return room.messages.length > 0 ? room.messages[room.messages.length - 1] : null;
-  }
-
-  ngAfterViewChecked() {
-    this.scrollToBottom();
-  }
-
-  scrollToBottom() {
-    const messageList: HTMLDivElement = this.messageListRef.nativeElement;
-    messageList.scrollTop = messageList.scrollHeight;
-  }
-
-  // onScroll() {
-  //   this.TradeService.getAllRoomsOfAUser(this.currentPage + 1).subscribe(newRooms => {
-  //     this.store.dispatch(roomsLoaded({room: [...this.rooms, ...newRooms]}));
-  //     this.currentPage++; // Incrémentez la page actuelle
-  //   });
-  handleImageError(room: IRoom): void {
-    console.log(`Image error for room ${room.id}`);
-    this.isLoading[room.id] = false;
-  }
-
-  handleImageLoad(room: IRoom): void {
-    console.log(`Image loaded for room ${room.id}`);
-    this.isLoading[room.id] = false;
-  }
-
-
-  sendMessage(): void {
-    if (this.newMessageContent.trim() && this.selectedRoom && this.currentUser) {
-      const {id: roomId} = this.selectedRoom;
-      const {id: userId} = this.currentUser;
-      this.tradeService.createMessage(this.newMessageContent, `/api/rooms/${roomId}`, `/api/users/${userId}`)
-        .subscribe(
-          () => this.newMessageContent = '',
-          error => console.error('Error sending message:', error)
-        );
-    }
-  }
-
-  selectRoom(room: IRoom): void {
-    this.selectedRoom = room;
-
-    if (room.messages.some(message => message.hasNewMessage)) {
-      this.tradeService.markMessagesAsReadForUser(room, this.currentUser!).subscribe(
-        () => {
-          // Mark all messages in the selected room as read in the local state
-          const updatedRoom = {...room};
-          updatedRoom.messages = room.messages.map(message => {
-            return {...message, hasNewMessage: false};
-          });
-          this.updateLocalRoomState(updatedRoom);
-        },
-        error => console.error('Error updating messages:', error)
-      );
-    }
-  }
-
-  handleImageStatus(room: IRoom, status: 'error' | 'load'): void {
-    console.log(`Image ${status} for room ${room.id}`);
-    this.isLoading[room.id] = false;
   }
 
   ngOnInit(): void {
@@ -110,16 +42,55 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
       this.sessionService.checkUserAuthentication();
     });
   }
-
+  private subscribeToRoomChanges(): void {
+    this.store.select(state => state.state).subscribe(state => this.rooms = state.room || []);
+  }
+  // scroll to bottom au init
+  ngAfterViewChecked() {
+    const messageList: HTMLDivElement = this.messageListRef.nativeElement;
+    messageList.scrollTop = messageList.scrollHeight;
+  }
+  // détruit la souscription à mercure pour l'opti
   ngOnDestroy(): void {
-    // Fermez la connexion lors de la destruction du composant.
+    // Fermez la connexion Mercure
     if (this.eventSource) {
       this.eventSource.close();
     }
   }
 
-  getRecipient(room: IRoom): IUser | null {
-    return room.users.find(user => user.id !== this.currentUser?.id) || null;
+  // onScroll() {
+  //   this.TradeService.getAllRoomsOfAUser(this.currentPage + 1).subscribe(newRooms => {
+  //     this.store.dispatch(roomsLoaded({room: [...this.rooms, ...newRooms]}));
+  //     this.currentPage++; // Incrémentez la page actuelle
+  //   });
+
+  // Reception de l'output du composant enfant
+  onRoomSelected(room: IRoom): void {
+    this.selectedRoom = room;
+  }
+
+  // Uniquement Requete API et désactivation du boutton pour le spam
+  sendMessage(): void {
+    if (this.newMessageContent.trim() && this.selectedRoom && this.currentUser) {
+      const {id: roomId} = this.selectedRoom;
+      const {id: userId} = this.currentUser;
+
+      // Désactiver le bouton avant d'envoyer la demande à l'API
+      this.isSending = true;
+
+      this.tradeService.createMessage(this.newMessageContent, `/api/rooms/${roomId}`, `/api/users/${userId}`)
+        .subscribe(
+          () => {
+            // Réponse reçue avec succès
+            this.newMessageContent = '';
+            this.isSending = false;
+          },
+          error => {
+            console.error('Erreur lors de l\'envoi du message :', error);
+            this.isSending = false;
+          }
+        );
+    }
   }
 
   updateRoomMessages(updatedRoom: Room): void {
@@ -139,10 +110,22 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
     roomToUpdate.messages = [...currentRoomMessages, ...newMessages];
 
     // Compter les messages non lus
-    roomToUpdate.unreadCount = roomToUpdate.messages.reduce((count, message) =>
-        count + (message.hasNewMessage && message.user.id !== this.currentUser?.id ? 1 : 0),
-      0
-    );
+
+// Only adjust the unreadCount if it's not the selectedRoom
+    if (!(this.selectedRoom && this.selectedRoom.id === updatedRoom.id)) {
+      roomToUpdate.unreadCount += newMessages.reduce((count, message) => {
+        // Check if the message hasn't been read
+        const isUnread = message.readed;
+
+        // Check if the message isn't from the current user
+        const notFromCurrentUser = message.user.id !== this.currentUser?.id;
+
+        if (isUnread && notFromCurrentUser) {
+          return count + 1;
+        }
+        return count;
+      }, 0);
+    }
 
     // Update rooms without direct mutation
     this.rooms = this.rooms.map((room, index) => index === roomIndex ? roomToUpdate : room);
@@ -159,15 +142,53 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
     console.log(this.rooms);
   }
 
-  private updateLocalRoomState(updatedRoom: IRoom): void {
-    const roomIndex = this.rooms.findIndex(room => room.id === updatedRoom.id);
-    if (roomIndex === -1) return;
 
-    this.rooms = this.rooms.map((room, index) => index === roomIndex ? updatedRoom : room);
+  private loadRoomsForCurrentUser(): void {
+    const user = this.sessionService.getSetLocalUserToClass();
+    if (user) {
+      this.tradeService.getAllRoomsOfAUser(user).subscribe(rooms => {
+        rooms.forEach(room => {
+          room.unreadCount = room.messages.reduce((count, message) => {
+            const isUnread = message.readed;
+            const notFromCurrentUser = message.user.id !== this.currentUser?.id;
 
-    // If the updated room is the currently selected room, update that too
-    if (this.selectedRoom && this.selectedRoom.id === updatedRoom.id) {
-      this.selectedRoom = updatedRoom;
+            if (isUnread && notFromCurrentUser) {
+              return count + 1;
+            }
+            return count;
+          }, 0);
+        });
+        this.store.dispatch(roomsLoaded({rooms}));
+        this.selectedRoom = rooms[0] || null;
+
+        // Suppression de la notification de nouveaux messages + traitement en back au chargement de la première room
+        if (this.selectedRoom && this.currentUser) {
+          this.tradeService.markMessagesAsReadForUser(this.selectedRoom, this.currentUser).subscribe(
+            response => {
+              console.log('Marked messages as read:', response);
+              setTimeout(() => {
+                // Clone the selectedRoom object and update unreadCount
+                this.selectedRoom! = { ...this.selectedRoom!, unreadCount: 0 };
+
+                // Clone the room you want to update in the rooms array and update unreadCount
+                const roomIndex = this.rooms.findIndex(room => room.id === this.selectedRoom!.id);
+                if (roomIndex !== -1) {
+                  const updatedRoom = { ...this.rooms[roomIndex], unreadCount: 0 };
+                  const updatedRooms = [...this.rooms]; // Create a new array
+                  updatedRooms[roomIndex] = updatedRoom; // Update the element in the new array
+                  this.rooms = updatedRooms; // Assign the new array back to this.rooms
+                }
+              }, 3000);
+
+            },
+            error => {
+              console.error('Error marking messages as read:', error);
+            }
+          );
+        }
+
+        this.initializeMercureSubscription();
+      });
     }
   }
 
@@ -181,7 +202,6 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
     };
 
     this.eventSource.onmessage = (event) => {
-      console.log("HASTA LA VISTA REPONSE DE MERCURE SA MERE LA ");
 
       this.ngZone.run(() => {
         const data = JSON.parse(event.data);
@@ -202,7 +222,7 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
               pictureUrl: userData.pictureUrl,
             })),
             messages: data.messages.map((messageData: any) => ({
-              hasNewMessage: messageData.hasNewMessage,
+              readed: messageData.readed,
               id: messageData.id,
               createdAt: messageData.createdAt,
               message: messageData.content,
@@ -223,23 +243,5 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
         }
       });
     };
-  }
-
-  private loadRoomsForCurrentUser(): void {
-    const user = this.sessionService.getSetLocalUserToClass();
-    if (user) {
-      this.tradeService.getAllRoomsOfAUser(user).subscribe(rooms => {
-        rooms.forEach(room => {
-          room.unreadCount = room.messages.reduce((count, message) => count + (message.hasNewMessage ? 1 : 0), 0);
-        });
-        this.store.dispatch(roomsLoaded({rooms}));
-        this.selectedRoom = rooms[0] || null;
-        this.initializeMercureSubscription();
-      });
-    }
-  }
-
-  private subscribeToRoomChanges(): void {
-    this.store.select(state => state.state).subscribe(state => this.rooms = state.room || []);
   }
 }

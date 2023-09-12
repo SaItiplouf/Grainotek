@@ -41,6 +41,7 @@ import {MatTableModule} from "@angular/material/table";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {ProfileParentComponent} from './component/pages/Profile/profile-parent/profile-parent.component';
 import {CarouselModule} from "ngx-owl-carousel-o";
+import { RoomSidebarComponent } from './component/pages/ChatParent/room-sidebar/room-sidebar.component';
 
 
 @NgModule({
@@ -57,6 +58,7 @@ import {CarouselModule} from "ngx-owl-carousel-o";
     ShowpostComponent,
     ChatParentComponent,
     ProfileParentComponent,
+    RoomSidebarComponent,
   ],
   imports: [
     BrowserModule,
