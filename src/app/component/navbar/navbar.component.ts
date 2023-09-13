@@ -56,7 +56,7 @@ export class NavbarComponent implements OnInit {
         this.tradeService.updateTrade(trade, statut, room);
       },
       error => {
-        console.error('Erreur lors de la création de la room :', error);
+        console.error('Erreur lors de la création de la room voir erreur:', error);
       }
     );
 
