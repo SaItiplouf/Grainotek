@@ -30,6 +30,7 @@ export class SessionService {
     if (!this.isTokenValid() || localStorage.getItem('jwt') === null) {
       this.router.navigate(['/']);
       this.toastr.error('Veuillez vous connecter', 'Erreur');
+      this.forgetToken()
     }
   }
 
@@ -96,14 +97,8 @@ export class SessionService {
     return null;
   }
 
-  register(email: string, password: string): Observable<any> {
-    const formData: FormData = new FormData();
-    formData.append('email', email);
-    formData.append('password', password);
-    // formData.append('username', username);
-    // formData.append('pictureFile', pictureFile, pictureFile.name);
-
-    return this.HttpClient.post<any>(`${this.BASE_URL}api/${this.REGISTER_URL}`, formData);
+  register(formData: FormData): Observable<any> {
+    return this.http.post<any>(`${this.BASE_URL}api/${this.REGISTER_URL}`, formData);
   }
 
   login(email: string, password: string): Observable<any> {

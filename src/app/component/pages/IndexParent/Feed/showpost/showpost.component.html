@@ -1,21 +1,24 @@
-<div class="bg-white rounded-lg shadow-lg p-4 md:p-8 overflow-hidden">
+<div class="bg-white rounded-lg shadow-lg p-2 md:p-4 lg:p-8">
   <div class="flex justify-between items-center mb-2 flex-col md:flex-row">
     <!-- User Info -->
-    <div class="flex items-center mb-2 md:mb-0">
-      <img (click)="redirectToProfile(post.user.id)" alt="Profile Image"
-           class="effectOnHover w-10 h-10 rounded-full mr-2"
-           src="{{ post.user.pictureUrl }}">
+    <div class="flex items-center justify-between mb-2 md:mb-0">
+      <!-- Contenu de gauche -->
+      <div class="flex items-center">
+        <img (click)="redirectToProfile(post.user.id)" alt="Profile Image" class="effectOnHover w-10 h-10 rounded-full mr-2" src="{{ post.user.pictureUrl }}">
+        <div>
+          <p class="text-xs md:text-sm font-semibold">{{ post.user.email }}</p>
+          <p class="text-xs text-gray-500 mt-n1">{{ formattedTime }}</p>
+        </div>
+      </div>
+      <!-- Contenu de droite (bouton "close") -->
       <div>
-        <p class="text-sm font-semibold">{{ post.user.email }}</p>
-        <p class="text-xs text-gray-500 mt-n1">{{ formattedTime }}</p>
+        <button (click)="close()" mat-icon-button>
+          <mat-icon color="warn">close</mat-icon>
+        </button>
       </div>
     </div>
-
-    <!-- Close Button -->
-    <button (click)="close()" mat-icon-button>
-      <mat-icon color="warn">close</mat-icon>
-    </button>
   </div>
+
 
   <!-- Post Name -->
   <h2 class="text-2xl font-semibold mb-2">{{ post.name }}</h2>
@@ -31,7 +34,7 @@
     <div class="w-full md:w-1/2 mb-4 md:mb-0 md:mr-4">
       <owl-carousel-o [options]="customOptions">
         <ng-container *ngFor="let images of post.images">
-          <ng-template [id]="images.id" carouselSlide>
+          <ng-template carouselSlide>
             <img [alt]="images.id" [src]="images.contentUrl" class="w-full h-48 object-contain rounded">
           </ng-template>
         </ng-container>
@@ -50,14 +53,14 @@
 
   <!-- Google Maps Section -->
   <div class="h-40 mt-4" id="map">
-    <div class="w-full h-full bg-gray-200 rounded overflow-hidden">
+    <div class="w-full h-full bg-gray-200 rounded">
       <!-- Google Map or placeholder -->
     </div>
   </div>
 
   <div *ngIf="isUserLoggedIn()" class="mt-4 flex justify-end">
     <button (click)="onButtonClick($event)"
-            class="pt-2 relative flex items-center overflow-hidden text-white font-bold py-1 px-4 rounded transition duration-300 ease-in-out transform active:scale-95 "
+            class="pt-2 relative flex items-center text-white font-bold py-1 px-4 rounded transition duration-300 ease-in-out transform active:scale-95 "
             color="primary" id="trade-btn" mat-raised-button>
       Trade
       <mat-icon [@iconAnimation]="iconState" class="tick-icon ml-2">check_circle</mat-icon>

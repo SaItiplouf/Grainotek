@@ -3,11 +3,13 @@ import {State} from "../../../Reducers/app.reducer";
 import {Store} from "@ngrx/store";
 import {AppService} from "../../../services/app.service";
 import {IRoom, Room} from "../../../models/room.model";
-import {TradeService} from "../../../services/trade.service";
 import {roomsLoaded} from "../../../actions/chat.actions";
 import {SessionService} from "../../../services/session.service";
 import {IUser, User} from "../../../models/user.model";
 import {Message} from "../../../models/message.model";
+import {MessageService} from "../../../services/ChatRelated/message.service";
+import {RoomService} from "../../../services/ChatRelated/room.service";
+import {TradeService} from "../../../services/ChatRelated/trade.service";
 
 @Component({
   selector: 'app-chat-parent',
@@ -30,7 +32,9 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
     private tradeService: TradeService,
     private ngZone: NgZone,
     private appService: AppService,
-    private sessionService: SessionService) {
+    private sessionService: SessionService,
+    private messageService: MessageService,
+    private roomService: RoomService) {
   }
 
   ngOnInit(): void {
@@ -78,7 +82,7 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
       // Désactiver le bouton avant d'envoyer la demande à l'API
       this.isSending = true;
 
-      this.tradeService.createMessage(this.newMessageContent, `/api/rooms/${roomId}`, `/api/users/${userId}`)
+      this.messageService.createMessage(this.newMessageContent, `/api/rooms/${roomId}`, `/api/users/${userId}`)
         .subscribe(
           () => {
             // Réponse reçue avec succès
@@ -113,7 +117,7 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
 
 // Only adjust the unreadCount if it's not the selectedRoom
     if (!(this.selectedRoom && this.selectedRoom.id === updatedRoom.id)) {
-      roomToUpdate.unreadCount += newMessages.reduce((count, message) => {
+      roomToUpdate.unreadCount! += newMessages.reduce((count, message) => {
         // Check if the message hasn't been read
         const isUnread = message.readed;
 
@@ -146,7 +150,7 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
   private loadRoomsForCurrentUser(): void {
     const user = this.sessionService.getSetLocalUserToClass();
     if (user) {
-      this.tradeService.getAllRoomsOfAUser(user).subscribe(rooms => {
+      this.roomService.getAllRoomsOfAUser(user).subscribe(rooms => {
         rooms.forEach(room => {
           room.unreadCount = room.messages.reduce((count, message) => {
             const isUnread = message.readed;
@@ -163,7 +167,7 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
 
         // Suppression de la notification de nouveaux messages + traitement en back au chargement de la première room
         if (this.selectedRoom && this.currentUser) {
-          this.tradeService.markMessagesAsReadForUser(this.selectedRoom, this.currentUser).subscribe(
+          this.messageService.markMessagesAsReadForUser(this.selectedRoom, this.currentUser).subscribe(
             response => {
               console.log('Marked messages as read:', response);
               setTimeout(() => {

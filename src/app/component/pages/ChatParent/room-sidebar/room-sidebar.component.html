@@ -10,16 +10,27 @@
       <div *ngIf="isLoading[room.id]" class="h-10 w-10">
         <div class="loader"></div>
       </div>
-      <img (error)="handleImageError(room)"
+      <img *ngIf="room.trade" [hidden]="isLoading[room.id]"
+           (load)="handleImageLoad(room)"
+           [src]="room.trade.post.images[0].contentUrl"
+           alt="Trade Image" class="h-10 w-10 rounded-full object-contain">
+
+      <img *ngIf="!room.trade" (error)="handleImageError(room)"
            (load)="handleImageLoad(room)"
            [hidden]="isLoading[room.id]"
            [src]="getRecipient(room)?.pictureUrl || 'https://via.placeholder.com/50'"
            alt="User Image"
-           class="h-10 w-10 rounded-full">
+           class="h-10 w-10 rounded-full object-contain">
 
       <div class="ml-4">
         <h4 class="text-lg">{{ room.name }}</h4>
         <p class="text-sm text-gray-500">{{ getLastMessage(room)?.message }}</p>
+
+        <div *ngIf="room.trade">
+          <mat-icon> message</mat-icon>
+          <span>{{ room.trade.post.name }}</span>
+        </div>
       </div>
+
     </div>
-  </div>
+</div>

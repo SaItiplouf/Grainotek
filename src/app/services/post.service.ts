@@ -35,6 +35,7 @@ export class PostService {
     this.dialog.open(ShowpostComponent, {
       data: {post, formattedTime},
       width: "80%",
+      maxHeight: "90vh"
     });
   }
 

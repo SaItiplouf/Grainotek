@@ -6,10 +6,13 @@ import {IUser} from "../../models/user.model";
 import {LoginDialogComponent} from "./login-dialog/login-dialog.component";
 import {Store} from "@ngrx/store";
 import {State} from "../../Reducers/app.reducer";
-import {TradeService} from "../../services/trade.service";
 import {ITrade} from "../../models/trade.model";
 import {IPost} from "../../models/post.model";
 import {PostService} from "../../services/post.service";
+import {IPostRoom, IRoom} from "../../models/room.model";
+import {map} from "rxjs";
+import {RoomService} from "../../services/ChatRelated/room.service";
+import {TradeService} from "../../services/ChatRelated/trade.service";
 
 @Component({
   selector: 'app-navbar',
@@ -22,13 +25,18 @@ export class NavbarComponent implements OnInit {
   applicantTrades: ITrade[] = [];
   userPostTrades: ITrade[] = [];
 
-  constructor(private router: Router, private PostService: PostService, public dialog: MatDialog, private sessionService: SessionService, private tradeService: TradeService, private store: Store<{
-    state: State
-  }>) {
-  }
+  constructor(private router: Router,
+              private PostService: PostService,
+              public dialog: MatDialog,
+              private sessionService: SessionService,
+              private tradeService: TradeService,
+              private roomService: RoomService,
+              private store: Store<{
+                      state: State
+                      }>) {}
 
-  updateTradeStatut(trade: ITrade, statut: string): void {
-    this.tradeService.updateTradeStatut(trade, statut)
+  updateTrade(trade: ITrade, statut: string): void {
+    this.tradeService.updateTrade(trade, statut)
       .subscribe(
         () => console.log("Il faut mettre à jour le trade, faire le Mercure, etc."),
         error => console.error('Erreur lors de l\'envoi du message:', error)
@@ -36,8 +44,22 @@ export class NavbarComponent implements OnInit {
   }
 
   acceptTrade(trade: ITrade, statut: string): void {
-    this.updateTradeStatut(trade, statut);
-    // Logique pour générer une room associé
+    const room: IPostRoom = {
+      name: "Salle n°" + trade.id,
+      trade: trade,
+      users: [trade.applicant, trade.userPostOwner]
+    };
+    this.roomService.createRoom(room).pipe(
+      map((response: any) => response as IRoom)
+    ).subscribe(
+      (room: IRoom) => {
+        this.tradeService.updateTrade(trade, statut, room);
+      },
+      error => {
+        console.error('Erreur lors de la création de la room :', error);
+      }
+    );
+
   }
 
   ngOnInit(): void {

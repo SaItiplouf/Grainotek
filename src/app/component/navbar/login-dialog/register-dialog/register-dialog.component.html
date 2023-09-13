@@ -1,18 +1,25 @@
-<h2 class="dialog-title" mat-dialog-title>Register</h2>
-
+<h2 class="dialog-title text-lg sm:text-xl font-bold mb-4" mat-dialog-title>Inscription</h2>
 <mat-dialog-content class="dialog-content">
-  <mat-form-field class="full-width-input">
-    <input #usernameInput (keyup.enter)="focusPasswordInput()" [(ngModel)]="email" matInput
-           placeholder="Nom d'utilisateur">
+  <mat-form-field class="full-width w-full mb-4">
+    <input #usernameInput class="appearance-none border rounded w-full py-2 px-3" (keyup.enter)="focusInput('username')" [(ngModel)]="username" matInput placeholder="Nom d'utilisateur">
   </mat-form-field>
-  <mat-form-field class="full-width-input">
-    <input #passwordInput (keyup.enter)="register()" [(ngModel)]="password" [disabled]="isLoading" matInput
-           placeholder="Mot de passe"
-           type="password">
+  <mat-form-field class="full-width w-full mb-4">
+    <input #emailInput class="appearance-none border rounded w-full py-2 px-3" (keyup.enter)="focusInput('email')" [(ngModel)]="email" matInput placeholder="Email">
   </mat-form-field>
+  <mat-form-field class="full-width w-full mb-4">
+    <input #passwordInput class="appearance-none border rounded w-full py-2 px-3" (keyup.enter)="register()" [(ngModel)]="password" [disabled]="isLoading" matInput placeholder="Mot de passe" type="password">
+  </mat-form-field>
+  <!-- Ajout du champ pour l'envoi d'image -->
+  <div class="image-upload border-dashed border-2 rounded p-2 md:p-4 text-center cursor-pointer transition-all hover:bg-gray-100 hover:border-gray-400">
+    <label for="file-input" class="block text-sm md:text-base mb-2">Glissez et déposez ou cliquez pour télécharger une photo de profil (facultatif)</label>
+    <input id="file-input" type="file" (change)="onFileChange($event)">
+  </div>
+  <div class="image-preview my-4" *ngIf="imagePreview">
+    <img [src]="imagePreview" alt="Prévisualisation de l'image" class="w-full max-h-56 object-cover rounded">
+  </div>
 </mat-dialog-content>
 
-<mat-dialog-actions align="end">
-  <button (click)="onNoClick()" mat-button>Annuler</button>
-  <button (click)="register()" [disabled]="isLoading" mat-button>S'inscrire</button>
+<mat-dialog-actions class="justify-end">
+  <button class="mx-2" (click)="onNoClick()" mat-button>Annuler</button>
+  <button class="mx-2 bg-blue-500 text-white rounded px-4 py-2 transition-transform transform hover:scale-105" (click)="register()" [disabled]="isLoading" mat-button>S'inscrire</button>
 </mat-dialog-actions>

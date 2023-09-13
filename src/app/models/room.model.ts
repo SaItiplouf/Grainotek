@@ -10,6 +10,11 @@ export interface IRoom {
   trade: ITrade;
   unreadCount: number;
 }
+export interface IPostRoom {
+  name: string;
+  users: IUser[];
+  trade: ITrade;
+}
 
 export class Room {
   id!: number;

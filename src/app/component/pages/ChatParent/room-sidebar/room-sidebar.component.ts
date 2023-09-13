@@ -4,9 +4,11 @@ import {Message} from "../../../../models/message.model";
 import {IUser, User} from "../../../../models/user.model";
 import {Store} from "@ngrx/store";
 import {State} from "../../../../Reducers/app.reducer";
-import {TradeService} from "../../../../services/trade.service";
 import {AppService} from "../../../../services/app.service";
 import {SessionService} from "../../../../services/session.service";
+import {TradeService} from "../../../../services/ChatRelated/trade.service";
+import {RoomService} from "../../../../services/ChatRelated/room.service";
+import {MessageService} from "../../../../services/ChatRelated/message.service";
 
 @Component({
   selector: 'app-room-sidebar',
@@ -23,7 +25,9 @@ export class RoomSidebarComponent {
   @Output() roomSelected: EventEmitter<IRoom> = new EventEmitter<IRoom>();
   constructor(
     private store: Store<{ state: State }>,
-    private tradeService: TradeService) {
+    private tradeService: TradeService,
+    private roomService: RoomService,
+    private messageService: MessageService) {
   }
   get filteredRooms(): IRoom[] {
     if (!this.searchTerm) {
@@ -41,7 +45,7 @@ export class RoomSidebarComponent {
     this.roomSelected.emit(this.selectedRoom);
 
     if (room.messages.some(message => message.readed)) {
-      this.tradeService.markMessagesAsReadForUser(this.selectedRoom, this.currentUser!).subscribe(
+      this.messageService.markMessagesAsReadForUser(this.selectedRoom, this.currentUser!).subscribe(
         response => {
           // Log the response
           console.log('API response:', response);
@@ -73,7 +77,7 @@ export class RoomSidebarComponent {
     return room.users.find(user => user.id !== this.currentUser?.id) || null;
   }
   get isLoading() {
-    return this.tradeService.isLoading;
+    return this.roomService.isLoading;
   }
   getLastMessage(room: IRoom): Message | null {
     return room.messages.length > 0 ? room.messages[room.messages.length - 1] : null;

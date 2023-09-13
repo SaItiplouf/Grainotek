@@ -9,14 +9,15 @@ import {ToastrService} from "ngx-toastr";
   styleUrls: ['./register-dialog.component.scss']
 })
 export class RegisterDialogComponent {
-
-
   @ViewChild('usernameInput') usernameInput!: ElementRef;
+  @ViewChild('emailInput') emailInput!: ElementRef;
   @ViewChild('passwordInput') passwordInput!: ElementRef;
+  username: string | undefined;
   email: string | undefined;
   password: string | undefined;
+  pictureFile: any | undefined;
   isLoading = false;
-
+  imagePreview: string | ArrayBuffer | null = null;
   constructor(
     public dialogRef: MatDialogRef<RegisterDialogComponent>,
     private toastr: ToastrService,
@@ -29,11 +30,19 @@ export class RegisterDialogComponent {
   }
 
   register(): void {
-    if (this.email && this.password && !this.isLoading) {
-      // let username = 'votre_username';
-      // let pictureFile = 'votre_pictureFile';
+    if (this.email && this.password && this.username && !this.isLoading) {
       this.isLoading = true;
-      this.sessionService.register(this.email, this.password).subscribe(
+
+      const formData: FormData = new FormData();
+      formData.append('email', this.email);
+      formData.append('password', this.password);
+      formData.append('username', this.username);
+
+      if (this.pictureFile) {
+        formData.append('pictureFile', this.pictureFile);
+      }
+
+      this.sessionService.register(formData).subscribe(
         (response: any) => {
           if (response) {
             this.toastr.success('Inscription réussie!', 'Succès');  // Alerte de succès
@@ -50,7 +59,25 @@ export class RegisterDialogComponent {
     }
   }
 
-  focusPasswordInput(): void {
-    this.passwordInput.nativeElement.focus();
+  onFileChange(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      let file = input.files[0];
+
+      // Pour la prévisualisation de l'image
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.imagePreview = reader.result;
+      }
+      reader.readAsDataURL(file);
+    }
+  }
+
+  focusInput(inputType: string): void {
+    if (inputType === 'email') {
+      this.passwordInput.nativeElement.focus();
+    } else if (inputType === 'username') {
+      this.usernameInput.nativeElement.focus();
+    }
   }
 }

@@ -8,21 +8,20 @@
     class="search-results"
     infiniteScroll
   >
-    <div class="flex flex-col bg-white rounded-s pt-2">
-      <div (click)="openPostDialog(post)"
-           *ngFor="let post of posts"
-           class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform transform hover:scale-105 m-2 relative h-200">
-        <mat-card class="post-card">
-          <div class="flex">
-            <div class="w-1/4 bg-gray-200">
+    <div (click)="openPostDialog(post)"
+         *ngFor="let post of posts"
+         class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform transform hover:scale-105 m-2 sm:m-4 relative h-200 sm:h-auto">
+      <mat-card class="post-card">
+        <div class="flex flex-col sm:flex-row">
+          <div class="w-full sm:w-1/4 bg-gray-200">
               <img *ngIf="post.images.length > 0" [src]="post.images[0].contentUrl" alt="Post Image"
                    class="object-contain h-80 w-80 p-4">
               <img *ngIf="post.images.length === 0" alt="Placeholder Image" class="object-cover h-80 w-80"
                    src="../../../../../assets/placeholderPost.png">
             </div>
-            <div class="w-3/4 p-4 flex flex-col">
-              <div class="flex justify-between items-start"> <!-- Change this line -->
-                <div class="flex items-center">
+          <div class="w-full sm:w-3/4 p-4 flex flex-col">
+            <div class="flex flex-col sm:flex-row justify-between items-start mb-2">
+              <div class="flex items-center mb-2 sm:mb-0">
                   <img [src]="post.user.pictureUrl"
                        alt="User Picture"
                        class="h-10 w-10 object-contain rounded-full mr-2">
@@ -38,16 +37,14 @@
                     </div>
                   </div>
                 </div>
-                <p class="text-xs text-gray-500">{{ formatTime(post) }}</p>
+              <p class="text-xs text-gray-500 sm:mt-0 mt-2">{{ formatTime(post) }}</p>
               </div>
-              <h2 class="text-md font-semibold text-gray-800 mb-1">{{ post.name }}</h2>
-              <p
-                class="text-xs text-gray-700">{{ post.content | slice:0:80 }}{{ post.content.length > 80 ? '...' : '' }}</p>
-
+            <h2 class="text-md font-semibold text-gray-800 mb-1">{{ post.name }}</h2>
+            <p class="text-xs text-gray-700">{{ post.content | slice:0:80 }}{{ post.content.length > 80 ? '...' : '' }}</p>
             </div>
-            <div class="flex justify-end mt-2">
-              <button (click)="openPostDialog(post)" class="text-xs" color="primary" mat-button>Ouvrir</button>
-            </div>
+          <div class="flex justify-end mt-2">
+            <button (click)="openPostDialog(post)" class="text-xs" color="primary" mat-button>Ouvrir</button>
+          </div>
           </div>
         </mat-card>
       </div>
@@ -58,4 +55,3 @@
       </button>
     </div>
   </div>
-</div>

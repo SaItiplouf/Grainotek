@@ -3,7 +3,6 @@ import {IPost} from "../../../../../models/post.model";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {animate, keyframes, state, style, transition, trigger} from '@angular/animations';
 import {SessionService} from "../../../../../services/session.service";
-import {TradeService} from "../../../../../services/trade.service";
 import {ToastrService} from "ngx-toastr";
 import {Router} from "@angular/router";
 import * as CryptoJS from 'crypto-js';
@@ -11,6 +10,7 @@ import {Loader} from "@googlemaps/js-api-loader";
 import {OwlOptions} from 'ngx-owl-carousel-o';
 import {IUser} from "../../../../../models/user.model";
 import {environnement} from "../../../../../../../environnement";
+import {TradeService} from "../../../../../services/ChatRelated/trade.service";
 
 @Component({
   selector: 'app-showpost',
