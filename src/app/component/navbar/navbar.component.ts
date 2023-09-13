@@ -24,6 +24,7 @@ export class NavbarComponent implements OnInit {
   userInfo: IUser | null = null;
   applicantTrades: ITrade[] = [];
   userPostTrades: ITrade[] = [];
+  menuOpen = false;
 
   constructor(private router: Router,
               private PostService: PostService,
@@ -32,8 +33,9 @@ export class NavbarComponent implements OnInit {
               private tradeService: TradeService,
               private roomService: RoomService,
               private store: Store<{
-                      state: State
-                      }>) {}
+                state: State
+              }>) {
+  }
 
   updateTrade(trade: ITrade, statut: string): void {
     this.tradeService.updateTrade(trade, statut)
@@ -56,7 +58,7 @@ export class NavbarComponent implements OnInit {
         this.tradeService.updateTrade(trade, statut, room);
       },
       error => {
-        console.error('Erreur lors de la création de la room :', error);
+        console.error('Erreur lors de la création de la room voir erreur:', error);
       }
     );
 
@@ -82,6 +84,9 @@ export class NavbarComponent implements OnInit {
     this.router.navigate(['pm']);
   }
 
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
+  }
 
   openPostDialog(post: IPost): void {
     this.PostService.DisplayPostModal(post)

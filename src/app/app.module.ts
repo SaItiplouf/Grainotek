@@ -42,6 +42,7 @@ import {MatTooltipModule} from "@angular/material/tooltip";
 import {ProfileParentComponent} from './component/pages/Profile/profile-parent/profile-parent.component';
 import {CarouselModule} from "ngx-owl-carousel-o";
 import { RoomSidebarComponent } from './component/pages/ChatParent/room-sidebar/room-sidebar.component';
+import { DeletetradedialogComponent } from './component/pages/ChatParent/deletetradedialog/deletetradedialog.component';
 
 
 @NgModule({
@@ -59,6 +60,7 @@ import { RoomSidebarComponent } from './component/pages/ChatParent/room-sidebar/
     ChatParentComponent,
     ProfileParentComponent,
     RoomSidebarComponent,
+    DeletetradedialogComponent,
   ],
   imports: [
     BrowserModule,

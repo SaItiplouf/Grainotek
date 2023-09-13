@@ -6,16 +6,6 @@
       <span class="self-center text-2xl font-semibold whitespace-nowrap text-white dark:text-white">Grainotek</span>
     </a>
 
-    <button aria-controls="navbar-user"
-            class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-400 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-            data-collapse-toggle="navbar-user"
-            type="button">
-      <span class="sr-only">Ouvrir le menu principal</span>
-      <svg aria-hidden="true" class="w-5 h-5" fill="none" viewBox="0 0 17 14" xmlns="http://www.w3.org/2000/svg">
-        <path d="M1 1h15M1 7h15M1 13h15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-              stroke-width="2"/>
-      </svg>
-    </button>
 
     <div class="hidden md:flex items-center">
       <ul
@@ -150,33 +140,45 @@
         Connexion
       </button>
     </div>
+
+    <button (click)="toggleMenu()"
+            class="z-50 inline-flex flex-col items-center p-2 w-10 h-10 justify-center text-sm text-gray-400 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+            type="button">
+      <span class="sr-only">Ouvrir le menu principal</span>
+      <div [ngClass]="{'rotate-45 translate-y-2': menuOpen, 'rotate-0': !menuOpen}"
+           class="w-5 h-0.5 bg-current mb-1 transform transition-transform duration-300"></div>
+      <div [ngClass]="{'opacity-0': menuOpen, 'opacity-100': !menuOpen}"
+           class="w-5 h-0.5 bg-current mb-1 transition-opacity duration-300"></div>
+      <div [ngClass]="{'-rotate-45 -translate-y-2': menuOpen, 'rotate-0': !menuOpen}"
+           class="w-5 h-0.5 bg-current transform transition-transform duration-300"></div>
+    </button>
     <!-- Options pour les petits écrans -->
-    <div class="md:hidden" id="navbar-user">
-      <div *ngIf="isUserLoggedIn()">
-        <ul aria-labelledby="user-menu-button" class="py-2">
-          <li>
-            <a
-              class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-100 dark:hover:bg-green-600 dark:text-green-200 dark:hover:text-white"
-              href="#">Tableau
-              de bord</a>
-          </li>
-          <li>
-            <a
-              class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-100 dark:hover:bg-green-600 dark:text-green-200 dark:hover:text-white"
-              href="#">Paramètres</a>
-          </li>
-          <li>
-            <a
-              class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-100 dark:hover:bg-green-600 dark:text-green-200 dark:hover:text-white"
-              href="#">Gains</a>
-          </li>
-          <li>
-            <a (click)="forgetToken()"
-               class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-100 dark:hover:bg-green-600 dark:text-green-200 dark:hover:text-white">Se
-              déconnecter</a>
-          </li>
-        </ul>
-      </div>
+    <div *ngIf="menuOpen"
+         [ngClass]="{'translate-y-0 opacity-100': menuOpen, 'translate-y-full opacity-0': !menuOpen}"
+         class="md:hidden transition-all ease-out duration-300 transform translate-y-full opacity-0">
+      <ul aria-labelledby="user-menu-button" class="py-2">
+        <li>
+          <a
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-100 dark:hover:bg-green-600 dark:text-green-200 dark:hover:text-white"
+            href="#">Tableau
+            de bord</a>
+        </li>
+        <li>
+          <a
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-100 dark:hover:bg-green-600 dark:text-green-200 dark:hover:text-white"
+            href="#">Paramètres</a>
+        </li>
+        <li>
+          <a
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-100 dark:hover:bg-green-600 dark:text-green-200 dark:hover:text-white"
+            href="#">Gains</a>
+        </li>
+        <li>
+          <a (click)="forgetToken()"
+             class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-100 dark:hover:bg-green-600 dark:text-green-200 dark:hover:text-white">Se
+            déconnecter</a>
+        </li>
+      </ul>
     </div>
   </div>
 </nav>

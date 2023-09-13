@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {map, Observable} from "rxjs";
+import {Observable} from "rxjs";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environnement} from "../../../../environnement";
 import {IUser} from "../../models/user.model";
@@ -23,16 +23,20 @@ export class TradeService {
   }
 
 
-  updateTrade(trade: ITrade, statut: string, room? : IRoom): Observable<any> {
+  updateTrade(trade: ITrade, statut: string, room?: IRoom): Observable<any> {
 
     if (!statut && !room) {
       throw new Error("Aucun statut ni room n'a été fourni.");
     }
+
+    // Create a copy of the trade object
+    let modifiedTrade = {...trade};
+
     if (statut) {
-      trade.statut = statut;
+      modifiedTrade.statut = statut;
     }
     if (room) {
-      trade.room = room;
+      modifiedTrade.room = room;
     }
 
     const httpOptions = {
@@ -41,9 +45,8 @@ export class TradeService {
       })
     };
 
-    return this.http.patch(environnement.BASE_URL + `api/trade/${trade.id}`, trade, httpOptions);
+    return this.http.patch(environnement.BASE_URL + `api/trade/${modifiedTrade.id}`, modifiedTrade, httpOptions);
   }
-
 
 
 }

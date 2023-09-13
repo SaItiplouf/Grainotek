@@ -5,8 +5,7 @@ import {AppService} from "../../../services/app.service";
 import {IRoom, Room} from "../../../models/room.model";
 import {roomsLoaded} from "../../../actions/chat.actions";
 import {SessionService} from "../../../services/session.service";
-import {IUser, User} from "../../../models/user.model";
-import {Message} from "../../../models/message.model";
+import {User} from "../../../models/user.model";
 import {MessageService} from "../../../services/ChatRelated/message.service";
 import {RoomService} from "../../../services/ChatRelated/room.service";
 import {TradeService} from "../../../services/ChatRelated/trade.service";
@@ -23,9 +22,10 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
   selector: string = ".main-panel";
   currentPage: number = 1;
   newMessageContent: string = '';
+  isSending = false;
+  isSidebarHidden = true;
   private eventSource: EventSource | null = null;
   @ViewChild('messageList') private messageListRef!: ElementRef;
-  isSending = false;
 
   constructor(
     private store: Store<{ state: State }>,
@@ -46,14 +46,13 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
       this.sessionService.checkUserAuthentication();
     });
   }
-  private subscribeToRoomChanges(): void {
-    this.store.select(state => state.state).subscribe(state => this.rooms = state.room || []);
-  }
+
   // scroll to bottom au init
   ngAfterViewChecked() {
     const messageList: HTMLDivElement = this.messageListRef.nativeElement;
     messageList.scrollTop = messageList.scrollHeight;
   }
+
   // détruit la souscription à mercure pour l'opti
   ngOnDestroy(): void {
     // Fermez la connexion Mercure
@@ -62,16 +61,16 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
     }
   }
 
+  // Reception de l'output du composant enfant
+  onRoomSelected(room: IRoom): void {
+    this.selectedRoom = room;
+  }
+
   // onScroll() {
   //   this.TradeService.getAllRoomsOfAUser(this.currentPage + 1).subscribe(newRooms => {
   //     this.store.dispatch(roomsLoaded({room: [...this.rooms, ...newRooms]}));
   //     this.currentPage++; // Incrémentez la page actuelle
   //   });
-
-  // Reception de l'output du composant enfant
-  onRoomSelected(room: IRoom): void {
-    this.selectedRoom = room;
-  }
 
   // Uniquement Requete API et désactivation du boutton pour le spam
   sendMessage(): void {
@@ -146,6 +145,13 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
     console.log(this.rooms);
   }
 
+  toggleSidebar() {
+    this.isSidebarHidden = !this.isSidebarHidden;
+  }
+
+  private subscribeToRoomChanges(): void {
+    this.store.select(state => state.state).subscribe(state => this.rooms = state.room || []);
+  }
 
   private loadRoomsForCurrentUser(): void {
     const user = this.sessionService.getSetLocalUserToClass();
@@ -172,12 +178,12 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
               console.log('Marked messages as read:', response);
               setTimeout(() => {
                 // Clone the selectedRoom object and update unreadCount
-                this.selectedRoom! = { ...this.selectedRoom!, unreadCount: 0 };
+                this.selectedRoom! = {...this.selectedRoom!, unreadCount: 0};
 
                 // Clone the room you want to update in the rooms array and update unreadCount
                 const roomIndex = this.rooms.findIndex(room => room.id === this.selectedRoom!.id);
                 if (roomIndex !== -1) {
-                  const updatedRoom = { ...this.rooms[roomIndex], unreadCount: 0 };
+                  const updatedRoom = {...this.rooms[roomIndex], unreadCount: 0};
                   const updatedRooms = [...this.rooms]; // Create a new array
                   updatedRooms[roomIndex] = updatedRoom; // Update the element in the new array
                   this.rooms = updatedRooms; // Assign the new array back to this.rooms

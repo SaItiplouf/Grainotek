@@ -1,14 +1,15 @@
-import {Component, EventEmitter, Input, NgZone, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {IRoom} from "../../../../models/room.model";
 import {Message} from "../../../../models/message.model";
 import {IUser, User} from "../../../../models/user.model";
 import {Store} from "@ngrx/store";
 import {State} from "../../../../Reducers/app.reducer";
-import {AppService} from "../../../../services/app.service";
-import {SessionService} from "../../../../services/session.service";
 import {TradeService} from "../../../../services/ChatRelated/trade.service";
 import {RoomService} from "../../../../services/ChatRelated/room.service";
 import {MessageService} from "../../../../services/ChatRelated/message.service";
+import {MatDialog} from "@angular/material/dialog";
+import {DeletetradedialogComponent} from "../deletetradedialog/deletetradedialog.component";
+import {ITrade} from "../../../../models/trade.model";
 
 @Component({
   selector: 'app-room-sidebar',
@@ -23,12 +24,15 @@ export class RoomSidebarComponent {
   searchTerm: string = '';
 
   @Output() roomSelected: EventEmitter<IRoom> = new EventEmitter<IRoom>();
+
   constructor(
     private store: Store<{ state: State }>,
     private tradeService: TradeService,
     private roomService: RoomService,
+    private dialog: MatDialog,
     private messageService: MessageService) {
   }
+
   get filteredRooms(): IRoom[] {
     if (!this.searchTerm) {
       return this.rooms;
@@ -39,6 +43,9 @@ export class RoomSidebarComponent {
     );
   }
 
+  get isLoading() {
+    return this.roomService.isLoading;
+  }
 
   selectRoom(room: IRoom): void {
     this.selectedRoom = room;
@@ -62,6 +69,37 @@ export class RoomSidebarComponent {
       );
     }
   }
+
+  closeTrade(room: IRoom, trade: ITrade) {
+    this.dialog.open(DeletetradedialogComponent, {
+      width: "70vh",
+      data: {room, trade}
+    });
+  }
+
+  getRecipient(room: IRoom): IUser | null {
+    return room.users.find(user => user.id !== this.currentUser?.id) || null;
+  }
+
+  getLastMessage(room: IRoom): Message | null {
+    return room.messages.length > 0 ? room.messages[room.messages.length - 1] : null;
+  }
+
+  handleImageError(room: IRoom): void {
+    console.log(`Image error for room ${room.id}`);
+    this.isLoading[room.id] = false;
+  }
+
+  handleImageLoad(room: IRoom): void {
+    console.log(`Image loaded for room ${room.id}`);
+    this.isLoading[room.id] = false;
+  }
+
+  handleImageStatus(room: IRoom, status: 'error' | 'load'): void {
+    console.log(`Image ${status} for room ${room.id}`);
+    this.isLoading[room.id] = false;
+  }
+
   private updateLocalRoomState(updatedRoom: IRoom): void {
     const roomIndex = this.rooms.findIndex(room => room.id === updatedRoom.id);
     if (roomIndex === -1) return;
@@ -72,27 +110,5 @@ export class RoomSidebarComponent {
     if (this.selectedRoom && this.selectedRoom.id === updatedRoom.id) {
       this.selectedRoom = updatedRoom;
     }
-  }
-  getRecipient(room: IRoom): IUser | null {
-    return room.users.find(user => user.id !== this.currentUser?.id) || null;
-  }
-  get isLoading() {
-    return this.roomService.isLoading;
-  }
-  getLastMessage(room: IRoom): Message | null {
-    return room.messages.length > 0 ? room.messages[room.messages.length - 1] : null;
-  }
-  handleImageError(room: IRoom): void {
-    console.log(`Image error for room ${room.id}`);
-    this.isLoading[room.id] = false;
-  }
-
-  handleImageLoad(room: IRoom): void {
-    console.log(`Image loaded for room ${room.id}`);
-    this.isLoading[room.id] = false;
-  }
-  handleImageStatus(room: IRoom, status: 'error' | 'load'): void {
-    console.log(`Image ${status} for room ${room.id}`);
-    this.isLoading[room.id] = false;
   }
 }

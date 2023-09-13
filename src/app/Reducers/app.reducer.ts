@@ -3,7 +3,7 @@ import {IPost} from "../models/post.model";
 import {addPost, postsLoaded, setUser} from "../actions/post.actions";
 import {IUser} from "../models/user.model";
 import {IRoom} from "../models/room.model";
-import {roomsLoaded} from "../actions/chat.actions";
+import {roomsLoaded, updateRoom} from "../actions/chat.actions";
 
 
 export interface State {
@@ -37,6 +37,15 @@ export const reducer = createReducer(
       ...state,
       posts: [post, ...state.posts]
     };
+  }),
+  on(updateRoom, (state, {room}) => {
+    const updatedRooms = state.room.map(existingRoom => {
+      if (existingRoom.id === room.id) {
+        return room;
+      }
+      return existingRoom;
+    });
+    return {...state, room: updatedRooms};
   }),
   on(roomsLoaded, (state, {rooms}) => ({...state, room: rooms}))
 );

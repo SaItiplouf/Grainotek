@@ -41,7 +41,8 @@ export class ShowpostComponent implements OnInit {
   public location: { lat: number; lng: number } | undefined;
   public formattedTime: string;
   ConnectedUser!: IUser;
-
+  showComments = false;
+  
   customOptions: OwlOptions = {
     loop: true,
     autoplay: true,

@@ -4,7 +4,8 @@
     <div class="flex items-center justify-between mb-2 md:mb-0">
       <!-- Contenu de gauche -->
       <div class="flex items-center">
-        <img (click)="redirectToProfile(post.user.id)" alt="Profile Image" class="effectOnHover w-10 h-10 rounded-full mr-2" src="{{ post.user.pictureUrl }}">
+        <img (click)="redirectToProfile(post.user.id)" alt="Profile Image"
+             class="effectOnHover w-10 h-10 rounded-full mr-2" src="{{ post.user.pictureUrl }}">
         <div>
           <p class="text-xs md:text-sm font-semibold">{{ post.user.email }}</p>
           <p class="text-xs text-gray-500 mt-n1">{{ formattedTime }}</p>
@@ -69,16 +70,19 @@
 
   <!-- Comment Section -->
   <div class="relative mt-4">
-    <button aria-label="Toggle Comments" class="flex items-center space-x-1 text-gray-600" id="commentToggle">
+    <button (click)="showComments = !showComments" aria-label="Toggle Comments"
+            class="flex items-center space-x-1 text-gray-600" id="commentToggle">
       <mat-icon>insert_comment</mat-icon>
       <span>Comment</span>
     </button>
-    <div class="absolute hidden bg-white rounded-lg shadow-md p-2 mt-1 right-0 w-40" id="commentSection">
+    <div *ngIf="showComments"
+         class="absolute transition-all ease-in-out duration-300 bg-white rounded-lg shadow-md p-2 mt-1 right-0 w-40"
+         id="commentSection">
       <div class="mb-2">
         <input aria-label="Add a comment" class="border rounded w-full px-2 py-1" placeholder="Add a comment"
                type="text">
       </div>
-      <div class="max-h-20 overflow-auto">
+      <div class="max-h-20 overflow-y-auto">
         <!-- Comment section content here -->
         <div class="mb-2">
           <p class="text-sm text-gray-600">Username: This is a comment.</p>

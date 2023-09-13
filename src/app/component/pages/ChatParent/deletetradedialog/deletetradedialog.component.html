@@ -1,0 +1,14 @@
+<div class="bg-white p-8 rounded-md shadow-xl">
+  <h2 class="text-2xl mb-4">Confirmer la fermeture de l'échange</h2>
+  <p class="mb-6">Êtes-vous sûr de vouloir cloturer cet échange ? Cette action est irréversible. N'oubliez pas de
+    laisser une note à votre interlocuteur à l'issue de cette fermeture</p>
+  <div class="flex justify-end space-x-4">
+    <button (click)="onCancel()" class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded" mat-button>
+      Annuler
+    </button>
+    <button (click)="onConfirm()" class="text-white px-4 py-2 rounded"
+            color="warn" mat-button>
+      Supprimer
+    </button>
+  </div>
+</div>

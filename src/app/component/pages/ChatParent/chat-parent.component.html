@@ -1,17 +1,22 @@
-<div class="h-screen bg-gray-100 p-4 flex">
-  <div class="w-1/4 bg-white rounded-lg scrollbar scrollbar-thumb-gray-200 scrollbar-track-gray-100 overflow-y-scroll">
-
-  <app-room-sidebar [rooms]="rooms"
-                    [currentUser]="currentUser"
-                    [selectedRoom]="selectedRoom"
-                    (roomSelected)="onRoomSelected($event)"
+<div class="h-screen bg-gray-100 p-4 flex flex-col md:flex-row">
+  <button (click)="toggleSidebar()"
+          class="md:hidden flex justify-between items-center bg-gray-200 p-4 pb-2 w-full rounded-lg shadow-md hover:bg-gray-300 focus:outline-none focus:ring">
+    <span>Liste des conversations</span>
+    <mat-icon>arrow_drop_down</mat-icon>
+  </button>
+  <div [class.overflow-hidden]="isSidebarHidden" [class.w-0]="isSidebarHidden" [class.w-full]="!isSidebarHidden"
+       class="md:w-1/4 pb-4 bg-white rounded-lg scrollbar scrollbar-thumb-gray-200 scrollbar-track-gray-100 md:mb-0 transition-all duration-300 ease-in-out"
   >
+    <app-room-sidebar (roomSelected)="onRoomSelected($event)"
+                      [currentUser]="currentUser"
+                      [rooms]="rooms"
+                      [selectedRoom]="selectedRoom"
+    >
+    </app-room-sidebar>
 
-  </app-room-sidebar>
   </div>
-
   <!-- Zone de chat -->
-  <div class="w-3/4 bg-white rounded-lg flex flex-col shadow-lg">
+  <div class="flex-grow w-full md:w-3/4 bg-white rounded-lg flex flex-col shadow-lg pt-4">
     <!-- Messages -->
     <div #messageList class="flex-1 p-4 overflow-y-scroll">
       <div *ngFor="let message of selectedRoom?.messages">
@@ -40,7 +45,7 @@
 
     <!-- Zone de saisie -->
     <div class="p-4 border-t border-gray-200">
-      <div class="flex items-center">
+      <div *ngIf="selectedRoom?.trade?.statut !== 'closed'; else tradeClosedContent" class="flex items-center">
         <input (keyup.enter)="!isSending ? sendMessage() : null"
                [(ngModel)]="newMessageContent"
                class="flex-grow p-3 rounded-l border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -50,8 +55,11 @@
                 class="bg-blue-500 text-white p-3 rounded-full hover:bg-blue-600 transition-colors">
           Envoyer
         </button>
-
       </div>
+
+      <ng-template #tradeClosedContent>
+        <div class="text-gray-500">La conversation est fermée.</div>
+      </ng-template>
     </div>
   </div>
 </div>
