@@ -59,7 +59,6 @@ export class CommentSectionComponent implements OnInit {
 
       this.store.select((state: any) => state.state.comments).subscribe((comments: IPostComment[]) => {
         this.comments = comments;
-        // Mise à jour de la variable userLikedComments lorsqu'il y a un changement dans les commentaires
         comments.forEach((comment) => {
           if (this.connectedUser) {
             this.userLikedComments[comment.id] = comment.postCommentLikes.some(
@@ -77,32 +76,23 @@ export class CommentSectionComponent implements OnInit {
   }
 
   onScroll() {
-    // Si les commentaires sont en cours de chargement, on sort de la fonction
     if (this.loading) {
       return;
     }
 
-    // Indiquez que les commentaires sont en cours de chargement
     this.loading = true;
 
     this.commentsService.getCommentsOfAPostFromApi(this.Modalpost, this.currentPage + 1).subscribe(
       (updatedComments) => {
-        updatedComments = updatedComments.map((comment) => ({
+        // Traitez les commentaires comme avant
+        updatedComments = updatedComments.map(comment => ({
           ...comment,
-          likeCount: comment.postCommentLikes?.filter((like) => like.liked).length || 0,
+          likeCount: comment.postCommentLikes?.filter(like => like.liked).length || 0,
         }));
 
-        // Mise à jour de la variable userLikedComments
-        updatedComments.forEach((comment) => {
-          this.userLikedComments[comment.id] = comment.postCommentLikes.some(
-            (like) => like.user.id === this.connectedUser.id && like.liked
-          );
-        });
+        this.store.dispatch(loadComments({comments: updatedComments}));
 
-        // Ajouter les nouveaux commentaires à la liste existante
-        this.comments = [...this.comments, ...updatedComments];
-
-        this.currentPage++; // Incrémentez la page actuelle
+        this.currentPage++;
         this.loading = false;
       },
       (error) => {

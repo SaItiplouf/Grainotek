@@ -124,6 +124,7 @@ export class SessionService {
   }
 
   setUserFromToken() {
+// Au login enregistrement dans le store
     const userInfo = this.getUserInfo();
     if (userInfo) {
       this.store.dispatch(setUser({user: userInfo}));

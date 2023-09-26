@@ -90,6 +90,9 @@ export const reducer = createReducer(
     };
   }),
   on(roomsLoaded, (state, {rooms}) => ({...state, room: rooms})),
-  on(loadComments, (state, {comments}) => ({...state, comments})),
+  on(loadComments, (state, {comments}) => ({
+    ...state,
+    comments: [...state.comments, ...comments]
+  })),
   on(addComment, (state, {comment}) => ({...state, comments: [comment, ...state.comments]})),
 );

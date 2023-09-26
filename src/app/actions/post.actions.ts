@@ -11,3 +11,4 @@ export const addPost = createAction('[Post] Add Post', props<{ post: IPost }>())
 
 export const loadComments = createAction('[Comment] Add Comment', props<{ comments: IPostComment[] }>());
 export const addComment = createAction('[Post] Add Comment', props<{ comment: IPostComment }>());
+
