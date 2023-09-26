@@ -23,8 +23,12 @@ export class FeedComponent implements OnInit {
   ConnectedUser!: IUser;
 
   constructor(private store: Store<{
-    state: State
-  }>, private PostService: PostService, private router: Router, private service: AppService, public dialog: MatDialog, private sessionService: SessionService) {
+                state: State
+              }>, private PostService: PostService,
+              private router: Router,
+              private service: AppService,
+              public dialog: MatDialog,
+              private sessionService: SessionService) {
   }
 
   onScroll() {
@@ -40,8 +44,8 @@ export class FeedComponent implements OnInit {
       this.store.dispatch(postsLoaded({posts}));
       console.log(posts)
     });
-    this.store.select((state: any) => state.state).subscribe((state: State) => {
-      this.posts = state.posts;
+    this.store.select((state: any) => state.state.posts).subscribe((post: IPost[]) => {
+      this.posts = post;
     });
     this.getConnectedUserInformationViaToken()
   }
@@ -63,6 +67,7 @@ export class FeedComponent implements OnInit {
   openDialog(): void {
     window.scrollTo(0, 0);
     this.dialog.open(CreatePostComponent, {
+      autoFocus: false,
       width: "500px",
     });
   }
@@ -70,6 +75,7 @@ export class FeedComponent implements OnInit {
   openPostDialog(post: IPost): void {
     this.PostService.DisplayPostModal(post)
   }
+
 
   formatTime(post: IPost): any {
     return this.PostService.formatTimeSince(post.createdAt);

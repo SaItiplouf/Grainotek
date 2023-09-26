@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {IUser} from '../../../models/user.model';
 import {AppService} from "../../../services/app.service";
 import {SessionService} from "../../../services/session.service";
@@ -12,7 +12,7 @@ import {Store} from "@ngrx/store";
   templateUrl: './profile-dashboard.component.html',
   styleUrls: ['./profile-dashboard.component.scss']
 })
-export class ProfileDashboardComponent implements OnInit {
+export class ProfileDashboardComponent implements OnInit, OnDestroy {
   jwtUserInfo: IUser | null = null;
   userInfo: IUser | null = null;
   updatedUsername: string | null = null;
@@ -25,9 +25,9 @@ export class ProfileDashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.store.select((state: any) => state.state).subscribe((state: State) => {
-      console.log(state.user)
-      this.userInfo = state.user;
+    this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
+      console.log(user)
+      this.userInfo = user;
     });
     this.sessionService.checkUserAuthentication();
     this.sessionService.userLoggedOut.subscribe(() => {
@@ -35,6 +35,9 @@ export class ProfileDashboardComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    this.sessionService.userLoggedOut.unsubscribe()
+  }
 
   // async initializeUserInfo() {
   //   this.jwtUserInfo = this.sessionService.getUserInfo();

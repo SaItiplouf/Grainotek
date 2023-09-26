@@ -1,16 +1,90 @@
-<header class="text-center py-5 bg-green-500 text-white">
-    <h1 class="text-4xl">Welcome to our Grainothèque</h1>
-    <p class="text-xl">A place for seed exchange and gardening tips</p>
+<body class="bg-green-100 font-sans">
+
+<!-- Barre de navigation -->
+<header class="bg-green-500 py-6 px-4 md:px-8 shadow-lg">
+  <div class="container mx-auto flex flex-col md:flex-row items-center justify-between">
+    <div class="text-white text-2xl font-bold mb-4 md:mb-0">
+      About
+    </div>
+    <button class="bg-white text-green-500 hover:bg-green-100 text-sm font-bold py-2 px-4 rounded">
+      S'abonner
+    </button>
+  </div>
 </header>
 
-<section class="p-5">
-    <h2 class="text-2xl font-bold mb-5">What is a Grainothèque?</h2>
-    <p>Explanation about Grainothèque...</p>
-    <img src="grainotheque.jpg" alt="Grainothèque image" class="w-full mt-5">
+<!-- Bannière principale -->
+<section class="relative py-24 px-4 text-center bg-fixed"
+         style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('../../../../assets/seeds-bg.jpg'); background-size: cover;">
+  <div class="container mx-auto relative z-10">
+    <h2 class="text-5xl text-white font-bold mb-4">Partageons des graines pour un avenir vert</h2>
+    <p class="text-xl text-white mb-4">Soutenir l'écologie et les associations locales</p>
+    <button class="bg-green-200 text-green-800 hover:bg-green-300 text-sm font-bold py-2 px-4 rounded">
+      En savoir plus
+    </button>
+  </div>
 </section>
 
-<section class="p-5">
-    <h2 class="text-2xl font-bold mb-5">How does seed exchange work?</h2>
-    <p>Explanation about seed exchange...</p>
-    <!-- Carousel goes here -->
-</section>
+<!-- Contenu principal -->
+<main class="bg-green-100 mt-12 px-4 pb-16 min-h-screen flex flex-col items-center justify-center">
+
+  <!-- Section Mission -->
+  <section class="bg-white rounded-lg p-8 shadow-lg mb-12">
+    <h2 class="text-3xl font-semibold mb-6 text-green-700">Notre Mission</h2>
+    <p class="text-gray-800 leading-relaxed">
+      Chez Notre Grainothèque, notre mission est de promouvoir la préservation de la biodiversité, de soutenir
+      les associations locales et de contribuer à un avenir plus vert. Nous croyons fermement en la puissance des
+      graines pour nourrir la planète et revitaliser nos écosystèmes.
+    </p>
+  </section>
+
+  <!-- Sections Offres et Soutien -->
+  <div class="flex flex-col md:flex-row gap-8 pb-12">
+    <!-- Section Offres -->
+    <section class="bg-white rounded-lg p-8 shadow-lg md:w-1/2 lg:w-1/3">
+      <h2 class="text-3xl font-semibold mb-6 text-green-700">Ce que nous offrons</h2>
+      <p class="text-gray-800 leading-relaxed">
+        Notre plateforme vous permet de partager, échanger et donner des graines. Vous pouvez rechercher des
+        variétés spécifiques, participer à des événements locaux et rejoindre notre communauté passionnée de
+        jardiniers et d'écologistes.
+      </p>
+    </section>
+
+    <!-- Section Soutien -->
+    <section class="bg-white rounded-lg p-8 shadow-lg md:w-1/2 lg:w-1/3">
+      <div class="flex flex-col items-center">
+        <h2 class="text-3xl font-semibold mb-6 text-green-700">Soutenez Notre Projet</h2>
+        <p class="text-gray-800 leading-relaxed text-center mb-6">
+          Vous pouvez soutenir notre projet en faisant un don. Votre contribution aidera à maintenir et à développer
+          notre plateforme pour un avenir plus vert.
+        </p>
+        <!-- Ajout d'une transition pour améliorer l'effet de survol -->
+        <button
+          class="bg-green-500 text-white hover:bg-green-600 text-sm font-bold py-2 px-4 rounded transition duration-300">
+          Faire un don
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Section Sponsors -->
+  <section class="mb-6">
+    <h2 class="text-3xl font-semibold mb-6 text-green-700">Nos Sponsors & Partenaires</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div class="flex justify-center items-center p-4 bg-white rounded-lg shadow-lg">
+        <img alt="Nom du Sponsor 1" class="max-w-full h-auto" src="lien_vers_image_du_sponsor1.jpg">
+      </div>
+      <div class="flex justify-center items-center p-4 bg-white rounded-lg shadow-lg">
+        <img alt="Nom du Sponsor 2" class="max-w-full h-auto" src="lien_vers_image_du_sponsor2.jpg">
+      </div>
+    </div>
+  </section>
+</main>
+
+
+<!-- Pied de page -->
+<footer class="bg-green-500 text-white py-6 text-center">
+  <div class="container mx-auto">
+    <p>&copy; 2023 Notre Grainothèque. Tous droits réservés.</p>
+  </div>
+</footer>
+</body>

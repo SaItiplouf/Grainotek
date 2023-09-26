@@ -1,8 +1,13 @@
 import {createAction, props} from '@ngrx/store';
 import {IRoom} from "../models/room.model";
+import {IPostCommentLike} from "../models/postcommentLike.model";
 
 export const roomsLoaded = createAction('[Room] Rooms Loaded', props<{ rooms: IRoom[] }>());
 export const updateRoom = createAction(
   '[Chat] Update Room',
   props<{ room: IRoom }>()
+);
+export const addLikeToComment = createAction(
+  '[Comment] Add Like',
+  props<{ commentId: number, like: IPostCommentLike }>()
 );

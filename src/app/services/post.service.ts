@@ -3,7 +3,7 @@ import {map, Observable} from "rxjs";
 import {IPost} from "../models/post.model";
 import {environnement} from "../../../environnement";
 import {IPostImage} from "../models/postimage.model";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {ShowpostComponent} from "../component/pages/IndexParent/Feed/showpost/showpost.component";
 import {MatDialog} from "@angular/material/dialog";
 
@@ -35,7 +35,8 @@ export class PostService {
     this.dialog.open(ShowpostComponent, {
       data: {post, formattedTime},
       width: "80%",
-      maxHeight: "90vh"
+      maxHeight: "90vh",
+      autoFocus: false,
     });
   }
 
@@ -54,6 +55,15 @@ export class PostService {
       return `${Math.floor(diffInSeconds / 86400)} jours passés`;
     }
   }
+
+  deletePost(post: IPost, jwt: any): Observable<any> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${jwt}`
+    });
+
+    return this.http.delete(environnement.BASE_URL + "api/posts/" + post.id, {headers});
+  }
+
 
   private mapToIPost(data: any[]): IPost[] {
     return data.map(post => {

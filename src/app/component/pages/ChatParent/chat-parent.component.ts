@@ -24,6 +24,7 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
   newMessageContent: string = '';
   isSending = false;
   isSidebarHidden = true;
+  hasRooms: boolean = false;
   private eventSource: EventSource | null = null;
   @ViewChild('messageList') private messageListRef!: ElementRef;
 
@@ -38,6 +39,7 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
   }
 
   ngOnInit(): void {
+    this.hasRooms = this.rooms && this.rooms.length > 0;
     this.currentUser = this.sessionService.getSetLocalUserToClass();
     this.loadRoomsForCurrentUser();
     this.subscribeToRoomChanges()
@@ -150,7 +152,7 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
   }
 
   private subscribeToRoomChanges(): void {
-    this.store.select(state => state.state).subscribe(state => this.rooms = state.room || []);
+    this.store.select(state => state.state.room).subscribe(rooms => this.rooms = rooms || []);
   }
 
   private loadRoomsForCurrentUser(): void {

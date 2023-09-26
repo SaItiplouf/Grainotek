@@ -73,6 +73,7 @@ export class RoomSidebarComponent {
   closeTrade(room: IRoom, trade: ITrade) {
     this.dialog.open(DeletetradedialogComponent, {
       width: "70vh",
+      autoFocus: false,
       data: {room, trade}
     });
   }

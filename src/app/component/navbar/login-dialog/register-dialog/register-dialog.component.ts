@@ -18,6 +18,7 @@ export class RegisterDialogComponent {
   pictureFile: any | undefined;
   isLoading = false;
   imagePreview: string | ArrayBuffer | null = null;
+
   constructor(
     public dialogRef: MatDialogRef<RegisterDialogComponent>,
     private toastr: ToastrService,
@@ -39,6 +40,7 @@ export class RegisterDialogComponent {
       formData.append('username', this.username);
 
       if (this.pictureFile) {
+        ("l'image est bien passé par la")
         formData.append('pictureFile', this.pictureFile);
       }
 
@@ -60,16 +62,19 @@ export class RegisterDialogComponent {
   }
 
   onFileChange(event: Event) {
+    console.log('onFileChange a été appelé');
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
-      let file = input.files[0];
+      console.log('Fichier sélectionné:', input.files[0]);
+      this.pictureFile = input.files[0];
 
       // Pour la prévisualisation de l'image
       const reader = new FileReader();
       reader.onload = (e) => {
+        console.log('reader.onload a été appelé', reader.result);
         this.imagePreview = reader.result;
-      }
-      reader.readAsDataURL(file);
+      };
+      reader.readAsDataURL(this.pictureFile);
     }
   }
 
@@ -77,7 +82,7 @@ export class RegisterDialogComponent {
     if (inputType === 'email') {
       this.passwordInput.nativeElement.focus();
     } else if (inputType === 'username') {
-      this.usernameInput.nativeElement.focus();
+      this.emailInput.nativeElement.focus();
     }
   }
 }

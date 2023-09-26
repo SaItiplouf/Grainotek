@@ -8,5 +8,13 @@ export interface IPostComment {
   post: IPost;
   content: string;
   createdAt: string;
-  postCommentLikes: IPostCommentLike[]
+  postCommentLikes: IPostCommentLike[];
+  likeCount: number;
+
+}
+
+export interface IPostPostComment {
+  user: IUser;
+  post: IPost;
+  content: string;
 }

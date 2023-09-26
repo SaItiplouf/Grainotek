@@ -5,5 +5,5 @@ export interface IPostCommentLike {
   id: number,
   user: IUser,
   postcomment: IPostComment,
-  liked: boolean
+  liked: boolean,
 }

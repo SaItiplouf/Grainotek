@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {map, Observable, Subject} from "rxjs";
 import jwt_decode from 'jwt-decode';
 import {IUser, User} from "../models/user.model";
@@ -98,6 +98,10 @@ export class SessionService {
   }
 
   register(formData: FormData): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'multipart/form-data'
+    });
+
     return this.http.post<any>(`${this.BASE_URL}api/${this.REGISTER_URL}`, formData);
   }
 
@@ -113,7 +117,7 @@ export class SessionService {
             return response;
           } else {
             console.log('JWT FAILED');
-            throw new Error('JWT Failed'); // Lève une erreur si JWT a échoué
+            throw new Error('JWT Failed');
           }
         })
       );

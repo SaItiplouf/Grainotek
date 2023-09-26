@@ -1,15 +1,17 @@
 import {createReducer, on} from '@ngrx/store';
 import {IPost} from "../models/post.model";
-import {addPost, postsLoaded, setUser} from "../actions/post.actions";
+import {addComment, addPost, loadComments, postsLoaded, setUser} from "../actions/post.actions";
 import {IUser} from "../models/user.model";
 import {IRoom} from "../models/room.model";
-import {roomsLoaded, updateRoom} from "../actions/chat.actions";
+import {addLikeToComment, roomsLoaded, updateRoom} from "../actions/chat.actions";
+import {IPostComment} from "../models/postcomment.model";
 
 
 export interface State {
   posts: IPost[];
   user: IUser | null;
   room: IRoom[];
+  comments: IPostComment[];
 }
 
 const localStorageUser = localStorage.getItem('localUser');
@@ -20,7 +22,8 @@ if (localStorageUser) {
 export const initialState: State = {
   posts: [],
   user: initialUser,
-  room: []
+  room: [],
+  comments: [],
 };
 
 export const reducer = createReducer(
@@ -47,5 +50,46 @@ export const reducer = createReducer(
     });
     return {...state, room: updatedRooms};
   }),
-  on(roomsLoaded, (state, {rooms}) => ({...state, room: rooms}))
+  on(addLikeToComment, (state, {commentId, like}) => {
+    return {
+      ...state,
+      comments: state.comments.map(comment => {
+        if (comment.id === commentId) {
+          // Vérifie si l'utilisateur a déjà "liké" le commentaire
+          const existingLikeIndex = comment.postCommentLikes.findIndex(l => l.user.id === like.user.id);
+
+          let newPostCommentLikes;
+          if (existingLikeIndex >= 0) {
+            if (like.liked) {
+              // Si l'utilisateur a "liké" à nouveau, mettez simplement à jour le like existant
+              newPostCommentLikes = [
+                ...comment.postCommentLikes.slice(0, existingLikeIndex),
+                like,
+                ...comment.postCommentLikes.slice(existingLikeIndex + 1)
+              ];
+            } else {
+              // Si l'utilisateur a "déliké", supprimez le like existant
+              newPostCommentLikes = [
+                ...comment.postCommentLikes.slice(0, existingLikeIndex),
+                ...comment.postCommentLikes.slice(existingLikeIndex + 1)
+              ];
+            }
+          } else {
+            // Si l'utilisateur n'a jamais "liké" auparavant, ajoutez simplement le nouveau like
+            newPostCommentLikes = [...comment.postCommentLikes, like];
+          }
+
+          return {
+            ...comment,
+            postCommentLikes: newPostCommentLikes,
+            likeCount: (comment.likeCount || 0) + (like.liked ? 1 : -1)
+          };
+        }
+        return comment;
+      })
+    };
+  }),
+  on(roomsLoaded, (state, {rooms}) => ({...state, room: rooms})),
+  on(loadComments, (state, {comments}) => ({...state, comments})),
+  on(addComment, (state, {comment}) => ({...state, comments: [comment, ...state.comments]})),
 );

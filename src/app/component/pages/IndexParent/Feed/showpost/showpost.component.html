@@ -1,93 +1,87 @@
-<div class="bg-white rounded-lg shadow-lg p-2 md:p-4 lg:p-8">
-  <div class="flex justify-between items-center mb-2 flex-col md:flex-row">
-    <!-- User Info -->
-    <div class="flex items-center justify-between mb-2 md:mb-0">
-      <!-- Contenu de gauche -->
-      <div class="flex items-center">
-        <img (click)="redirectToProfile(post.user.id)" alt="Profile Image"
-             class="effectOnHover w-10 h-10 rounded-full mr-2" src="{{ post.user.pictureUrl }}">
+<div class="main-panel">
+  <div class="bg-white rounded-lg shadow-lg p-2 md:p-4 lg:p-8">
+    <div class="flex justify-between items-center mb-2 flex-col md:flex-row">
+      <!-- User Info -->
+      <div class="flex items-center justify-between mb-2 md:mb-0">
+        <!-- Contenu de gauche -->
+        <div class="flex items-center">
+          <img (click)="redirectToProfile(Modalpost.user.id)" alt="Profile Image"
+               class="effectOnHover w-10 h-10 rounded-full mr-2" src="{{ Modalpost.user.pictureUrl }}">
+          <div>
+            <p class="text-xs md:text-sm font-semibold">{{ Modalpost.user.email }}</p>
+            <p class="text-xs text-gray-500 mt-n1">{{ formattedTime }}</p>
+          </div>
+        </div>
+        <!-- Contenu de droite (bouton "close") -->
         <div>
-          <p class="text-xs md:text-sm font-semibold">{{ post.user.email }}</p>
-          <p class="text-xs text-gray-500 mt-n1">{{ formattedTime }}</p>
+          <button (click)="close()" mat-icon-button>
+            <mat-icon color="warn">close</mat-icon>
+          </button>
         </div>
       </div>
-      <!-- Contenu de droite (bouton "close") -->
-      <div>
-        <button (click)="close()" mat-icon-button>
-          <mat-icon color="warn">close</mat-icon>
+    </div>
+
+
+    <!-- Post Name -->
+    <h2 class="text-2xl font-semibold mb-2">{{ Modalpost.name }}</h2>
+    <div *ngIf="isUserLoggedIn()">
+      <div *ngIf="Modalpost.user.id === ConnectedUser.id" class="sticky-fab">
+        <button (click)="deletePost()" class="sticky-fab" color="warn" mat-fab>
+          <mat-icon>delete_forever</mat-icon>
         </button>
       </div>
     </div>
-  </div>
+    <div class="flex mt-4 flex-col md:flex-row">
+      <!-- Carrousel d'images -->
+      <div class="w-full md:w-1/2 mb-4 md:mb-0 md:mr-4">
+        <owl-carousel-o [options]="customOptions">
+          <ng-container *ngFor="let images of Modalpost.images">
+            <ng-template carouselSlide>
+              <img [alt]="images.id" [src]="images.contentUrl" class="w-full h-48 object-cover rounded">
+            </ng-template>
+          </ng-container>
+          <ng-template *ngIf="Modalpost.images.length === 0" carouselSlide>
+            <img class="w-full h-48 object-cover rounded" src="../../../../../../assets/placeholderPost.png">
+          </ng-template>
+        </owl-carousel-o>
+      </div>
+
+      <!-- Contenu du poste -->
+      <div class="w-full md:w-1/2 bg-gray-100 p-4 rounded-lg">
+        <p class="w-full h-full p-2 rounded text-gray-600" readonly>{{ Modalpost.content }}</p>
+      </div>
+    </div>
 
 
-  <!-- Post Name -->
-  <h2 class="text-2xl font-semibold mb-2">{{ post.name }}</h2>
-  <div *ngIf="isUserLoggedIn()">
-    <div *ngIf="post.user.id === ConnectedUser.id" class="sticky-fab">
-      <button class="sticky-fab" color="warn" mat-fab>
-        <mat-icon>delete_forever</mat-icon>
+    <!-- Google Maps Section -->
+    <div *ngIf="Modalpost.location" class="h-40 mt-4" id="map">
+      <div class="w-full h-full bg-gray-200 rounded">
+        <!-- Google Map or placeholder -->
+      </div>
+    </div>
+
+    <div *ngIf="isUserLoggedIn()" class="mt-4 flex justify-end">
+      <button (click)="onButtonClick($event)"
+              class="pt-2 relative flex items-center text-white font-bold py-1 px-4 rounded transition duration-300 ease-in-out transform active:scale-95 "
+              color="primary" id="trade-btn" mat-raised-button>
+        Trade
+        <mat-icon [@iconAnimation]="iconState" class="tick-icon ml-2">check_circle</mat-icon>
       </button>
     </div>
-  </div>
-  <div class="flex mt-4 flex-col md:flex-row">
-    <!-- Carrousel d'images -->
-    <div class="w-full md:w-1/2 mb-4 md:mb-0 md:mr-4">
-      <owl-carousel-o [options]="customOptions">
-        <ng-container *ngFor="let images of post.images">
-          <ng-template carouselSlide>
-            <img [alt]="images.id" [src]="images.contentUrl" class="w-full h-48 object-contain rounded">
-          </ng-template>
-        </ng-container>
-        <ng-template *ngIf="post.images.length === 0" carouselSlide>
-          <img class="w-full h-48 object-cover rounded" src="../../../../../../assets/placeholderPost.png">
-        </ng-template>
-      </owl-carousel-o>
-    </div>
-
-    <!-- Contenu du poste -->
-    <div class="w-full md:w-1/2 bg-gray-100 p-4 rounded-lg">
-      <p class="w-full h-full p-2 rounded text-gray-600" readonly>{{ post.content }}</p>
-    </div>
-  </div>
 
 
-  <!-- Google Maps Section -->
-  <div class="h-40 mt-4" id="map">
-    <div class="w-full h-full bg-gray-200 rounded">
-      <!-- Google Map or placeholder -->
-    </div>
-  </div>
-
-  <div *ngIf="isUserLoggedIn()" class="mt-4 flex justify-end">
-    <button (click)="onButtonClick($event)"
-            class="pt-2 relative flex items-center text-white font-bold py-1 px-4 rounded transition duration-300 ease-in-out transform active:scale-95 "
-            color="primary" id="trade-btn" mat-raised-button>
-      Trade
-      <mat-icon [@iconAnimation]="iconState" class="tick-icon ml-2">check_circle</mat-icon>
-    </button>
-  </div>
-
-  <!-- Comment Section -->
-  <div class="relative mt-4">
-    <button (click)="showComments = !showComments" aria-label="Toggle Comments"
-            class="flex items-center space-x-1 text-gray-600" id="commentToggle">
-      <mat-icon>insert_comment</mat-icon>
-      <span>Comment</span>
-    </button>
-    <div *ngIf="showComments"
-         class="absolute transition-all ease-in-out duration-300 bg-white rounded-lg shadow-md p-2 mt-1 right-0 w-40"
-         id="commentSection">
-      <div class="mb-2">
-        <input aria-label="Add a comment" class="border rounded w-full px-2 py-1" placeholder="Add a comment"
-               type="text">
-      </div>
-      <div class="max-h-20 overflow-y-auto">
-        <!-- Comment section content here -->
-        <div class="mb-2">
-          <p class="text-sm text-gray-600">Username: This is a comment.</p>
-        </div>
+    <!-- Comment Section -->
+    <div class="relative mt-4">
+      <button (click)="showComments = !showComments" aria-label="Toggle Comments"
+              class="flex items-center space-x-1 text-gray-600" id="commentToggle">
+        <mat-icon>insert_comment</mat-icon>
+        <span>Comment</span>
+      </button>
+      <div *ngIf="showComments"
+           class="transition-all ease-in-out duration-300 bg-white rounded-lg shadow-md p-2 mt-1 right-0 w-full">
+        <app-comment-section [Modalpost]="Modalpost"></app-comment-section>
       </div>
     </div>
   </div>
 </div>
+

@@ -38,8 +38,8 @@ export class LoginDialogComponent {
   }
 
   login(): void {
-    if (this.email && this.password && !this.isLoading) { // Vérifiez que isLoading est false
-      this.isLoading = true; // Définissez isLoading sur true avant de commencer la requête
+    if (this.email && this.password && !this.isLoading) {
+      this.isLoading = true;
       this.sessionService.login(this.email, this.password).subscribe(
         (response: any) => {
           if (response) {

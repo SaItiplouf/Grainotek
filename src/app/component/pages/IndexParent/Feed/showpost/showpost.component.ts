@@ -1,4 +1,4 @@
-import {Component, ElementRef, Inject, OnInit, Renderer2} from '@angular/core';
+import {Component, ElementRef, Inject, Input, OnInit, Renderer2, ViewChild} from '@angular/core';
 import {IPost} from "../../../../../models/post.model";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {animate, keyframes, state, style, transition, trigger} from '@angular/animations';
@@ -11,6 +11,8 @@ import {OwlOptions} from 'ngx-owl-carousel-o';
 import {IUser} from "../../../../../models/user.model";
 import {environnement} from "../../../../../../../environnement";
 import {TradeService} from "../../../../../services/ChatRelated/trade.service";
+import {CommentSectionComponent} from "./comment-section/comment-section.component";
+import {PostService} from "../../../../../services/post.service";
 
 @Component({
   selector: 'app-showpost',
@@ -37,12 +39,14 @@ import {TradeService} from "../../../../../services/ChatRelated/trade.service";
 })
 export class ShowpostComponent implements OnInit {
   iconState = 'inactive';
-  public post: IPost;
+  @Input() Modalpost: IPost;
   public location: { lat: number; lng: number } | undefined;
   public formattedTime: string;
   ConnectedUser!: IUser;
   showComments = false;
-  
+  @ViewChild(CommentSectionComponent) commentSectionComponent!: CommentSectionComponent;
+  selector: string = ".main-panel";
+
   customOptions: OwlOptions = {
     loop: true,
     autoplay: true,
@@ -50,7 +54,7 @@ export class ShowpostComponent implements OnInit {
     touchDrag: false,
     pullDrag: false,
     dots: true,
-    navSpeed: 700,
+    navSpeed: 2200,
     navText: ['', ''],
     responsive: {
       0: {
@@ -77,15 +81,16 @@ export class ShowpostComponent implements OnInit {
     private sessionService: SessionService,
     private toastr: ToastrService,
     private tradeService: TradeService,
-    private router: Router
+    private router: Router,
+    private postService: PostService
   ) {
-    this.post = data.post;
+    this.Modalpost = data.post;
     this.formattedTime = data.formattedTime;
   }
 
   ngOnInit(): void {
-    if (this.post.location) {
-      const [latStr, lngStr] = this.post.location.split(',');
+    if (this.Modalpost.location) {
+      const [latStr, lngStr] = this.Modalpost.location.split(',');
       this.location = {
         lat: parseFloat(latStr),
         lng: parseFloat(lngStr)
@@ -115,24 +120,40 @@ export class ShowpostComponent implements OnInit {
     this.trade();
   }
 
+  deletePost() {
+    const storedData = localStorage.getItem("jwt");
+    if (!storedData) {
+      this.toastr.error("Données JWT non trouvées");
+      console.error("Données JWT non trouvées");
+      return;
+    }
+    const parsedData = JSON.parse(storedData);
+    const jwt = parsedData.token;
+    
+    console.log(jwt)
+    this.postService.deletePost(this.Modalpost, jwt).subscribe(
+      response => {
+        console.log('Post supprimé avec succès.');
+      },
+      error => {
+        console.error('Erreur lors de la suppression du post:', error);
+      }
+    );
+  }
+
   close() {
     this.dialogRef.close();
   }
 
   trade(): void {
-    const postOwnerUserURI = `/api/users/${this.post.user.id}`;
-
     const sessionUser = JSON.parse(localStorage.getItem("localUser") as string);
-    const applicantURI = `/api/users/${sessionUser.id}`;
-
-    const postURI = `/api/posts/${this.post.id}`;
-
+    console.log("log test trade sessionuser", sessionUser)
     const statut = "pending";
 
     this.tradeService.createTrade({
-      applicant: applicantURI,
-      userPostOwner: postOwnerUserURI,
-      post: postURI,
+      applicant: sessionUser,
+      userPostOwner: this.Modalpost.user,
+      post: this.Modalpost,
       statut: statut
     }).subscribe(response => {
       this.toastr.success('Le trade a été créé', 'Réussi');
@@ -157,6 +178,7 @@ export class ShowpostComponent implements OnInit {
 
     this.router.navigate([`/profile/${encodedEncryptedId}`]);
   }
+
 
   async initMap(): Promise<void> {
     const mapElement = document.getElementById('map');

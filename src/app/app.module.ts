@@ -41,8 +41,15 @@ import {MatTableModule} from "@angular/material/table";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {ProfileParentComponent} from './component/pages/Profile/profile-parent/profile-parent.component';
 import {CarouselModule} from "ngx-owl-carousel-o";
-import { RoomSidebarComponent } from './component/pages/ChatParent/room-sidebar/room-sidebar.component';
-import { DeletetradedialogComponent } from './component/pages/ChatParent/deletetradedialog/deletetradedialog.component';
+import {RoomSidebarComponent} from './component/pages/ChatParent/room-sidebar/room-sidebar.component';
+import {DeletetradedialogComponent} from './component/pages/ChatParent/deletetradedialog/deletetradedialog.component';
+import {
+  CommentSectionComponent
+} from './component/pages/IndexParent/Feed/showpost/comment-section/comment-section.component';
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import { TradeComponent } from './component/navbar/nav-buttons/trade/trade.component';
+import { MessagerieComponent } from './component/navbar/nav-buttons/messagerie/messagerie.component';
+import { UsermenuComponent } from './component/navbar/nav-buttons/usermenu/usermenu.component';
 
 
 @NgModule({
@@ -61,6 +68,10 @@ import { DeletetradedialogComponent } from './component/pages/ChatParent/deletet
     ProfileParentComponent,
     RoomSidebarComponent,
     DeletetradedialogComponent,
+    CommentSectionComponent,
+    TradeComponent,
+    MessagerieComponent,
+    UsermenuComponent,
   ],
   imports: [
     BrowserModule,
@@ -86,7 +97,8 @@ import { DeletetradedialogComponent } from './component/pages/ChatParent/deletet
     MatMenuModule,
     MatTableModule,
     MatTooltipModule,
-    CarouselModule
+    CarouselModule,
+    MatProgressSpinnerModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptorInterceptor, multi: true},

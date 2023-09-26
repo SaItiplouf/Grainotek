@@ -12,11 +12,15 @@
 @import './styles/loginModal';
 @import './styles/feed.scss';
 @import './styles/anims.scss';
+@import './styles/commentlike.scss';
 
 a {
   cursor: pointer;
 }
 
+.comment:first-child mat-icon {
+  animation: votreAnimation 1.5s forwards;
+}
 
 body {
   background-color: #1f2937;

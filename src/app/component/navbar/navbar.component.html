@@ -30,111 +30,22 @@
 
       <div *ngIf="isUserLoggedIn()" class="flex items-center ml-4">
         <div class="flex items-center ml-auto">
-          <!-- Apps -->
-          <button (click)="openMail()"
-                  class="p-2 active:bg-blend-darken rounded-lg transition-transform transform hover:scale-105 flex flex-col items-center justify-end">
-            <mat-icon class="text-gray-200">mail</mat-icon>
-          </button>
 
-          <button [matMenuTriggerFor]="tradesMenu"
-                  class="p-2 active:bg-blend-darken rounded-lg transition-transform transform hover:scale-105 flex flex-col items-center justify-end">
-            <mat-icon class="text-gray-200">inbox</mat-icon>
-          </button>
+          <!-- Apps -->
+          <app-messagerie></app-messagerie>
+
 
           <!-- Menu déroulant -->
-          <mat-menu #tradesMenu="matMenu">
-            <ng-container *ngFor="let trade of userPostTrades">
-              <div *ngIf="trade.statut !== 'closed'">
-                <button [matMenuTriggerFor]="tradeOptions" mat-menu-item>
-                  <!-- Image utilisateur -->
-                  <img [src]="trade.applicant.pictureUrl" alt="Image de l'utilisateur"
-                       class="w-12 h-12 rounded-full shadow-lg">
-
-                  <!-- Détails utilisateur et trade -->
-                  <div class="flex-grow ml-4">
-                    <div>
-                      <span class="text-gray-500 font-semibold">{{trade.applicant.email}}</span>
-                    </div>
-                    <div class="text-sm text-gray-400">{{trade.post.name}}</div>
-                  </div>
-                </button>
-
-                <!-- Sous-menu avec les options pour chaque trade -->
-                <mat-menu #tradeOptions="matMenu">
-                  <button (click)="acceptTrade(trade, 'accepted')"
-                          class="text-green-600 hover:bg-green-100 p-2 rounded-full" mat-menu-item
-                          matTooltip="Accepter">
-                    <mat-icon>check_circle</mat-icon>
-                    Accepter
-                  </button>
-                  <button (click)="updateTrade(trade, 'closed')"
-                          class="text-red-600 hover:bg-red-100 p-2 rounded-full" mat-menu-item
-                          matTooltip="Refuser">
-                    <mat-icon>cancel</mat-icon>
-                    Refuser
-                  </button>
-                  <button (click)="openPostDialog(trade.post)" class="text-blue-600 hover:bg-blue-100 p-2 rounded-full"
-                          mat-menu-item
-                          matTooltip="Voir le poste">
-                    <mat-icon>visibility</mat-icon>
-                    Voir le poste
-                  </button>
-                </mat-menu>
-              </div>
-            </ng-container>
-          </mat-menu>
+          <app-trade [user]="userInfo"></app-trade>
 
           <!-- Utilisation de la bibliothèque Angular Material -->
-          <button [matMenuTriggerFor]="userMenu" aria-label="Open user menu" mat-icon-button>
-            <ng-container *ngIf="userInfo?.pictureUrl; else noPicture">
-              <img [src]="userInfo?.pictureUrl" alt="User Picture" class="w-8 h-8 rounded cursor-pointer">
-            </ng-container>
-            <ng-template #noPicture>
-              <mat-icon>account_circle</mat-icon>
-            </ng-template>
-          </button>
-          <!-- Dropdown menu -->
-          <mat-menu #userMenu="matMenu" class="user-menu w-56 bg-white rounded-lg shadow-md">
-            <div class="user-menu-content p-4 space-y-3">
-              <ng-container *ngIf="userInfo?.pictureUrl; else noPicture">
-                <img [src]="userInfo?.pictureUrl" alt="User Picture"
-                     class="user-picture w-16 h-16 rounded-full mx-auto">
-              </ng-container>
-              <ng-template #noPicture>
-                <mat-icon class="user-icon text-4xl mx-auto">account_circle</mat-icon>
-              </ng-template>
-
-              <span *ngIf="userInfo?.username"
-                    class="username block text-xl font-semibold text-gray-800 text-center">{{ userInfo?.username }}</span>
-              <span *ngIf="userInfo?.email"
-                    class="user-email block text-sm text-gray-500 text-center">{{ userInfo?.email }}</span>
-
-              <button (click)="navigateToIndex()"
-                      class="user-menu-item flex items-center justify-center text-gray-700 hover:bg-gray-100 p-2 rounded">
-                <mat-icon class="user-menu-icon text-gray-500 text-lg">home</mat-icon>
-                <span class="user-menu-label ml-2">Accueil</span>
-              </button>
-              <button (click)="navigateToDash()"
-                      class="user-menu-item flex items-center justify-center text-gray-700 hover:bg-gray-100 p-2 rounded">
-                <mat-icon class="user-menu-icon text-gray-500 text-lg">settings</mat-icon>
-                <span class="user-menu-label ml-2">Paramètres</span>
-              </button>
-              <button
-                class="user-menu-item flex items-center justify-center text-gray-700 hover:bg-gray-100 p-2 rounded">
-                <mat-icon class="user-menu-icon text-gray-500 text-lg">favorite</mat-icon>
-                <span class="user-menu-label ml-2">Mes favoris</span>
-              </button>
-              <button (click)="forgetToken()"
-                      class="user-menu-item flex items-center justify-center text-gray-700 hover:bg-gray-100 p-2 rounded">
-                <mat-icon class="user-menu-icon text-gray-500 text-lg">exit_to_app</mat-icon>
-                <span class="user-menu-label ml-2">Déconnexion</span>
-              </button>
-            </div>
-          </mat-menu>
+          <app-usermenu [navigateToIndex]="navigateToIndex"
+                        [user]="userInfo"></app-usermenu>
 
         </div>
       </div>
     </div>
+
     <div *ngIf="!isUserLoggedIn()">
       <button (click)="openLoginDialog()" color="primary" mat-raised-button>
         Connexion
