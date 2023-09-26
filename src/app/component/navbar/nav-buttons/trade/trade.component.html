@@ -1,0 +1,56 @@
+<button [matMenuTriggerFor]="tradesMenu"
+        class="p-2 active:bg-blend-darken rounded-lg transition-transform transform hover:scale-105 flex flex-col items-center justify-end">
+  <mat-icon class="text-gray-200">inbox</mat-icon>
+</button>
+
+<mat-menu #tradesMenu="matMenu">
+  <ng-container *ngFor="let trade of userPostTrades">
+    <div *ngIf="trade.statut === 'pending'">
+      <button [matMenuTriggerFor]="tradeOptions" mat-menu-item>
+        <!-- Image utilisateur -->
+        <img [src]="trade.applicant.pictureUrl" alt="Image de l'utilisateur"
+             class="w-12 h-12 rounded-full shadow-lg">
+
+        <!-- Détails utilisateur et trade -->
+        <div class="flex-grow ml-4">
+          <div>
+            <span class="text-gray-500 font-semibold">{{trade.applicant.email}}</span>
+          </div>
+          <div class="text-sm text-gray-400">{{trade.post.name}}</div>
+        </div>
+      </button>
+
+      <!-- Sous-menu avec les options pour chaque trade -->
+      <mat-menu #tradeOptions="matMenu">
+        <button (click)="acceptTrade(trade, 'accepted')"
+                class="text-green-600 hover:bg-green-100 p-2 rounded-full" mat-menu-item
+                matTooltip="Accepter">
+          <mat-icon>check_circle</mat-icon>
+          Accepter
+        </button>
+        <button (click)="updateTrade(trade, 'closed')"
+                class="text-red-600 hover:bg-red-100 p-2 rounded-full" mat-menu-item
+                matTooltip="Refuser">
+          <mat-icon>cancel</mat-icon>
+          Refuser
+        </button>
+        <button (click)="openPostDialog(trade.post)" class="text-blue-600 hover:bg-blue-100 p-2 rounded-full"
+                mat-menu-item
+                matTooltip="Voir le poste">
+          <mat-icon>visibility</mat-icon>
+          Voir le poste
+        </button>
+      </mat-menu>
+    </div>
+  </ng-container>
+
+
+  <ng-container *ngIf="!userPostTrades || userPostTrades.length === 0">
+    <button disabled mat-menu-item>
+      <mat-icon>info</mat-icon>
+      <span class="text-gray-800">Aucun trade disponible</span>
+    </button>
+  </ng-container>
+
+
+</mat-menu>

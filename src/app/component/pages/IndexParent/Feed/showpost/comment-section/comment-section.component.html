@@ -1,0 +1,88 @@
+<div *ngIf="loading" class="fixed inset-0 flex items-center justify-center">
+  <mat-card class="max-w-sm w-full p-4">
+    <div class="flex items-center justify-center space-x-4">
+      <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+      <span>Chargement des commentaires...</span>
+    </div>
+  </mat-card>
+</div>
+
+<div class="comment-section mt-4">
+  <div
+    (scrolled)="onScroll()"
+    [infiniteScrollDistance]="2"
+    [infiniteScrollThrottle]="100"
+    [infiniteScrollUpDistance]="1.5"
+    [scrollWindow]="false"
+    class="search-results"
+    infiniteScroll
+    style="height: 32vh; overflow: auto;"
+  >
+    <div *ngIf="isUserLoggedIn()" class="bg-white rounded-md shadow-sm p-4">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label>Ajouter un commentaire</mat-label>
+        <div class="flex items-center">
+          <input (keyup.enter)="addComment()" [(ngModel)]="newCommentContent" class="flex-grow" matInput>
+          <button (click)="addComment()"
+                  class="ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+                  mat-raised-button>
+            <span class="text-gray-700">Envoyer</span>
+          </button>
+        </div>
+      </mat-form-field>
+    </div>
+
+    <div *ngFor="let comment of comments" class="comment mt-4 p-4 bg-gray-50 rounded-md">
+
+      <div class="flex justify-between items-center">
+
+        <!-- Section de gauche : Photo de profil, nom d'utilisateur et date -->
+        <div class="flex items-center space-x-4">
+          <div class="relative h-10 w-10">
+            <img [src]="comment.user.pictureUrl"
+                 alt="pp utilisateur" class="h-10 w-10 rounded-full object-contain">
+          </div>
+
+          <div>
+            <div class="font-semibold">{{ comment.user.username }}</div>
+            <div class="text-sm text-gray-600">{{ comment.createdAt | date: 'short' }}</div>
+            <div class="mt-2 flex-grow">{{ comment.content }}</div>
+
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <!-- Compteur de Likes -->
+          <div *ngIf="comment.likeCount"
+               class="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full text-gray-500 text-sm">
+            {{ comment.likeCount }}
+          </div>
+
+          <!-- Bouton Like -->
+          <ng-container *ngIf="connectedUser; else notLoggedIn">
+            <svg
+              (click)="likeComment(connectedUser, comment)"
+              [ngClass]="{
+      'heart-svg': true,
+      'liked': userLikedComments[comment.id],
+      'start-animation': animationStates[comment.id]
+    }"
+              class="cursor-pointer text-xl"
+              height="28" viewBox="0 0 32 28" width="32" xmlns="http://www.w3.org/2000/svg">
+              <path d="M16 26s8.5-6 8.5-12.5S20.5 2 16 7.5 7.5 14 7.5 13.5 0 20 16 26z" fill="#f76c6c"/>
+            </svg>
+          </ng-container>
+
+
+          <!-- Si l'utilisateur n'est pas connecté -->
+          <ng-template #notLoggedIn>
+            <mat-icon class="cursor-pointer text-xl text-gray-500">
+              favorite_border
+            </mat-icon>
+          </ng-template>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

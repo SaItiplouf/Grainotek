@@ -1,0 +1,46 @@
+<button [matMenuTriggerFor]="userMenu" aria-label="Open user menu" mat-icon-button>
+  <ng-container *ngIf="user?.pictureUrl; else noPicture">
+    <img [src]="user?.pictureUrl" alt="User Picture" class="w-8 h-8 rounded cursor-pointer">
+  </ng-container>
+  <ng-template #noPicture>
+    <mat-icon>account_circle</mat-icon>
+  </ng-template>
+</button>
+<!-- Dropdown menu -->
+<mat-menu #userMenu="matMenu" class="user-menu w-56 bg-white rounded-lg shadow-md">
+  <div class="user-menu-content p-4 space-y-3">
+    <ng-container *ngIf="user?.pictureUrl; else noPicture">
+      <img [src]="user?.pictureUrl" alt="User Picture"
+           class="user-picture w-16 h-16 rounded-full mx-auto">
+    </ng-container>
+    <ng-template #noPicture>
+      <mat-icon class="user-icon text-4xl mx-auto">account_circle</mat-icon>
+    </ng-template>
+
+    <span *ngIf="user?.username"
+          class="username block text-xl font-semibold text-gray-800 text-center">{{ user?.username }}</span>
+    <span *ngIf="user?.email"
+          class="user-email block text-sm text-gray-500 text-center">{{ user?.email }}</span>
+
+    <button (click)="navigateToIndex()"
+            class="user-menu-item flex items-center justify-center text-gray-700 hover:bg-gray-100 p-2 rounded">
+      <mat-icon class="user-menu-icon text-gray-500 text-lg">home</mat-icon>
+      <span class="user-menu-label ml-2">Accueil</span>
+    </button>
+    <button (click)="navigateToDash()"
+            class="user-menu-item flex items-center justify-center text-gray-700 hover:bg-gray-100 p-2 rounded">
+      <mat-icon class="user-menu-icon text-gray-500 text-lg">settings</mat-icon>
+      <span class="user-menu-label ml-2">Paramètres</span>
+    </button>
+    <button
+      class="user-menu-item flex items-center justify-center text-gray-700 hover:bg-gray-100 p-2 rounded">
+      <mat-icon class="user-menu-icon text-gray-500 text-lg">favorite</mat-icon>
+      <span class="user-menu-label ml-2">Mes favoris</span>
+    </button>
+    <button (click)="forgetToken()"
+            class="user-menu-item flex items-center justify-center text-gray-700 hover:bg-gray-100 p-2 rounded">
+      <mat-icon class="user-menu-icon text-gray-500 text-lg">exit_to_app</mat-icon>
+      <span class="user-menu-label ml-2">Déconnexion</span>
+    </button>
+  </div>
+</mat-menu>
