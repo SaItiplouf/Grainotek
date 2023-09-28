@@ -1,23 +1,21 @@
 <div class="main-panel">
   <div class="bg-white rounded-lg shadow-lg p-2 md:p-4 lg:p-8">
-    <div class="flex justify-between items-center mb-2 flex-col md:flex-row">
+    <div class="flex justify-between items-center mb-2">
       <!-- User Info -->
-      <div class="flex items-center justify-between mb-2 md:mb-0">
-        <!-- Contenu de gauche -->
-        <div class="flex items-center">
-          <img (click)="redirectToProfile(Modalpost.user.id)" alt="Profile Image"
-               class="effectOnHover w-10 h-10 rounded-full mr-2" src="{{ Modalpost.user.pictureUrl }}">
-          <div>
-            <p class="text-xs md:text-sm font-semibold">{{ Modalpost.user.email }}</p>
-            <p class="text-xs text-gray-500 mt-n1">{{ formattedTime }}</p>
-          </div>
-        </div>
-        <!-- Contenu de droite (bouton "close") -->
+      <div class="flex items-center">
+        <img (click)="redirectToProfile(Modalpost.user.id)" alt="Profile Image"
+             class="effectOnHover w-10 h-10 rounded-full mr-2" src="{{ Modalpost.user.pictureUrl }}">
         <div>
-          <button (click)="close()" mat-icon-button>
-            <mat-icon color="warn">close</mat-icon>
-          </button>
+          <p class="text-xs md:text-sm font-semibold">{{ Modalpost.user.email }}</p>
+          <p class="text-xs text-gray-500 mt-n1">{{ formattedTime }}</p>
         </div>
+      </div>
+
+      <!-- Bouton "close" -->
+      <div>
+        <button (click)="close()" mat-icon-button>
+          <mat-icon color="warn">close</mat-icon>
+        </button>
       </div>
     </div>
 

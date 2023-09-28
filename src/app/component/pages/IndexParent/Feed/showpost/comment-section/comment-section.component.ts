@@ -9,6 +9,7 @@ import {SessionService} from "../../../../../../services/session.service";
 import {ToastrService} from "ngx-toastr";
 import {IUser} from "../../../../../../models/user.model";
 import {addLikeToComment} from "../../../../../../actions/chat.actions";
+import {map} from "rxjs";
 
 @Component({
   selector: 'app-comment-section',
@@ -39,34 +40,38 @@ export class CommentSectionComponent implements OnInit {
   ngOnInit() {
     try {
       this.isOpen = true;
+
       this.commentsService.getCommentsOfAPostFromApi(this.Modalpost, this.currentPage).subscribe((comments) => {
         const updatedComments = comments.map((comment) => ({
           ...comment,
-          likeCount: comment.postCommentLikes?.filter((like) => like.liked).length || 0,
+          likeCount: (comment.postCommentLikes?.length > 0)
+            ? comment.postCommentLikes.filter((like) => like.liked).length
+            : 0,
         }));
 
-        // Mise à jour de la variable userLikedComments
-        updatedComments.forEach((comment) => {
-          this.userLikedComments[comment.id] = comment.postCommentLikes.some(
-            (like) => like.user.id === this.connectedUser.id && like.liked
-          );
-        });
+        // Vérifiez d'abord si `this.connectedUser` et `this.connectedUser.id` existent
+        if (this.connectedUser && this.connectedUser.id) {
+          // Mise à jour de la variable userLikedComments
+          updatedComments.forEach((comment) => {
+            this.userLikedComments[comment.id] = comment.postCommentLikes?.some(
+              (like) => like.user && like.user.id === this.connectedUser.id && like.liked
+            ) || false; // par défaut à false si postCommentLikes est indéfini
+          });
+        }
 
         this.store.dispatch(loadComments({comments: updatedComments}));
-        console.log(updatedComments);
         this.loading = false;
       });
 
-      this.store.select((state: any) => state.state.comments).subscribe((comments: IPostComment[]) => {
-        this.comments = comments;
-        comments.forEach((comment) => {
-          if (this.connectedUser) {
-            this.userLikedComments[comment.id] = comment.postCommentLikes.some(
-              (like) => like.user.id === this.connectedUser.id && like.liked
-            );
-          }
+      this.store.select((state: any) => state.state.comments)
+        .pipe(
+          map((comments: IPostComment[]) =>
+            comments.filter(comment => comment.post && comment.post.id === this.Modalpost.id)
+          )
+        )
+        .subscribe((filteredComments: IPostComment[]) => {
+          this.comments = filteredComments;
         });
-      });
 
       this.getUserInfo();
     } catch (error) {
