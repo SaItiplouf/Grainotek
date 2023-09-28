@@ -23,6 +23,7 @@ export class TradeComponent implements OnInit {
   @Input() user: IUser | null = null;
   applicantTrades: ITrade[] = [];
   userPostTrades: ITrade[] = [];
+  lastThreeTrades: ITrade[] = [];
 
   constructor(private router: Router,
               private PostService: PostService,
@@ -42,6 +43,9 @@ export class TradeComponent implements OnInit {
         console.log(response)
         this.applicantTrades = response.applicant;
         this.userPostTrades = response.user_post;
+
+        const startIndex = Math.max(0, this.userPostTrades.length - 3);
+        this.lastThreeTrades = this.userPostTrades.slice(startIndex);
       });
     }
   }
@@ -49,6 +53,18 @@ export class TradeComponent implements OnInit {
   openPostDialog(post: IPost): void {
     console.log(post);
     this.PostService.DisplayPostModal(post)
+  }
+
+  deleteTrade(trade: ITrade) {
+    console.log("suppression poste")
+  }
+
+  leaveRating(trade: ITrade) {
+    console.log("systeme de notations")
+  }
+
+  onShowMore() {
+    this.router.navigate(['/']);
   }
 
   updateTrade(trade: ITrade, statut: string): void {

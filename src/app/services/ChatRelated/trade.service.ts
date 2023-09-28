@@ -24,28 +24,26 @@ export class TradeService {
 
 
   updateTrade(trade: ITrade, statut: string, room?: IRoom): Observable<any> {
-
     if (!statut && !room) {
       throw new Error("Aucun statut ni room n'a été fourni.");
     }
 
     // Create a copy of the trade object
-    let modifiedTrade = {...trade};
-
+    let Trade = {...trade};
+    let patchData: any = {};
     if (statut) {
-      modifiedTrade.statut = statut;
+      patchData.statut = statut;
     }
     if (room) {
-      modifiedTrade.room = room;
+      patchData.room = room;
     }
-
+    console.log(patchData);
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/merge-patch+json'
       })
     };
-
-    return this.http.patch(environnement.BASE_URL + `api/trade/${modifiedTrade.id}`, modifiedTrade, httpOptions);
+    return this.http.patch(environnement.BASE_URL + `api/trade/${Trade.id}`, patchData, httpOptions);
   }
 
 

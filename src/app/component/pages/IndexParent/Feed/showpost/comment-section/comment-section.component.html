@@ -32,57 +32,65 @@
       </mat-form-field>
     </div>
 
-    <div *ngFor="let comment of comments" class="comment mt-4 p-4 bg-gray-50 rounded-md">
+    <div *ngIf="comments && comments.length; else noCommentsBlock">
+      <div *ngFor="let comment of comments" class="comment mt-4 p-4 bg-gray-50 rounded-md">
 
-      <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center">
 
-        <!-- Section de gauche : Photo de profil, nom d'utilisateur et date -->
-        <div class="flex items-center space-x-4">
-          <div class="relative h-10 w-10">
-            <img [src]="comment.user.pictureUrl"
-                 alt="pp utilisateur" class="h-10 w-10 rounded-full object-contain">
+          <!-- Section de gauche : Photo de profil, nom d'utilisateur et date -->
+          <div class="flex items-center space-x-4">
+            <div class="relative h-10 w-10">
+              <img [src]="comment.user.pictureUrl"
+                   alt="pp utilisateur" class="h-10 w-10 rounded-full object-contain">
+            </div>
+
+            <div>
+              <div class="font-semibold">{{ comment.user.username }}</div>
+              <div class="text-sm text-gray-600">{{ comment.createdAt | date: 'short' }}</div>
+              <div class="mt-2 flex-grow">{{ comment.content }}</div>
+
+            </div>
           </div>
 
-          <div>
-            <div class="font-semibold">{{ comment.user.username }}</div>
-            <div class="text-sm text-gray-600">{{ comment.createdAt | date: 'short' }}</div>
-            <div class="mt-2 flex-grow">{{ comment.content }}</div>
+          <div class="flex items-center space-x-2">
+            <!-- Compteur de Likes -->
+            <div *ngIf="comment.likeCount"
+                 class="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full text-gray-500 text-sm">
+              {{ comment.likeCount }}
+            </div>
 
-          </div>
-        </div>
-
-        <div class="flex items-center space-x-2">
-          <!-- Compteur de Likes -->
-          <div *ngIf="comment.likeCount"
-               class="w-8 h-8 flex items-center justify-center bg-gray-200 rounded-full text-gray-500 text-sm">
-            {{ comment.likeCount }}
-          </div>
-
-          <!-- Bouton Like -->
-          <ng-container *ngIf="connectedUser; else notLoggedIn">
-            <svg
-              (click)="likeComment(connectedUser, comment)"
-              [ngClass]="{
+            <!-- Bouton Like -->
+            <ng-container *ngIf="connectedUser; else notLoggedIn">
+              <svg
+                (click)="likeComment(connectedUser, comment)"
+                [ngClass]="{
       'heart-svg': true,
       'liked': userLikedComments[comment.id],
       'start-animation': animationStates[comment.id]
     }"
-              class="cursor-pointer text-xl"
-              height="28" viewBox="0 0 32 28" width="32" xmlns="http://www.w3.org/2000/svg">
-              <path d="M16 26s8.5-6 8.5-12.5S20.5 2 16 7.5 7.5 14 7.5 13.5 0 20 16 26z" fill="#f76c6c"/>
-            </svg>
-          </ng-container>
+                class="cursor-pointer text-xl"
+                height="28" viewBox="0 0 32 28" width="32" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16 26s8.5-6 8.5-12.5S20.5 2 16 7.5 7.5 14 7.5 13.5 0 20 16 26z" fill="#f76c6c"/>
+              </svg>
+            </ng-container>
 
 
-          <!-- Si l'utilisateur n'est pas connecté -->
-          <ng-template #notLoggedIn>
-            <mat-icon class="cursor-pointer text-xl text-gray-500">
-              favorite_border
-            </mat-icon>
-          </ng-template>
+            <!-- Si l'utilisateur n'est pas connecté -->
+            <ng-template #notLoggedIn>
+              <mat-icon class="cursor-pointer text-xl text-gray-500">
+                favorite_border
+              </mat-icon>
+            </ng-template>
+          </div>
+
         </div>
-
       </div>
     </div>
+    <ng-template #noCommentsBlock>
+      <div class="flex justify-center items-center h-40 text-xl font-bold text-gray-500">
+        Aucun commentaire.
+      </div>
+    </ng-template>
+
   </div>
 </div>
