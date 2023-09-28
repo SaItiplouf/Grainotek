@@ -9,7 +9,7 @@ import * as CryptoJS from 'crypto-js';
 import {Loader} from "@googlemaps/js-api-loader";
 import {OwlOptions} from 'ngx-owl-carousel-o';
 import {IUser} from "../../../../../models/user.model";
-import {environnement} from "../../../../../../../environnement";
+import {environnement} from "../../../../../../environnement";
 import {TradeService} from "../../../../../services/ChatRelated/trade.service";
 import {CommentSectionComponent} from "./comment-section/comment-section.component";
 import {PostService} from "../../../../../services/post.service";
@@ -129,7 +129,7 @@ export class ShowpostComponent implements OnInit {
     }
     const parsedData = JSON.parse(storedData);
     const jwt = parsedData.token;
-    
+
     console.log(jwt)
     this.postService.deletePost(this.Modalpost, jwt).subscribe(
       response => {

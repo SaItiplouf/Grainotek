@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {map, Observable} from "rxjs";
 import {IPostRoom, IRoom, Room} from "../../models/room.model";
-import {environnement} from "../../../../environnement";
+import {environnement} from "../../../environnement";
 import {IUser} from "../../models/user.model";
 
 @Injectable({

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {map, Observable, take} from 'rxjs';
-import {environnement} from "../../../environnement";
+import {environnement} from "../../environnement";
 import {Store} from "@ngrx/store";
 import {State} from "../Reducers/app.reducer";
 import {tap} from 'rxjs/operators';

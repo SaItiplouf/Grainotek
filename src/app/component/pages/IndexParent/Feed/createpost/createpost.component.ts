@@ -9,7 +9,7 @@ import {Store} from "@ngrx/store";
 import {State} from "../../../../../Reducers/app.reducer";
 import {concatMap, map, Observable} from "rxjs";
 import {Loader} from "@googlemaps/js-api-loader";
-import {environnement} from "../../../../../../../environnement";
+import {environnement} from "../../../../../../environnement";
 
 @Component({
   selector: 'app-createpost',

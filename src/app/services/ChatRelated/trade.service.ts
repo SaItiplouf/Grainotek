@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable} from "rxjs";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {environnement} from "../../../../environnement";
+import {environnement} from "../../../environnement";
 import {IUser} from "../../models/user.model";
 import {IRoom} from "../../models/room.model";
 import {ITrade} from "../../models/trade.model";

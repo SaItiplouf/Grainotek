@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {environnement} from "../../../environnement";
+import {environnement} from "../../environnement";
 import {IPostComment, IPostPostComment} from "../models/postcomment.model";
 import {IPost} from "../models/post.model";
 

@@ -3,7 +3,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {map, Observable, Subject} from "rxjs";
 import jwt_decode from 'jwt-decode';
 import {IUser, User} from "../models/user.model";
-import {environnement} from "../../../environnement";
+import {environnement} from "../../environnement";
 import {Store} from "@ngrx/store";
 import {setUser} from "../actions/post.actions";
 import {State} from "../Reducers/app.reducer";

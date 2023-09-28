@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {map, Observable} from "rxjs";
 import {IPost} from "../models/post.model";
-import {environnement} from "../../../environnement";
+import {environnement} from "../../environnement";
 import {IPostImage} from "../models/postimage.model";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {ShowpostComponent} from "../component/pages/IndexParent/Feed/showpost/showpost.component";
