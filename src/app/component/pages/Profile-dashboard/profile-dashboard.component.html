@@ -5,12 +5,17 @@
 
     <div class="mt-6 flex items-center justify-center">
       <div class="relative w-24 h-24 transition duration-300 transform hover:scale-105">
-        <ng-container *ngIf="userInfo?.pictureUrl; else defaultImage">
-          <img [src]="userInfo?.pictureUrl" alt="Avatar" class="object-scale-down w-full h-full rounded-full"/>
+        <ng-container *ngIf="croppedImage; else userImage">
+          <img [src]="croppedImage" alt="Avatar" class="object-scale-down w-full h-full rounded-full"/>
         </ng-container>
-        <ng-template #defaultImage>
-          <img alt="Default Avatar" class="object-scale-down w-full h-full rounded-full"
-               src="../../../../assets/ppdefault.png"/>
+        <ng-template #userImage>
+          <ng-container *ngIf="userInfo?.pictureUrl; else defaultImage">
+            <img [src]="userInfo?.pictureUrl" alt="Avatar" class="object-scale-down w-full h-full rounded-full"/>
+          </ng-container>
+          <ng-template #defaultImage>
+            <img alt="Default Avatar" class="object-scale-down w-full h-full rounded-full"
+                 src="../../../../assets/ppdefault.png"/>
+          </ng-template>
         </ng-template>
         <div class="absolute inset-0 flex items-center justify-center">
           <label class="cursor-pointer">
@@ -23,6 +28,7 @@
           </label>
         </div>
       </div>
+
     </div>
 
 

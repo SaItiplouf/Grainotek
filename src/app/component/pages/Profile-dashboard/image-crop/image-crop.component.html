@@ -1,0 +1,17 @@
+<div class="flex flex-col items-center p-6 bg-white shadow-lg rounded-lg">
+  <h2 class="text-2xl font-bold mb-4">Recadrer votre image</h2>
+  <div class="mb-6 w-full max-w-xl">
+    <image-cropper (imageCropped)="imageCropped($event)"
+                   [imageChangedEvent]="data.event"
+                   class="border rounded-md object-scale-down">
+    </image-cropper>
+  </div>
+  <div class="flex justify-between w-full max-w-md">
+    <button (click)="close()"
+            class="px-4 py-2 text-gray-500 bg-gray-100 hover:bg-gray-200 rounded-md">Annuler
+    </button>
+    <button (click)="confirm()"
+            class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-md">Confirmer
+    </button>
+  </div>
+</div>

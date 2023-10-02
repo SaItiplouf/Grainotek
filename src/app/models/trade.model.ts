@@ -11,4 +11,6 @@ export interface ITrade {
   statut: string;
   room: IRoom;
   createdAt: string;
+  applicantDeleted: boolean;
+  postOwnerDeleted: boolean;
 }

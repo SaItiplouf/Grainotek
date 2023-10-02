@@ -40,6 +40,7 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
 
   ngOnInit(): void {
     this.hasRooms = this.rooms && this.rooms.length > 0;
+    console.log(this.rooms, this.selectedRoom)
     this.currentUser = this.sessionService.getSetLocalUserToClass();
     this.loadRoomsForCurrentUser();
     this.subscribeToRoomChanges()
@@ -61,6 +62,7 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
     if (this.eventSource) {
       this.eventSource.close();
     }
+    this.sessionService.userLoggedOut.unsubscribe();
   }
 
   // Reception de l'output du composant enfant

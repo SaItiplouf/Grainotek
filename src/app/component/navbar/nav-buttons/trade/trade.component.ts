@@ -21,9 +21,8 @@ import {PostService} from "../../../../services/post.service";
 })
 export class TradeComponent implements OnInit {
   @Input() user: IUser | null = null;
-  applicantTrades: ITrade[] = [];
-  userPostTrades: ITrade[] = [];
   lastThreeTrades: ITrade[] = [];
+  trades: ITrade[] = [];
 
   constructor(private router: Router,
               private PostService: PostService,
@@ -41,23 +40,44 @@ export class TradeComponent implements OnInit {
     if (this.user) {
       this.tradeService.getAllTradeFromAUser(this.user).subscribe(response => {
         console.log(response)
-        this.applicantTrades = response.applicant;
-        this.userPostTrades = response.user_post;
 
-        const startIndex = Math.max(0, this.userPostTrades.length - 3);
-        this.lastThreeTrades = this.userPostTrades.slice(startIndex);
+        this.trades = [...response.user_post, ...response.applicant];
+
+        this.lastThreeTrades = this.trades.filter(trade => {
+          const isUserApplicant = trade.applicant.id === this.user!.id;
+          const isUserPostOwner = trade.userPostOwner.id === this.user!.id;
+
+          const isDeleted = isUserApplicant ? trade.applicantDeleted : isUserPostOwner ? trade.postOwnerDeleted : false;
+
+          return !isDeleted;
+        });
+
       });
     }
   }
+
+  deleteTrade(trade: ITrade, user: IUser | null) {
+    if (user === null) {
+      return;
+    }
+
+    this.tradeService.updatePatchDeleted(trade, user!).subscribe(response => {
+      console.log('Trade deleted', response);
+
+      // Filtrer les trades via réponse api pour les supprimer
+      this.lastThreeTrades = this.lastThreeTrades.filter(tradeItem => tradeItem.id !== response.id);
+      this.trades = this.trades.filter(tradeItem => tradeItem.id !== response.id);
+    }, error => {
+      console.error('Error deleting trade', error);
+    });
+  }
+
 
   openPostDialog(post: IPost): void {
     console.log(post);
     this.PostService.DisplayPostModal(post)
   }
 
-  deleteTrade(trade: ITrade) {
-    console.log("suppression poste")
-  }
 
   leaveRating(trade: ITrade) {
     console.log("systeme de notations")

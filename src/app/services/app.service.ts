@@ -50,7 +50,7 @@ export class AppService {
 
   updateProfilePicture(userId: number, file: File): Observable<IUser> {
     const formData = new FormData();
-    formData.append('pictureFile', file);
+    formData.append('pictureFile', file, file.name);
     return this.http.post(environnement.BASE_URL + `api/users/${userId}/picture`, formData).pipe(
       map(updatedUser => {
         return updatedUser as IUser;

@@ -55,7 +55,7 @@
       </ng-container>
 
       <ng-container *ngIf="trade.statut === 'closed'">
-        <button (click)="deleteTrade(trade)" class="text-red-600 hover:bg-red-100 p-2 rounded-full" mat-menu-item
+        <button (click)="deleteTrade(trade, user)" class="text-red-600 hover:bg-red-100 p-2 rounded-full" mat-menu-item
                 matTooltip="Supprimer le trade">
           <mat-icon>delete</mat-icon>
           Supprimer le trade
@@ -75,13 +75,13 @@
   </ng-container>
 
   <!-- Affiche le bouton "Voir plus" si userPostTrades.length est supérieur à 3 -->
-  <ng-container *ngIf="userPostTrades.length > 3">
+  <ng-container *ngIf="trades.length > 3">
     <button (click)="onShowMore()" mat-menu-item>
       Voir plus
     </button>
   </ng-container>
 
-  <ng-container *ngIf="!userPostTrades || userPostTrades.length === 0">
+  <ng-container *ngIf="lastThreeTrades.length === 0">
     <button disabled mat-menu-item>
       <mat-icon>info</mat-icon>
       <span class="text-gray-800">Aucun trade disponible</span>

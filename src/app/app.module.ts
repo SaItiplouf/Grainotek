@@ -47,9 +47,11 @@ import {
   CommentSectionComponent
 } from './component/pages/IndexParent/Feed/showpost/comment-section/comment-section.component';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
-import { TradeComponent } from './component/navbar/nav-buttons/trade/trade.component';
-import { MessagerieComponent } from './component/navbar/nav-buttons/messagerie/messagerie.component';
-import { UsermenuComponent } from './component/navbar/nav-buttons/usermenu/usermenu.component';
+import {TradeComponent} from './component/navbar/nav-buttons/trade/trade.component';
+import {MessagerieComponent} from './component/navbar/nav-buttons/messagerie/messagerie.component';
+import {UsermenuComponent} from './component/navbar/nav-buttons/usermenu/usermenu.component';
+import {ImageCropperModule} from "ngx-image-cropper";
+import { ImageCropComponent } from './component/pages/Profile-dashboard/image-crop/image-crop.component';
 
 
 @NgModule({
@@ -72,6 +74,7 @@ import { UsermenuComponent } from './component/navbar/nav-buttons/usermenu/userm
     TradeComponent,
     MessagerieComponent,
     UsermenuComponent,
+    ImageCropComponent,
   ],
   imports: [
     BrowserModule,
@@ -98,7 +101,8 @@ import { UsermenuComponent } from './component/navbar/nav-buttons/usermenu/userm
     MatTableModule,
     MatTooltipModule,
     CarouselModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    ImageCropperModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptorInterceptor, multi: true},

@@ -28,8 +28,6 @@ export class TradeService {
       throw new Error("Aucun statut ni room n'a été fourni.");
     }
 
-    // Create a copy of the trade object
-    let Trade = {...trade};
     let patchData: any = {};
     if (statut) {
       patchData.statut = statut;
@@ -43,8 +41,27 @@ export class TradeService {
         'Content-Type': 'application/merge-patch+json'
       })
     };
-    return this.http.patch(environnement.BASE_URL + `api/trade/${Trade.id}`, patchData, httpOptions);
+    return this.http.patch(environnement.BASE_URL + `api/trade/${trade.id}`, patchData, httpOptions);
   }
 
+  updatePatchDeleted(trade: ITrade, user: IUser): Observable<any> {
+    const patchData: { [key: string]: any } = {};
+
+    if (user.id === trade.applicant.id) {
+      patchData['applicantDeleted'] = true;
+    } else if (user.id === trade.userPostOwner.id) {
+      patchData['postOwnerDeleted'] = true;
+    } else {
+      throw new Error("L'utilisateur n'est ni créateur du trade ni le receveur");
+    }
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/merge-patch+json'
+      })
+    };
+
+    return this.http.patch(environnement.BASE_URL + `api/trade/${trade.id}`, patchData, httpOptions);
+  }
 
 }

@@ -6,6 +6,9 @@ import {ToastrService} from "ngx-toastr";
 import {Router} from "@angular/router";
 import {State} from "../../../Reducers/app.reducer";
 import {Store} from "@ngrx/store";
+import {MatDialog} from "@angular/material/dialog";
+import {ImageCropComponent} from "./image-crop/image-crop.component";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-profile-dashboard',
@@ -17,26 +20,32 @@ export class ProfileDashboardComponent implements OnInit, OnDestroy {
   userInfo: IUser | null = null;
   updatedUsername: string | null = null;
   updatedEmail: string | null = null;
-
+  imageChangedEvent: any = '';
+  croppedImage: any = '';
+  private userSubscription?: Subscription;
 
   constructor(private appService: AppService, private store: Store<{
-    state: State
-  }>, private sessionService: SessionService, private toastr: ToastrService, private router: Router) {
+                state: State
+              }>, private sessionService: SessionService,
+              private toastr: ToastrService,
+              private router: Router,
+              private dialog: MatDialog,
+  ) {
   }
 
   ngOnInit() {
-    this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
+    this.userSubscription = this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
       console.log(user)
       this.userInfo = user;
     });
     this.sessionService.checkUserAuthentication();
-    this.sessionService.userLoggedOut.subscribe(() => {
-      this.sessionService.checkUserAuthentication();
-    });
   }
 
   ngOnDestroy() {
-    this.sessionService.userLoggedOut.unsubscribe()
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
+    }
+    this.sessionService.userLoggedOut.unsubscribe();
   }
 
   // async initializeUserInfo() {
@@ -52,30 +61,55 @@ export class ProfileDashboardComponent implements OnInit, OnDestroy {
   //   }
   // }
 
+  // onFileSelected(event: any) {
+  //   const file: File = event.target.files[0];
+  //
+  //   if (file) {
+  //     const reader = new FileReader();
+  //
+  //     reader.onload = (e: any) => {
+  //       if (this.userInfo) {
+  //         console.log(e.target.result)
+  //         console.log(this.userInfo)
+  //
+  //
+  //         this.appService.updateProfilePicture(this.userInfo.id, file)
+  //           .subscribe(response => {
+  //             this.toastr.success('Photo du profil mise à jour!', 'Succès');  // Alerte de succès
+  //
+  //             console.log('Photo de profil mise à jour avec succès');
+  //           });
+  //       }
+  //     };
+  //
+  //     reader.readAsDataURL(file);
+  //   }
+  // }
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
 
     if (file) {
-      const reader = new FileReader();
+      const dialogRef = this.dialog.open(ImageCropComponent, {
+        width: '80%',
+        data: {event: event}
+      });
 
-      reader.onload = (e: any) => {
-        if (this.userInfo) {
-          console.log(e.target.result)
-          console.log(this.userInfo)
+      dialogRef.afterClosed().subscribe(result => {
+        console.log("Dialog est fermé avec le résultat:", result);
+        if (result && this.userInfo) {
+          const croppedFile = result;
 
-
-          this.appService.updateProfilePicture(this.userInfo.id, file)
+          // Envoyez l'image rognée au serveur
+          this.appService.updateProfilePicture(this.userInfo.id, croppedFile)
             .subscribe(response => {
-              this.toastr.success('Photo du profil mise à jour!', 'Succès');  // Alerte de succès
-
+              this.toastr.success('Photo du profil mise à jour!', 'Succès');
               console.log('Photo de profil mise à jour avec succès');
             });
         }
-      };
-
-      reader.readAsDataURL(file);
+      });
     }
   }
+
 
   updateProfile() {
     console.log("CC", this.userInfo);
@@ -107,6 +141,7 @@ export class ProfileDashboardComponent implements OnInit, OnDestroy {
       }
     }
   }
+
 
   updateUsername(newUsername: string) {
     this.updatedUsername = newUsername;

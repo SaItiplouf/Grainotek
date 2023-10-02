@@ -150,7 +150,7 @@ export class SessionService {
   forgetToken() {
     localStorage.removeItem('jwt');
     localStorage.removeItem('localUser');
-
+    this.router.navigate(['/']);
     this.userLoggedOut.next();
   }
 
