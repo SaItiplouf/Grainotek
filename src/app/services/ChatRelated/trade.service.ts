@@ -5,6 +5,7 @@ import {environnement} from "../../../environnement";
 import {IUser} from "../../models/user.model";
 import {IRoom} from "../../models/room.model";
 import {ITrade} from "../../models/trade.model";
+import {IUserReview} from "../../models/user_review.model";
 
 @Injectable({
   providedIn: 'root'
@@ -42,6 +43,10 @@ export class TradeService {
       })
     };
     return this.http.patch(environnement.BASE_URL + `api/trade/${trade.id}`, patchData, httpOptions);
+  }
+
+  submitReview(data: IUserReview) {
+    return this.http.post(environnement.BASE_URL + `api/reviews`, data);
   }
 
   updatePatchDeleted(trade: ITrade, user: IUser): Observable<any> {

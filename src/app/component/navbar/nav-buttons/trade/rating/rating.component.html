@@ -1,0 +1,39 @@
+<div class="fixed inset-0 flex items-center justify-center z-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-64">
+    <h2 class="text-xl font-semibold mb-4">Notation</h2>
+    <div class="flex items-center">
+      <ng-container *ngFor="let star of stars; let i = index">
+        <svg
+          (click)="rate(i + 1)"
+          [class.text-gray-400]="i >= rating"
+          [class.text-yellow-500]="i < rating"
+          class="h-6 w-6 cursor-pointer transition-transform transform hover:scale-125 fill-current"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10 1l2.4 6.3H18l-5 4.8 1.4 6.1L10 15.4l-4.8 2.8L6 11.1l-5-4.8h5.6L10 1z"
+          />
+        </svg>
+      </ng-container>
+    </div>
+    <p class="text-gray-600 mt-4">{{ rating }} étoiles</p>
+
+    <!-- Champ de commentaire -->
+    <textarea
+      (keyup.enter)="submitRating()"
+      [(ngModel)]="note"
+      class="w-full h-16 mt-4 border border-gray-300 rounded p-2 focus:outline-none"
+      placeholder="Laissez un commentaire..."
+    ></textarea>
+
+    <div class="flex justify-end mt-6">
+      <button
+        (click)="submitRating()"
+        class="text-blue-500 hover:text-blue-700 font-semibold"
+      >
+        Soumettre
+      </button>
+    </div>
+  </div>
+</div>

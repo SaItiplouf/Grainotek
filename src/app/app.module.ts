@@ -52,6 +52,7 @@ import {MessagerieComponent} from './component/navbar/nav-buttons/messagerie/mes
 import {UsermenuComponent} from './component/navbar/nav-buttons/usermenu/usermenu.component';
 import {ImageCropperModule} from "ngx-image-cropper";
 import { ImageCropComponent } from './component/pages/Profile-dashboard/image-crop/image-crop.component';
+import { RatingComponent } from './component/navbar/nav-buttons/trade/rating/rating.component';
 
 
 @NgModule({
@@ -75,6 +76,7 @@ import { ImageCropComponent } from './component/pages/Profile-dashboard/image-cr
     MessagerieComponent,
     UsermenuComponent,
     ImageCropComponent,
+    RatingComponent,
   ],
   imports: [
     BrowserModule,

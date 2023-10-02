@@ -10,6 +10,7 @@ import {PostService} from "../../../../services/post.service";
 import {postsLoaded} from "../../../../actions/post.actions";
 import {Router} from "@angular/router";
 import {IUser} from "../../../../models/user.model";
+import {IUserReview} from "../../../../models/user_review.model";
 
 @Component({
   selector: 'app-feed',
@@ -34,7 +35,7 @@ export class FeedComponent implements OnInit {
   onScroll() {
     this.PostService.getPostsFromApi(this.currentPage + 1).subscribe(newPosts => {
       this.store.dispatch(postsLoaded({posts: [...this.posts, ...newPosts]}));
-      this.currentPage++; // Incrémentez la page actuelle
+      this.currentPage++;
     });
   }
 
@@ -59,6 +60,14 @@ export class FeedComponent implements OnInit {
     }
   }
 
+  calculateAverageRating(reviews: IUserReview[]): number {
+    if (!reviews || reviews.length === 0) {
+      return 0;
+    }
+
+    const totalStars = reviews.reduce((total, review) => total + review.stars, 0);
+    return totalStars / reviews.length;
+  }
 
   isUserLoggedIn(): boolean {
     return this.sessionService.isUserLoggedIn();
@@ -81,5 +90,8 @@ export class FeedComponent implements OnInit {
     return this.PostService.formatTimeSince(post.createdAt);
   }
 
+  convertToNumber(value: any): number {
+    return parseFloat(value);
+  }
 }
 

@@ -1,9 +1,13 @@
+import {IUserReview} from "./user_review.model";
+
 export interface IUser {
   id: number;
   email: string;
   roles: string;
   username: string;
   pictureUrl: string;
+  userReviews?: IUserReview[];
+  userReviewsWhereUserIsTargeted?: IUserReview[];
 }
 
 export class User implements IUser {

@@ -40,8 +40,8 @@
           <!-- Section de gauche : Photo de profil, nom d'utilisateur et date -->
           <div class="flex items-center space-x-4">
             <div class="relative h-10 w-10">
-              <img [src]="comment.user.pictureUrl"
-                   alt="pp utilisateur" class="h-10 w-10 rounded-full object-contain">
+              <img (click)="redirectToProfile(comment.user.id)" alt="Profile Image"
+                   class="effectOnHover w-10 h-10 rounded-full mr-2" src="{{ comment.user.pictureUrl }}">
             </div>
 
             <div>

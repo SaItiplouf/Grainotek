@@ -1,7 +1,7 @@
 <div class="bg-gray-900 min-h-screen p-6 fade-in">
 
   <!-- Carte de profil utilisateur -->
-  <div class="bg-blue-900 rounded-md p-6 shadow-xl">
+  <div class="bg-green-500 rounded-md p-6 shadow-xl">
     <div *ngIf="userInfo" class="text-center">
       <img alt="Avatar de l'utilisateur" class="w-20 h-20 rounded-full mx-auto mb-4 shadow-lg"
            src="{{ userInfo.pictureUrl }}">
@@ -18,10 +18,10 @@
         <img *ngIf="post.images.length === 0" alt="Placeholder Image"
              class="w-full h-64 object-cover"
              src="../../../../../assets/placeholderPost.png">
-       
+
 
         <div class="p-4">
-          <div class="font-semibold mb-2 text-blue-800">{{ post.user.email }}</div>
+          <div class="font-semibold mb-2 text-green-800">{{ post.user.email }}</div>
           <div class="text-gray-800">{{ post.content }}</div>
         </div>
       </div>

@@ -13,6 +13,7 @@ import {RoomService} from "../../../../services/ChatRelated/room.service";
 import {Store} from "@ngrx/store";
 import {State} from "../../../../Reducers/app.reducer";
 import {PostService} from "../../../../services/post.service";
+import {RatingComponent} from "./rating/rating.component";
 
 @Component({
   selector: 'app-trade',
@@ -80,7 +81,17 @@ export class TradeComponent implements OnInit {
 
 
   leaveRating(trade: ITrade) {
-    console.log("systeme de notations")
+    const user = this.user;
+    if (user) {
+      this.dialog.open(RatingComponent, {
+        data: {trade, user},
+        width: "80%",
+        maxHeight: "90vh",
+        autoFocus: false,
+      });
+    } else {
+      console.log("Manque un user dans le rating")
+    }
   }
 
   onShowMore() {

@@ -10,6 +10,7 @@ import {ToastrService} from "ngx-toastr";
 import {IUser} from "../../../../../../models/user.model";
 import {addLikeToComment} from "../../../../../../actions/chat.actions";
 import {map} from "rxjs";
+import {ShowpostComponent} from "../showpost.component";
 
 @Component({
   selector: 'app-comment-section',
@@ -29,6 +30,7 @@ export class CommentSectionComponent implements OnInit {
 
   constructor(
     private commentsService: CommentsService,
+    private ShowpostComponent: ShowpostComponent,
     private sessionService: SessionService,
     private toastr: ToastrService,
     private store: Store<{
@@ -78,6 +80,10 @@ export class CommentSectionComponent implements OnInit {
       console.error('Erreur:', error);
       this.loading = false;
     }
+  }
+
+  redirectToProfile(userId: number): void {
+    this.ShowpostComponent.redirectToProfile(userId);
   }
 
   onScroll() {

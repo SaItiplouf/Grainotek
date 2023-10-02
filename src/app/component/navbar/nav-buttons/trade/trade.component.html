@@ -43,15 +43,15 @@
 
       <!-- Display container and options when the trade has the status "accepted" -->
       <ng-container *ngIf="trade.statut === 'accepted'">
-    <span class="text-green-600 p-2 rounded-full" mat-menu-item>
-      <mat-icon>check_circle</mat-icon>
-      Trade accepté
-    </span>
         <button (click)="updateTrade(trade, 'closed')" class="text-red-600 hover:bg-red-100 p-2 rounded-full"
                 mat-menu-item matTooltip="Clore le trade">
           <mat-icon>close</mat-icon>
           Clore le trade
         </button>
+        <span class="text-gray-600 p-2 rounded-full opacity-50 cursor-not-allowed" mat-menu-item>
+      <mat-icon>check_circle</mat-icon>
+      Trade accepté
+    </span>
       </ng-container>
 
       <ng-container *ngIf="trade.statut === 'closed'">
