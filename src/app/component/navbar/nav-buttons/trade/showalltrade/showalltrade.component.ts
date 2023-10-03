@@ -1,31 +1,30 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {IPost} from "../../../../models/post.model";
-import {ITrade} from "../../../../models/trade.model";
-import {IPostRoom, IRoom} from "../../../../models/room.model";
-import {map} from "rxjs";
-import {IUser} from "../../../../models/user.model";
+import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
-import {SessionService} from "../../../../services/session.service";
-import {TradeService} from "../../../../services/ChatRelated/trade.service";
+import {SessionService} from "../../../../../services/session.service";
+import {TradeService} from "../../../../../services/ChatRelated/trade.service";
 import {ToastrService} from "ngx-toastr";
-import {RoomService} from "../../../../services/ChatRelated/room.service";
+import {RoomService} from "../../../../../services/ChatRelated/room.service";
 import {Store} from "@ngrx/store";
-import {State} from "../../../../Reducers/app.reducer";
-import {PostService} from "../../../../services/post.service";
-import {RatingComponent} from "./rating/rating.component";
-import {deleteTrade, tradesLoaded, updateTrade} from "../../../../actions/trade.actions";
+import {State} from "../../../../../Reducers/app.reducer";
+import {ITrade} from "../../../../../models/trade.model";
+import {PostService} from "../../../../../services/post.service";
+import {IUser} from "../../../../../models/user.model";
+import {IPost} from "../../../../../models/post.model";
+import {RatingComponent} from "../rating/rating.component";
+import {IPostRoom, IRoom} from "../../../../../models/room.model";
+import {map} from "rxjs";
 import {tap} from "rxjs/operators";
+import {deleteTrade, updateTrade} from "../../../../../actions/trade.actions";
 
 @Component({
-  selector: 'app-trade',
-  templateUrl: './trade.component.html',
-  styleUrls: ['./trade.component.scss']
+  selector: 'app-showalltrade',
+  templateUrl: './showalltrade.component.html',
+  styleUrls: ['./showalltrade.component.scss']
 })
-export class TradeComponent implements OnInit {
-  @Input() user: IUser | null = null;
-  lastThreeTrades: ITrade[] = [];
+export class ShowalltradeComponent implements OnInit {
   trades: ITrade[] = [];
+  user: IUser | null = null;
 
   constructor(private router: Router,
               private PostService: PostService,
@@ -40,38 +39,23 @@ export class TradeComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.user) {
-      this.tradeService.getAllTradeFromAUser(this.user).subscribe(response => {
-        console.log(response)
-
-        const trades = [...response.user_post, ...response.applicant];
-        const nonDeletedTrades = trades.filter(trade => {
-          const isUserApplicant = trade.applicant.id === this.user!.id;
-          const isUserPostOwner = trade.userPostOwner.id === this.user!.id;
-
-          const isDeleted = isUserApplicant ? trade.applicantDeleted : isUserPostOwner ? trade.postOwnerDeleted : false;
-
-          return !isDeleted;
-        });
-
-        this.store.dispatch(tradesLoaded({trades: nonDeletedTrades}));
-      });
-    }
     this.store.select((state: any) => state.state.trades).subscribe((trades: ITrade[]) => {
       this.trades = trades;
-      this.lastThreeTrades = trades.slice(-3);
+      console.log(this.trades)
     });
+    this.getConnectedUserInformationViaToken()
+  }
+
+  getConnectedUserInformationViaToken() {
+    const ConnectedUser = this.sessionService.getUserInfo();
+    if (ConnectedUser) {
+      this.user = ConnectedUser;
+    } else {
+      return
+    }
   }
 
   deleteTrade(trade: ITrade, user: IUser | null) {
-
-    // this.dialog.open(DeletetradedialogComponent, {
-    //   width: "70vh",
-    //   autoFocus: false,
-    //   data: {room, trade}
-    // });
-    // passer ce composant en juste une confirmation avant traitement
-    
     if (user === null) {
       return;
     }

@@ -57,6 +57,10 @@ export class RatingComponent {
     this.dialogRef.close();
   }
 
+  close() {
+    this.dialogRef.close();
+  }
+
   rate(selectedRating: number): void {
     this.rating = selectedRating;
   }

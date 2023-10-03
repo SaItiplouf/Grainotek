@@ -53,6 +53,8 @@ import {UsermenuComponent} from './component/navbar/nav-buttons/usermenu/usermen
 import {ImageCropperModule} from "ngx-image-cropper";
 import { ImageCropComponent } from './component/pages/Profile-dashboard/image-crop/image-crop.component';
 import { RatingComponent } from './component/navbar/nav-buttons/trade/rating/rating.component';
+import { ShowalltradeComponent } from './component/navbar/nav-buttons/trade/showalltrade/showalltrade.component';
+import { BottomNavComponent } from './component/navbar/bottom-nav/bottom-nav.component';
 
 
 @NgModule({
@@ -77,6 +79,8 @@ import { RatingComponent } from './component/navbar/nav-buttons/trade/rating/rat
     UsermenuComponent,
     ImageCropComponent,
     RatingComponent,
+    ShowalltradeComponent,
+    BottomNavComponent,
   ],
   imports: [
     BrowserModule,

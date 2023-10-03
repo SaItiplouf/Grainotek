@@ -8,6 +8,7 @@ import {Store} from "@ngrx/store";
 import {State} from "../../Reducers/app.reducer";
 import {PostService} from "../../services/post.service";
 import {ToastrService} from "ngx-toastr";
+import {CreatePostComponent} from "../pages/IndexParent/Feed/createpost/createpost.component";
 
 @Component({
   selector: 'app-navbar',
@@ -27,14 +28,15 @@ export class NavbarComponent implements OnInit {
               private store: Store<{
                 state: State
               }>) {
+
   }
 
   ngOnInit(): void {
     this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
       this.userInfo = user;
     });
-  }
 
+  }
 
   toggleMenu() {
     this.menuOpen = !this.menuOpen;
@@ -44,6 +46,20 @@ export class NavbarComponent implements OnInit {
     return this.sessionService.isUserLoggedIn();
   }
 
+  openDialog() {
+    window.scrollTo(0, 0);
+    this.dialog.open(CreatePostComponent, {
+      autoFocus: false,
+      width: "500px",
+    });
+  }
+
+
+  navigateToDash() {
+    this.router.navigate(['profile-dashboard']).then(() => {
+      console.log("Navigate Success")
+    });
+  }
 
   navigateToIndex() {
     this.router.navigate(['']).then(() => {
@@ -61,7 +77,7 @@ export class NavbarComponent implements OnInit {
     this.sessionService.forgetToken()
     console.log("Token deleted")
   }
-  
+
   openLoginDialog(): void {
     this.dialog.open(LoginDialogComponent, {
       autoFocus: false,

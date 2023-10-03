@@ -7,6 +7,7 @@ import {SecondaryParentComponent} from "./component/pages/SecondaryParent/second
 import {ProfileDashboardComponent} from "./component/pages/Profile-dashboard/profile-dashboard.component";
 import {ChatParentComponent} from "./component/pages/ChatParent/chat-parent.component";
 import {ProfileParentComponent} from "./component/pages/Profile/profile-parent/profile-parent.component";
+import {ShowalltradeComponent} from "./component/navbar/nav-buttons/trade/showalltrade/showalltrade.component";
 
 
 const routes: Routes = [
@@ -15,7 +16,7 @@ const routes: Routes = [
   {path: 'profile-dashboard', component: ProfileDashboardComponent},
   {path: 'pm', component: ChatParentComponent},
   {path: 'profile/:userId', component: ProfileParentComponent},
-
+  {path: 'trade', component: ShowalltradeComponent},
 ];
 
 @NgModule({

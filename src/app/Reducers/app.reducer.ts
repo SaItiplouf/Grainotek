@@ -5,6 +5,8 @@ import {IUser} from "../models/user.model";
 import {IRoom} from "../models/room.model";
 import {addLikeToComment, roomsLoaded, updateRoom} from "../actions/chat.actions";
 import {IPostComment} from "../models/postcomment.model";
+import {ITrade} from "../models/trade.model";
+import {deleteTrade, tradesLoaded, updateTrade} from "../actions/trade.actions";
 
 
 export interface State {
@@ -12,6 +14,7 @@ export interface State {
   user: IUser | null;
   room: IRoom[];
   comments: IPostComment[];
+  trades: ITrade[];
 }
 
 const localStorageUser = localStorage.getItem('localUser');
@@ -24,6 +27,7 @@ export const initialState: State = {
   user: initialUser,
   room: [],
   comments: [],
+  trades: [],
 };
 
 export const reducer = createReducer(
@@ -95,4 +99,18 @@ export const reducer = createReducer(
     comments: [...state.comments, ...comments]
   })),
   on(addComment, (state, {comment}) => ({...state, comments: [comment, ...state.comments]})),
+  on(tradesLoaded, (state, {trades}) => ({...state, trades})),
+  on(deleteTrade, (state, {trade}) => {
+    const updatedTrades = state.trades.filter(existingTrade => existingTrade.id !== trade.id);
+    return {...state, trades: updatedTrades};
+  }),
+  on(updateTrade, (state, {trade}) => {
+    const updatedTrades = state.trades.map(existingTrade => {
+      if (existingTrade.id === trade.id) {
+        return trade;
+      }
+      return existingTrade;
+    });
+    return {...state, trades: updatedTrades};
+  }),
 );

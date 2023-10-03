@@ -1,0 +1,24 @@
+<div class="fixed z-50 bottom-0 left-0 right-0 bg-gray-800 dark:bg-gray-900 p-4 flex justify-around md:hidden">
+  <button (click)="navigateToTrade()"
+          class="p-2 active:bg-blend-darken rounded-lg transition-transform transform hover:scale-105 flex flex-col items-center justify-end">
+    <mat-icon class="text-gray-200">inbox</mat-icon>
+  </button>
+  <div *ngIf="isUserLoggedIn() && isDefaultRoute()" class="transition-opacity duration-300">
+    <button (click)="openDialog()" class="w-5 h-5" color="primary" mat-mini-fab>
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+
+  <div *ngIf="!isUserLoggedIn() || !isDefaultRoute()" class="transition-opacity duration-300">
+    <button
+      (click)="navigateToIndex()"
+      class="p-2 active:bg-blend-darken rounded-lg transition-transform transform hover:scale-105 flex flex-col items-center justify-end">
+      <mat-icon class="text-gray-200 icon-display">home</mat-icon>
+    </button>
+  </div>
+  <button (click)="navigateToChat()"
+          class="p-2 active:bg-blend-darken rounded-lg transition-transform transform hover:scale-105 flex flex-col items-center justify-end">
+    <mat-icon class="text-gray-200">mail</mat-icon>
+  </button>
+
+</div>

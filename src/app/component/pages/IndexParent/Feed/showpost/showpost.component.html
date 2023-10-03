@@ -23,7 +23,7 @@
     <!-- Post Name -->
     <h2 class="text-2xl font-semibold mb-2">{{ Modalpost.name }}</h2>
     <div *ngIf="isUserLoggedIn()">
-      <div *ngIf="Modalpost.user.id === ConnectedUser.id" class="sticky-fab">
+      <div *ngIf="Modalpost.user.id === ConnectedUser.id" class="sticky-fab hidden md:block">
         <button (click)="deletePost()" class="sticky-fab" color="warn" mat-fab>
           <mat-icon>delete_forever</mat-icon>
         </button>
@@ -39,14 +39,15 @@
             </ng-template>
           </ng-container>
           <ng-template *ngIf="Modalpost.images.length === 0" carouselSlide>
-            <img class="w-full h-48 object-cover rounded" src="../../../../../../assets/placeholderPost.png">
+            <img alt="placeholder" class="w-full h-48 object-cover rounded"
+                 src="../../../../../../assets/placeholderPost.png">
           </ng-template>
         </owl-carousel-o>
       </div>
 
       <!-- Contenu du poste -->
       <div class="w-full md:w-1/2 bg-gray-100 p-4 rounded-lg">
-        <p class="w-full h-full p-2 rounded text-gray-600" readonly>{{ Modalpost.content }}</p>
+        <p class="w-full h-full p-2 rounded text-gray-600">{{ Modalpost.content }}</p>
       </div>
     </div>
 

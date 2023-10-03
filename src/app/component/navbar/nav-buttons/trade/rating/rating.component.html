@@ -1,8 +1,26 @@
-<div class="fixed inset-0 flex items-center justify-center z-50">
-  <div class="bg-white p-6 rounded-lg shadow-lg w-64">
-    <h2 class="text-xl font-semibold mb-4">Notation</h2>
-    <div class="flex items-center">
-      <ng-container *ngFor="let star of stars; let i = index">
+<div class="fixed inset-0 flex items-center justify-center z-50 px-4 sm:px-0">
+  <div class="bg-green-100 p-6 rounded-lg shadow-lg w-full max-w-md relative">
+    <div class="flex justify-between items-start mb-4">
+      <h2 class="text-xl font-semibold">Notation</h2>
+      <button (click)="close()" mat-icon-button>
+        <mat-icon color="warn">close</mat-icon>
+      </button>
+    </div>
+    <div class="flex items-center justify-center space-x-2">
+
+      <!-- Champ de commentaire -->
+      <textarea
+        (keyup.enter)="submitRating()"
+        [(ngModel)]="note"
+        class="w-full h-16 mt-4 border border-gray-300 rounded p-2 focus:outline-none"
+        placeholder="Laissez un commentaire..."
+      ></textarea>
+
+    </div>
+
+    <div class="flex items-center justify-center space-x-2 mt-4">
+      <h4 class="text-gray-600 text-center text-lg h-6">{{ rating }} étoiles</h4>
+      <ng-container *ngFor="let star of stars; let i = index" class="self-start">
         <svg
           (click)="rate(i + 1)"
           [class.text-gray-400]="i >= rating"
@@ -17,15 +35,7 @@
         </svg>
       </ng-container>
     </div>
-    <p class="text-gray-600 mt-4">{{ rating }} étoiles</p>
 
-    <!-- Champ de commentaire -->
-    <textarea
-      (keyup.enter)="submitRating()"
-      [(ngModel)]="note"
-      class="w-full h-16 mt-4 border border-gray-300 rounded p-2 focus:outline-none"
-      placeholder="Laissez un commentaire..."
-    ></textarea>
 
     <div class="flex justify-end mt-6">
       <button
