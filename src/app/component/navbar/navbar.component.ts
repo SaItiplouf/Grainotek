@@ -18,7 +18,7 @@ import {CreatePostComponent} from "../pages/IndexParent/Feed/createpost/createpo
 export class NavbarComponent implements OnInit {
   jwtUserInfo: IUser | null = null;
   userInfo: IUser | null = null;
-  menuOpen = false;
+  menuOpen!: boolean;
 
   constructor(private router: Router,
               private PostService: PostService,
@@ -75,6 +75,7 @@ export class NavbarComponent implements OnInit {
 
   forgetToken() {
     this.sessionService.forgetToken()
+    this.toggleMenu();
     console.log("Token deleted")
   }
 

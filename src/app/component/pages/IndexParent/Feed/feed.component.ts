@@ -22,6 +22,7 @@ export class FeedComponent implements OnInit {
   selector: string = ".main-panel";
   currentPage: number = 1;
   ConnectedUser!: IUser;
+  public showPosts = false;
 
   constructor(private store: Store<{
                 state: State
@@ -47,6 +48,9 @@ export class FeedComponent implements OnInit {
     });
     this.store.select((state: any) => state.state.posts).subscribe((post: IPost[]) => {
       this.posts = post;
+      setTimeout(() => {
+        this.showPosts = true;
+      }, 750);
     });
     this.getConnectedUserInformationViaToken()
   }

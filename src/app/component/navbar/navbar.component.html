@@ -70,9 +70,9 @@
       <ul aria-labelledby="user-menu-button" class="py-2">
         <li>
           <a
-            (click)="navigateToIndex(); toggleMenu()"
+            (click)="navigateToSecondary(); toggleMenu()"
             class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-green-600 dark:text-green-200 dark:hover:text-white
-        transition duration-300 ease-in-out transform hover:scale-105">Accueil
+        transition duration-300 ease-in-out transform hover:scale-105">A propos
           </a>
         </li>
         <li>
@@ -83,7 +83,7 @@
         </li>
         <li>
           <a
-            (click)="forgetToken(); toggleMenu()"
+            (click)="forgetToken();"
             class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-green-600 dark:text-green-200 dark:hover:text-white
         transition duration-300 ease-in-out transform hover:scale-105">Se déconnecter</a>
         </li>
@@ -91,6 +91,6 @@
     </div>
   </div>
 
-  <app-bottom-nav>
+  <app-bottom-nav (menuToggle)="toggleMenu()" [menuOpen]="menuOpen">
   </app-bottom-nav>
 </nav>

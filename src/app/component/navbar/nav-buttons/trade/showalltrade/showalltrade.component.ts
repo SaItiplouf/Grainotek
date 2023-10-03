@@ -43,7 +43,7 @@ export class ShowalltradeComponent implements OnInit {
       this.trades = trades;
       console.log(this.trades)
     });
-    this.getConnectedUserInformationViaToken()
+    this.sessionService.checkUserAuthentication()
   }
 
   getConnectedUserInformationViaToken() {

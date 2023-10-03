@@ -34,6 +34,7 @@ export class ProfileDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    document.body.style.overflow = 'hidden';
     this.userSubscription = this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
       console.log(user)
       this.userInfo = user;
@@ -42,6 +43,7 @@ export class ProfileDashboardComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    document.body.style.overflow = 'auto';
     if (this.userSubscription) {
       this.userSubscription.unsubscribe();
     }

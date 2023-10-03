@@ -8,12 +8,12 @@
     class="search-results"
     infiniteScroll
   >
-    <div (click)="openPostDialog(post)"
-         *ngFor="let post of posts"
-         class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform transform hover:scale-105 m-2 sm:m-4 relative h-200 sm:h-auto">
+    <div (click)="openPostDialog(post)" *ngFor="let post of posts"
+         [ngClass]="{'fade-in.show': showPosts, 'fade-in': !showPosts}"
+         class="bg-white rounded-lg shadow-lg fade-in overflow-hidden transition-transform transform hover:scale-105 m-2 sm:m-4 relative h-200 sm:h-auto">
       <mat-card class="post-card">
         <div class="flex flex-col sm:flex-row">
-          <div class="w-full sm:w-1/4 bg-gray-200">
+          <div class="w-full sm:w-1/4 bg-gray-200 min-w-[200px] aspect-ratio-4/5">
             <img *ngIf="post.images.length > 0" [src]="post.images[0].contentUrl" alt="Post Image"
                  class="object-cover h-80 w-full">
             <img *ngIf="post.images.length === 0" alt="Placeholder Image" class="object-cover h-80 w-full"
@@ -56,7 +56,9 @@
                   </div>
                 </div>
               </div>
-              <p class="text-xs text-gray-500 sm:mt-0 mt-2">{{ formatTime(post) }}</p>
+              <p class="text-xs text-gray-500 sm:mt-0 mt-2 p-4 sm:absolute bottom-0 right-0">
+                {{ formatTime(post) }}
+              </p>
             </div>
             <h2 class="text-md font-semibold text-gray-800 mb-1">{{ post.name }}</h2>
             <p
