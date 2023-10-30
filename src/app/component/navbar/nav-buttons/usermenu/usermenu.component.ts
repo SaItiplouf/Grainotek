@@ -31,4 +31,7 @@ export class UsermenuComponent {
     console.log("Token deleted")
   }
 
+  navigateToFavorite() {
+    this.router.navigate(['favoris']);
+  }
 }

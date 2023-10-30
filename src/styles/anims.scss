@@ -115,10 +115,26 @@ img.effectOnHover:hover {
 .fade-in {
   opacity: 0;
   transform: translateY(110px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
 .fade-in.show {
-  opacity: 1;
-  transform: translateY(0);
+  animation: fadeIn 0.75s ease 0.75s forwards, moveUp 0.75s ease 0.75s forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes moveUp {
+  from {
+    transform: translateY(110px);
+  }
+  to {
+    transform: translateY(0);
+  }
 }

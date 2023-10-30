@@ -8,6 +8,7 @@ import {ProfileDashboardComponent} from "./component/pages/Profile-dashboard/pro
 import {ChatParentComponent} from "./component/pages/ChatParent/chat-parent.component";
 import {ProfileParentComponent} from "./component/pages/Profile/profile-parent/profile-parent.component";
 import {ShowalltradeComponent} from "./component/navbar/nav-buttons/trade/showalltrade/showalltrade.component";
+import {FavorisComponent} from "./component/pages/Favoris/favoris.component";
 
 
 const routes: Routes = [
@@ -17,6 +18,7 @@ const routes: Routes = [
   {path: 'pm', component: ChatParentComponent},
   {path: 'profile/:userId', component: ProfileParentComponent},
   {path: 'trade', component: ShowalltradeComponent},
+  {path: 'favoris', component: FavorisComponent}
 ];
 
 @NgModule({

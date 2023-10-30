@@ -32,8 +32,8 @@
       <mat-icon class="user-menu-icon text-gray-500 text-lg">settings</mat-icon>
       <span class="user-menu-label ml-2">Paramètres</span>
     </button>
-    <button
-      class="user-menu-item flex items-center justify-center text-gray-700 hover:bg-gray-100 p-2 rounded">
+    <button (click)="navigateToFavorite()"
+            class="user-menu-item flex items-center justify-center text-gray-700 hover:bg-gray-100 p-2 rounded">
       <mat-icon class="user-menu-icon text-gray-500 text-lg">favorite</mat-icon>
       <span class="user-menu-label ml-2">Mes favoris</span>
     </button>

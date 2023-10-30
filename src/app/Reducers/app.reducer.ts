@@ -1,12 +1,13 @@
 import {createReducer, on} from '@ngrx/store';
 import {IPost} from "../models/post.model";
-import {addComment, addPost, loadComments, postsLoaded, setUser} from "../actions/post.actions";
+import {addComment, addPost, loadComments, loadFavorites, postsLoaded, setUser} from "../actions/post.actions";
 import {IUser} from "../models/user.model";
 import {IRoom} from "../models/room.model";
 import {addLikeToComment, roomsLoaded, updateRoom} from "../actions/chat.actions";
 import {IPostComment} from "../models/postcomment.model";
 import {ITrade} from "../models/trade.model";
 import {deleteTrade, tradesLoaded, updateTrade} from "../actions/trade.actions";
+import {IPostCommentLike} from "../models/postcommentLike.model";
 
 
 export interface State {
@@ -15,6 +16,7 @@ export interface State {
   room: IRoom[];
   comments: IPostComment[];
   trades: ITrade[];
+  favorites: IPostCommentLike[];
 }
 
 const localStorageUser = localStorage.getItem('localUser');
@@ -28,6 +30,7 @@ export const initialState: State = {
   room: [],
   comments: [],
   trades: [],
+  favorites: []
 };
 
 export const reducer = createReducer(
@@ -113,4 +116,11 @@ export const reducer = createReducer(
     });
     return {...state, trades: updatedTrades};
   }),
+  on(loadFavorites, (state, {favorites}) => {
+    console.log('Nouvelles données de favoris :', favorites); // Ajoutez cette ligne
+    return {
+      ...state,
+      favorites: favorites
+    };
+  })
 );
