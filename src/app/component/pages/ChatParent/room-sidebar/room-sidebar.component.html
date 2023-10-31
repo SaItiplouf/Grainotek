@@ -1,4 +1,4 @@
-<div class="max-h-screen p-4 border-b border-gray-200 overflow-y-auto">
+<div class="max-h-screen p-4 border-b border-gray-200">
   <input [(ngModel)]="searchTerm" class="w-full p-2 rounded border border-gray-300" placeholder="Recherche..."
          type="text">
 </div>
@@ -6,20 +6,25 @@
 <div (click)="selectRoom(room)" *ngFor="let room of filteredRooms"
      [ngClass]="{'bg-gray-200 cursor-not-allowed': selectedRoom?.id === room.id, 'unread-room': room.unreadCount && room.unreadCount > 0 }"
      class="max-h-screen p-4 cursor-pointer hover:bg-gray-100 flex flex-col md:flex-row justify-between space-y-4 md:space-y-0">
-  <div class="flex items-start space-x-4 w-full">
+  <div class="flex items-start space-x-4 w-full ">
 
     <!-- Room Image/Loader -->
     <div class="relative h-10 w-10 mb-2 md:mb-0">
       <div *ngIf="isLoading[room.id]" class="absolute inset-0 loader"></div>
 
       <div *ngIf="room.trade">
-        <img (load)="handleImageLoad(room)"
-             [hidden]="isLoading[room.id]"
-             [src]="room.trade.post.images[0].contentUrl"
-             alt="Trade Image" class="h-10 w-10 rounded-full object-contain">
-        <mat-icon *ngIf="room.trade.statut === 'closed'"
-                  class="text-red-600 h-10 w-10 absolute top-0 right-0 mt-1 mr-1">cancel
-        </mat-icon>
+        <ng-container *ngIf="room.trade.post.images[0]?.contentUrl; else placeholder">
+          <img (load)="handleImageLoad(room)"
+               [hidden]="isLoading[room.id]"
+               [src]="room.trade.post.images[0]?.contentUrl" alt="Trade Image"
+               class="w-full h-10 rounded-full object-contain">
+        </ng-container>
+        <ng-template #placeholder>
+          <img (load)="handleImageLoad(room)"
+               [hidden]="isLoading[room.id]"
+               alt="Trade Image" class="h-full w-full rounded-full object-contain"
+               src="../../../../../assets/missing.png">
+        </ng-template>
       </div>
       <img (error)="handleImageError(room)" (load)="handleImageLoad(room)" *ngIf="!room.trade"
            [hidden]="isLoading[room.id]"
@@ -49,4 +54,9 @@
   <div *ngIf="room.trade && room.trade.statut === 'closed'" class="flex-none mt-2 md:mt-0">
     <mat-icon class="text-gray-400">swap_horiz</mat-icon>
   </div>
+  <!--  <div *ngIf="room.trade.statut === 'closed'" class="relative">-->
+  <!--    <div class="absolute top-0 right-0 mt-1 mr-1">-->
+  <!--      <mat-icon class="text-red-800 h-8 w-8 rounded-full bg-white">cancel</mat-icon>-->
+  <!--    </div>-->
+  <!--  </div>-->
 </div>
