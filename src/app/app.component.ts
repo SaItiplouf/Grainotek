@@ -20,7 +20,8 @@ export class AppComponent implements OnInit {
     initFlowbite();
 
     if (!this.sessionService.isTokenValid()) {
-      this.sessionService.forgetToken()
+      // this.sessionService.forgetToken()
+      return
     } else {
       let userJson = localStorage.getItem('localUser')
       if (userJson) {
