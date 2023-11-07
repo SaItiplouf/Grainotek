@@ -49,11 +49,12 @@
       <div *ngIf="selectedRoom?.trade?.statut !== 'closed'; else tradeClosedContent" class="flex items-center">
         <input (keyup.enter)="!isSending ? sendMessage() : null"
                [(ngModel)]="newMessageContent"
-               class="flex-grow p-3 rounded-l border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+               class="flex-grow rounded-l border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                placeholder="Écrivez un message..."
                type="text">
         <button (click)="sendMessage()" [disabled]="isSending"
-                class="bg-blue-500 text-white p-3 rounded-full hover:bg-blue-600 transition-colors">
+                class="bg-blue-500 text-white p-4 rounded-full hover:bg-blue-600 transition-colors"
+                color="primary" mat-raised-button>
           Envoyer
         </button>
       </div>
