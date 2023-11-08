@@ -1,25 +1,25 @@
-import {Component, OnDestroy} from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
+import { Component, OnDestroy, AfterViewInit } from '@angular/core';
+import { ActivatedRoute, Router } from "@angular/router";
 import * as CryptoJS from 'crypto-js';
-import {AppService} from "../../../../services/app.service";
-import {IPost} from "../../../../models/post.model";
-import {forkJoin, Subscription} from "rxjs";
-import {PostService} from "../../../../services/post.service";
-import {IUser} from "../../../../models/user.model";
-import {Store} from "@ngrx/store";
-import {State} from "../../../../Reducers/app.reducer";
-import {selectUser} from "../../../../selector/user.selectors";
-import {RoomService} from "../../../../services/ChatRelated/room.service";
-import {SessionService} from "../../../../services/session.service";
-import {ChatParentComponent} from "../../ChatParent/chat-parent.component";
-import {SharedService} from "../../../../../ComponentService/sharedata";
+import { AppService } from "../../../../services/app.service";
+import { IPost } from "../../../../models/post.model";
+import { forkJoin, Subscription } from "rxjs";
+import { PostService } from "../../../../services/post.service";
+import { IUser } from "../../../../models/user.model";
+import { Store } from "@ngrx/store";
+import { State } from "../../../../Reducers/app.reducer";
+import { selectUser } from "../../../../selector/user.selectors";
+import { RoomService } from "../../../../services/ChatRelated/room.service";
+import { SessionService } from "../../../../services/session.service";
+import { ChatParentComponent } from "../../ChatParent/chat-parent.component";
+import { SharedService } from "../../../../../ComponentService/sharedata";
 
 @Component({
   selector: 'app-profile-parent',
   templateUrl: './profile-parent.component.html',
   styleUrls: ['./profile-parent.component.scss']
 })
-export class ProfileParentComponent implements OnDestroy{
+export class ProfileParentComponent implements OnDestroy, AfterViewInit {
   encryptedUserId?: string;
   userInfo?: any;
   userPosts: IPost[] = [];
@@ -34,7 +34,9 @@ export class ProfileParentComponent implements OnDestroy{
               private sharedService: SharedService,
               private store: Store<{
                 state: State
-              }>) {
+              }>) { }
+
+  ngAfterViewInit() {
     this.route.params.subscribe(params => {
       const encodedEncryptedId = this.route.snapshot.paramMap.get('userId');
 
@@ -47,7 +49,7 @@ export class ProfileParentComponent implements OnDestroy{
           userInfo: this.appService.getInformationAboutAUser(decryptedId.toString()),
           userPosts: this.appService.getAllPostAboutAUser(decryptedId.toString())
         }).subscribe(
-          ({userInfo, userPosts}) => {
+          ({ userInfo, userPosts }) => {
             this.userInfo = userInfo;
             this.userPosts = userPosts;
           },
@@ -64,9 +66,11 @@ export class ProfileParentComponent implements OnDestroy{
   isUserLoggedIn(): boolean {
     return this.sessionService.isUserLoggedIn();
   }
+
   openPostDialog(post: IPost): void {
     this.postService.DisplayPostModal(post)
   }
+
   openChat(targetUser: IUser) {
     this.userSubscription = this.store.select((state) => state.state.user).subscribe((selectedUser) => {
       if (selectedUser !== null) {
@@ -74,7 +78,7 @@ export class ProfileParentComponent implements OnDestroy{
         this.roomService.chatWithUser(selectedUser, targetUser).subscribe((response) => {
           console.log("Réponse reçue :", response);
 
-          this.sharedService.shareData({ user: selectedUser, targetUser });
+          this.sharedService.shareData({ user: selectedUser, targetUser: targetUser });
 
           this.router.navigate(['pm']);
         });
@@ -92,5 +96,3 @@ export class ProfileParentComponent implements OnDestroy{
     }
   }
 }
-
-

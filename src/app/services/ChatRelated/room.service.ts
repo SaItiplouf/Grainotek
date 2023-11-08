@@ -36,7 +36,6 @@ export class RoomService {
       console.error('Data is undefined!');
       return [];
     }
-    console.log('Raw data:', data);  // Logs raw data received
 
     const mappedRooms = data.map(roomData => {
       this.isLoading[roomData.id] = true;

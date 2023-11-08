@@ -5,12 +5,11 @@ import {AppService} from "../../../services/app.service";
 import {IRoom, Room} from "../../../models/room.model";
 import {roomsLoaded} from "../../../actions/chat.actions";
 import {SessionService} from "../../../services/session.service";
-import {IUser, User} from "../../../models/user.model";
+import {User} from "../../../models/user.model";
 import {MessageService} from "../../../services/ChatRelated/message.service";
 import {RoomService} from "../../../services/ChatRelated/room.service";
 import {TradeService} from "../../../services/ChatRelated/trade.service";
 import {ActivatedRoute} from "@angular/router";
-import {SharedService} from "../../../../ComponentService/sharedata";
 
 @Component({
   selector: 'app-chat-parent',
@@ -20,7 +19,7 @@ import {SharedService} from "../../../../ComponentService/sharedata";
 export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked {
   @Input() selectedRoom: IRoom | null = null;
   @Input() currentUser!: User | null;
-  @Input() rooms: IRoom[] = [];
+  rooms: IRoom[] = [];
   selector: string = ".main-panel";
   currentPage: number = 1;
   newMessageContent: string = '';
@@ -38,27 +37,19 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
     private sessionService: SessionService,
     private messageService: MessageService,
     private route: ActivatedRoute,
-    private sharedService: SharedService,
     private roomService: RoomService) {
   }
 
   ngOnInit(): void {
     this.currentUser = this.sessionService.getSetLocalUserToClass();
     this.loadRoomsForCurrentUser();
-    this.hasRooms = this.rooms && this.rooms.length > 0;
-    console.log(this.rooms, this.selectedRoom)
-    this.subscribeToRoomChanges()
+    this.store.select(state => state.state.room).subscribe(rooms => {
+      this.rooms = rooms || [];
+      this.hasRooms = this.rooms && this.rooms.length > 0;
+    });
     this.sessionService.checkUserAuthentication();
     this.sessionService.userLoggedOut.subscribe(() => {
       this.sessionService.checkUserAuthentication();
-    });
-    this.sharedService.dataToShare$.subscribe((data: { user: IUser, targetUser: IUser }) => {
-      if (data && data.user && data.targetUser) {
-        console.log(data.user, data.targetUser)
-        this.updateSelectedRoomProfileRedirection(data.user, data.targetUser);
-      } else {
-        console.log("Aucune donnée disponible.");
-      }
     });
   }
 
@@ -165,14 +156,10 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
     this.isSidebarHidden = !this.isSidebarHidden;
   }
 
-  private subscribeToRoomChanges(): void {
-    this.store.select(state => state.state.room).subscribe(rooms => this.rooms = rooms || []);
-  }
 
   private loadRoomsForCurrentUser(): void {
-    const user = this.sessionService.getSetLocalUserToClass();
-    if (user) {
-      this.roomService.getAllRoomsOfAUser(user).subscribe(rooms => {
+    if (this.currentUser) {
+      this.roomService.getAllRoomsOfAUser(this.currentUser).subscribe(rooms => {
         rooms.forEach(room => {
           room.unreadCount = room.messages.reduce((count, message) => {
             const isUnread = message.readed;
@@ -219,23 +206,7 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
       });
     }
   }
-  updateSelectedRoomProfileRedirection(user: IUser, targetUser: IUser) {
-    console.log("AHDZJHADHAZ NINHO GHRRR", user, targetUser)
-    const room = this.rooms.find((room) => {
-      const hasUser = room.users.some(u => u.id === user.id);
-      const hasTargetUser = room.users.some(u => u.id === targetUser.id);
-      const hasNoITrade = !room.trade;
 
-      if (hasUser && hasTargetUser && hasNoITrade) {
-        console.log('La salle a été trouvée pour l\'utilisateur, l\'utilisateur cible et n\'a pas d\'objet ITRADE :', room);
-      }
-      return hasUser && hasTargetUser && hasNoITrade;
-    });
-    if (room) {
-     this.onRoomSelected(room)
-      console.log("SELECTED ROOM = ", this.selectedRoom)
-    }
-  }
   private initializeMercureSubscription(): void {
     const mercureHubUrl = 'http://mercure-hub-polo.freeboxos.fr:56666/.well-known/mercure?topic=' + `https://polocovoitapi.projets.garage404.com/api/users/${this.currentUser?.id}/rooms`;
 

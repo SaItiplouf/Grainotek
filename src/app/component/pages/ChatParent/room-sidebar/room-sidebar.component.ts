@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {IRoom} from "../../../../models/room.model";
 import {Message} from "../../../../models/message.model";
 import {IUser, User} from "../../../../models/user.model";
@@ -10,17 +10,20 @@ import {MessageService} from "../../../../services/ChatRelated/message.service";
 import {MatDialog} from "@angular/material/dialog";
 import {DeletetradedialogComponent} from "../deletetradedialog/deletetradedialog.component";
 import {ITrade} from "../../../../models/trade.model";
+import {SharedService} from "../../../../../ComponentService/sharedata";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-room-sidebar',
   templateUrl: './room-sidebar.component.html',
   styleUrls: ['./room-sidebar.component.scss']
 })
-export class RoomSidebarComponent {
+export class RoomSidebarComponent implements OnInit, OnDestroy{
   @Input() selectedRoom: IRoom | null = null;
   @Input() currentUser!: User | null;
   @Input() rooms: IRoom[] = [];
-
+  private dataToShareSubscription: Subscription | null = null;
+  private roomSubscription: Subscription | null = null;
   searchTerm: string = '';
 
   @Output() roomSelected: EventEmitter<IRoom> = new EventEmitter<IRoom>();
@@ -30,9 +33,50 @@ export class RoomSidebarComponent {
     private tradeService: TradeService,
     private roomService: RoomService,
     private dialog: MatDialog,
+    private sharedService: SharedService,
     private messageService: MessageService) {
   }
 
+  ngOnInit() {
+    this.dataToShareSubscription = this.sharedService.dataToShare$.subscribe((data: { user: IUser, targetUser: IUser }) => {
+      if (data && data.user && data.targetUser) {
+        this.updateSelectedRoomProfileRedirection(data.user, data.targetUser);
+      } else {
+        console.log("Aucune donnée disponible.");
+      }
+    });
+
+    this.roomSubscription = this.store.select((state) => state.state.room).subscribe((rooms: IRoom[]) => {
+      this.rooms = rooms;
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.dataToShareSubscription) {
+      this.dataToShareSubscription.unsubscribe();
+    }
+    if (this.roomSubscription) {
+      this.roomSubscription.unsubscribe();
+    }
+  }
+
+  private updateSelectedRoomProfileRedirection(user: IUser, targetUser: IUser) {
+    console.log("AHDZJHADHAZ NINHO GHRRR", this.rooms, user, targetUser);
+    const room = this.rooms.find((room) => {
+      const hasUser = room.users.some(u => u.id === user.id);
+      const hasTargetUser = room.users.some(u => u.id === targetUser.id);
+      const hasNoITrade = !room.trade;
+
+      if (hasUser && hasTargetUser && hasNoITrade) {
+        console.log('La salle a été trouvée pour l\'utilisateur, l\'utilisateur cible et n\'a pas d\'objet ITRADE :', room);
+      }
+      return hasUser && hasTargetUser && hasNoITrade;
+    });
+    if (room) {
+      this.selectRoom(room);
+      console.log("SELECTED ROOM = ", this.selectedRoom);
+    }
+  }
   get filteredRooms(): IRoom[] {
     if (!this.searchTerm) {
       return this.rooms;
