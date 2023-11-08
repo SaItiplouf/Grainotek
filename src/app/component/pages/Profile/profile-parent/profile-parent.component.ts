@@ -1,4 +1,4 @@
-import { Component, OnDestroy, AfterViewInit } from '@angular/core';
+import {Component, OnDestroy, AfterViewInit, OnInit} from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import * as CryptoJS from 'crypto-js';
 import { AppService } from "../../../../services/app.service";
@@ -19,7 +19,7 @@ import { SharedService } from "../../../../../ComponentService/sharedata";
   templateUrl: './profile-parent.component.html',
   styleUrls: ['./profile-parent.component.scss']
 })
-export class ProfileParentComponent implements OnDestroy, AfterViewInit {
+export class ProfileParentComponent implements OnInit, OnDestroy {
   encryptedUserId?: string;
   userInfo?: any;
   userPosts: IPost[] = [];
@@ -36,7 +36,7 @@ export class ProfileParentComponent implements OnDestroy, AfterViewInit {
                 state: State
               }>) { }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.route.params.subscribe(params => {
       const encodedEncryptedId = this.route.snapshot.paramMap.get('userId');
 
@@ -68,7 +68,7 @@ export class ProfileParentComponent implements OnDestroy, AfterViewInit {
   }
 
   openPostDialog(post: IPost): void {
-    this.postService.DisplayPostModal(post)
+    this.postService.DisplayPostModal(post);
   }
 
   openChat(targetUser: IUser) {

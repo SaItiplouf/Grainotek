@@ -1,5 +1,5 @@
 <!--<div *ngIf="hasRooms; else noRoomsContent" class="h-screen bg-gray-100 p-4 flex flex-col md:flex-row">-->
-<div class="h-screen bg-gray-100 p-4 pb-10 flex flex-col md:flex-row">
+<div class="relative bg-gray-100 p-4 mb-20 flex flex-col md:flex-row">
   <button (click)="toggleSidebar()"
           class="md:hidden mb-4 flex justify-between items-center bg-gray-200 p-4 pb-2 w-full rounded-lg shadow-md hover:bg-gray-300 focus:outline-none focus:ring">
     <span>Liste des conversations</span>
@@ -14,10 +14,9 @@
                       [selectedRoom]="selectedRoom"
     >
     </app-room-sidebar>
-
   </div>
   <!-- Zone de chat -->
-  <div class="flex-grow w-full md:w-3/4 bg-white rounded-lg flex flex-col shadow-lg pt-4">
+  <div class="md:flex-grow w-full md:w-3/4 bg-white rounded-lg flex flex-col shadow-lg pt-4">
     <!-- Messages -->
     <div #messageList class="flex-1 p-4 overflow-y-scroll">
       <div *ngFor="let message of selectedRoom?.messages">

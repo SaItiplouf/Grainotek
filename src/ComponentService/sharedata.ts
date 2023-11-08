@@ -5,12 +5,12 @@ import { BehaviorSubject } from 'rxjs';
 export class SharedService {
   private dataToShare = new BehaviorSubject<any>(null);
   dataToShare$ = this.dataToShare.asObservable();
+
   constructor() {
     this.dataToShare.next(null);
   }
+
   shareData(data: any) {
     this.dataToShare.next(data);
   }
-
 }
-

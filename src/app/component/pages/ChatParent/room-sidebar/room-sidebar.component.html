@@ -1,11 +1,11 @@
-<div class="max-h-screen p-4 border-b border-gray-200">
+<div class="max-h-screen p-4 border-b border-gray-200 relative overflow-hidden">
   <input [(ngModel)]="searchTerm" class="w-full p-2 rounded border border-gray-300" placeholder="Recherche..."
          type="text">
 </div>
 
 <div (click)="selectRoom(room)" *ngFor="let room of filteredRooms"
      [ngClass]="{'bg-gray-200 cursor-not-allowed': selectedRoom?.id === room.id, 'unread-room': room.unreadCount && room.unreadCount > 0 }"
-     class="max-h-screen p-4 cursor-pointer hover:bg-gray-100 flex flex-col md:flex-row justify-between space-y-4 md:space-y-0">
+     class="max-h-screen p-4 cursor-pointer hover:bg-gray-100 flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 relative">
   <div class="flex items-start space-x-4 w-full ">
 
     <!-- Room Image/Loader -->
