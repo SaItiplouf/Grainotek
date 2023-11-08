@@ -9,6 +9,8 @@ import {setUser} from "../actions/post.actions";
 import {State} from "../Reducers/app.reducer";
 import {ToastrService} from "ngx-toastr";
 import {Router} from "@angular/router";
+import jwtDecode from "jwt-decode";
+import {EventSourcePolyfill} from "ng-event-source";
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +22,7 @@ export class SessionService {
   BASE_URL: string = environnement.BASE_URL;
   userLoggedOut = new Subject<void>();
   userLoggedIn = new Subject<void>();
-
+  private eventSource: EventSource | null = null;
   constructor(private HttpClient: HttpClient, private toastr: ToastrService, private router: Router, private http: HttpClient, private store: Store<{
     state: State
   }>) {
@@ -113,7 +115,8 @@ export class SessionService {
             localStorage.setItem('jwt', JSON.stringify(response));
             console.log('JWT STORED');
             this.userLoggedIn.next();
-            this.setUserFromToken()
+            this.setUserFromToken();
+            this.subscribeToUserTopic()
             return response;
           } else {
             console.log('JWT FAILED');
@@ -121,6 +124,30 @@ export class SessionService {
           }
         })
       );
+  }
+  subscribeToUserTopic(): void {
+    const jwtFromLocalStorage = localStorage.getItem("jwt");
+    if (!jwtFromLocalStorage) return;
+
+    const decodedJwt: IUser = jwtDecode(jwtFromLocalStorage);
+    const topicUrl = `user/${decodedJwt.id}`;
+    const authorizationHeader = `Bearer ${jwtFromLocalStorage}`;
+    const mercureHubUrl = environnement.MERCURE_URL + topicUrl;
+
+    const headers = new Headers({
+      'Authorization': authorizationHeader
+    });
+
+    const eventSource = new EventSourcePolyfill(mercureHubUrl, { withCredentials: true, headers });
+
+    eventSource.onopen = (event: any) => {
+      console.log('Connection to Mercure opened successfully! USER SIDE', event);
+    };
+
+    eventSource.onmessage = (event: any) => {
+      const data = JSON.parse(event.data);
+      console.log('Received message from Mercure:', data);
+    };
   }
 
   setUserFromToken() {

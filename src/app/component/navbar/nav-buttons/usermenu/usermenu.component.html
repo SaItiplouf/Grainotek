@@ -22,11 +22,6 @@
     <span *ngIf="user?.email"
           class="user-email block text-sm text-gray-500 text-center">{{ user?.email }}</span>
 
-    <button (click)="navigateToIndex()"
-            class="user-menu-item flex items-center justify-center text-gray-700 hover:bg-gray-100 p-2 rounded">
-      <mat-icon class="user-menu-icon text-gray-500 text-lg">home</mat-icon>
-      <span class="user-menu-label ml-2">Accueil</span>
-    </button>
     <button (click)="navigateToDash()"
             class="user-menu-item flex items-center justify-center text-gray-700 hover:bg-gray-100 p-2 rounded">
       <mat-icon class="user-menu-icon text-gray-500 text-lg">settings</mat-icon>

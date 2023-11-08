@@ -27,6 +27,9 @@ export class RoomService {
     );
   }
 
+  chatWithUser(user: IUser, targetUser: IUser) {
+    return this.http.get<any>(environnement.BASE_URL + `api/check/user/${user.id}/targetuserid/${targetUser.id}`);
+  }
   private mapToIRoom(data: any[]): Room[] {
     console.log('Attempting to map to IRoom with data:', data);
     if (!data) {

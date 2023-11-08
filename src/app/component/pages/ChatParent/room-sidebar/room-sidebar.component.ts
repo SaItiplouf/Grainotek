@@ -92,7 +92,6 @@ export class RoomSidebarComponent {
   }
 
   handleImageLoad(room: IRoom): void {
-    console.log(`Image loaded for room ${room.id}`);
     this.isLoading[room.id] = false;
   }
 

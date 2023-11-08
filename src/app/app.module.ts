@@ -56,6 +56,7 @@ import {RatingComponent} from './component/navbar/nav-buttons/trade/rating/ratin
 import {ShowalltradeComponent} from './component/navbar/nav-buttons/trade/showalltrade/showalltrade.component';
 import {BottomNavComponent} from './component/navbar/bottom-nav/bottom-nav.component';
 import {FavorisComponent} from './component/pages/Favoris/favoris.component';
+import {SharedService} from "../ComponentService/sharedata";
 
 
 @NgModule({
@@ -110,10 +111,11 @@ import {FavorisComponent} from './component/pages/Favoris/favoris.component';
     MatTooltipModule,
     CarouselModule,
     MatProgressSpinnerModule,
-    ImageCropperModule
+    ImageCropperModule,
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptorInterceptor, multi: true},
+    SharedService
   ],
   bootstrap: [AppComponent],
 })

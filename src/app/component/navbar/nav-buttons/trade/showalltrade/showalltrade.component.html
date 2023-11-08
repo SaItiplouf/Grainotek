@@ -7,7 +7,7 @@
   </div>
 
   <div *ngIf="trades.length > 0">
-    <div *ngFor="let trade of trades" class="bg-white shadow-md rounded-lg p-4">
+    <div *ngFor="let trade of trades" class="bg-white shadow-md rounded-lg p-4 mt-1">
       <div class="flex flex-col md:flex-row items-center justify-between">
         <div class="flex items-center space-x-4 mb-2 md:mb-0">
           <img [src]="trade.applicant.pictureUrl" alt="Image de l'utilisateur" class="w-12 h-12 rounded-full shadow-lg">
