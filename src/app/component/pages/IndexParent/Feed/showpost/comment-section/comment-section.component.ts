@@ -75,7 +75,9 @@ export class CommentSectionComponent implements OnInit {
           this.comments = filteredComments;
         });
 
-      this.getUserInfo();
+      this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
+        this.connectedUser = user;
+      });
     } catch (error) {
       console.error('Erreur:', error);
       this.loading = false;
@@ -145,12 +147,6 @@ export class CommentSectionComponent implements OnInit {
     );
   }
 
-  getUserInfo() {
-    const connectedUser = this.sessionService.getUserInfo();
-    if (connectedUser) {
-      this.connectedUser = connectedUser;
-    }
-  }
 
   addComment() {
     const userFromService = this.sessionService.getUserInfo();

@@ -16,7 +16,6 @@ import {CreatePostComponent} from "../pages/IndexParent/Feed/createpost/createpo
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit {
-  jwtUserInfo: IUser | null = null;
   userInfo: IUser | null = null;
   menuOpen!: boolean;
 

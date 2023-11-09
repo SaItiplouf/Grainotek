@@ -5,7 +5,7 @@ import {AppService} from "../../../services/app.service";
 import {IRoom, Room} from "../../../models/room.model";
 import {roomsLoaded} from "../../../actions/chat.actions";
 import {SessionService} from "../../../services/session.service";
-import {User} from "../../../models/user.model";
+import {IUser, User} from "../../../models/user.model";
 import {MessageService} from "../../../services/ChatRelated/message.service";
 import {RoomService} from "../../../services/ChatRelated/room.service";
 import {TradeService} from "../../../services/ChatRelated/trade.service";
@@ -41,16 +41,15 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
   }
 
   ngOnInit(): void {
-    this.currentUser = this.sessionService.getSetLocalUserToClass();
+    this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
+      this.currentUser = user;
+    });
     this.loadRoomsForCurrentUser();
     this.store.select(state => state.state.room).subscribe(rooms => {
       this.rooms = rooms || [];
       this.hasRooms = this.rooms && this.rooms.length > 0;
     });
     this.sessionService.checkUserAuthentication();
-    this.sessionService.userLoggedOut.subscribe(() => {
-      this.sessionService.checkUserAuthentication();
-    });
   }
 
   // scroll to bottom au init

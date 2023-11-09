@@ -16,7 +16,7 @@ import {IPost} from "../../../models/post.model";
 })
 export class FavorisComponent implements OnInit {
 
-  user!: IUser
+  userInfo!: IUser
   favorites!: IPostCommentLike[];
 
   constructor(private store: Store<{ state: State }>,
@@ -27,25 +27,27 @@ export class FavorisComponent implements OnInit {
 
   ngOnInit() {
     this.sessionService.checkUserAuthentication();
-    const userInfo = this.sessionService.getUserInfo();
+    this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
+      this.userInfo = user;
+      if (this.userInfo !== null) {
 
-    if (userInfo !== null) {
-      this.user = userInfo;
-
-      this.commentService.getFavorites(this.user).subscribe(
-        (data) => {
-          this.store.dispatch(loadFavorites({favorites: data}));
-        },
-        (error) => {
-          console.error('Une erreur s\'est produite :', error);
-        }
-      );
-    } else {
-      console.error('Aucune réponse de getUserInfo');
-    }
-    this.store.select((state: any) => state.state.favorites).subscribe((favorites: IPostCommentLike[]) => {
-      this.favorites = favorites;
+        this.commentService.getFavorites(this.userInfo).subscribe(
+          (data) => {
+            this.store.dispatch(loadFavorites({favorites: data}));
+          },
+          (error) => {
+            console.error('Une erreur s\'est produite :', error);
+          }
+        );
+      } else {
+        console.error('Aucune réponse de getUserInfo');
+      }
+      this.store.select((state: any) => state.state.favorites).subscribe((favorites: IPostCommentLike[]) => {
+        this.favorites = favorites;
+      });
     });
+
+
   }
 
   showPost(post: IPost) {

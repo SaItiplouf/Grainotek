@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {map, Observable, Subject} from "rxjs";
 import jwt_decode from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
 import {IUser, User} from "../models/user.model";
 import {environnement} from "../../environnement";
 import {Store} from "@ngrx/store";
@@ -9,7 +10,6 @@ import {setUser} from "../actions/post.actions";
 import {State} from "../Reducers/app.reducer";
 import {ToastrService} from "ngx-toastr";
 import {Router} from "@angular/router";
-import jwtDecode from "jwt-decode";
 import {EventSourcePolyfill} from "ng-event-source";
 
 @Injectable({
@@ -22,7 +22,8 @@ export class SessionService {
   BASE_URL: string = environnement.BASE_URL;
   userLoggedOut = new Subject<void>();
   userLoggedIn = new Subject<void>();
-  private eventSource: EventSource | null = null;
+  private eventSource: EventSourcePolyfill | null = null;
+
   constructor(private HttpClient: HttpClient, private toastr: ToastrService, private router: Router, private http: HttpClient, private store: Store<{
     state: State
   }>) {
@@ -36,42 +37,44 @@ export class SessionService {
     }
   }
 
-  async getUserInfoFromAPI(user: IUser) {
-    const token = localStorage.getItem('jwt');
+  // probleme d'opti
 
-    if (token) {
-      try {
-        const response = await fetch(`${environnement.BASE_URL}api/users/${user.id}`, {
-          method: 'GET',
-          // headers: {
-          //   'Authorization': `Bearer ${token}`
-          // }
-        });
-
-        if (response.ok) {
-          const userData = await response.json();
-
-          const userInfoFromAPI = {
-            id: userData.id,
-            email: userData.email,
-            roles: userData.roles,
-            username: userData.username,
-            pictureUrl: userData.pictureUrl,
-          };
-
-          return userInfoFromAPI;
-        } else {
-          console.error("Erreur lors de la requête API :", response.status);
-          return null;
-        }
-      } catch (error) {
-        console.error("Erreur lors de la requête API :", error);
-        return null;
-      }
-    } else {
-      return null;
-    }
-  }
+  // async getUserInfoFromAPI(user: IUser) {
+  //   const token = localStorage.getItem('jwt');
+  //
+  //   if (token) {
+  //     try {
+  //       const response = await fetch(`${environnement.BASE_URL}api/users/${user.id}`, {
+  //         method: 'GET',
+  //         // headers: {
+  //         //   'Authorization': `Bearer ${token}`
+  //         // }
+  //       });
+  //
+  //       if (response.ok) {
+  //         const userData = await response.json();
+  //
+  //         const userInfoFromAPI = {
+  //           id: userData.id,
+  //           email: userData.email,
+  //           roles: userData.roles,
+  //           username: userData.username,
+  //           pictureUrl: userData.pictureUrl,
+  //         };
+  //
+  //         return userInfoFromAPI;
+  //       } else {
+  //         console.error("Erreur lors de la requête API :", response.status);
+  //         return null;
+  //       }
+  //     } catch (error) {
+  //       console.error("Erreur lors de la requête API :", error);
+  //       return null;
+  //     }
+  //   } else {
+  //     return null;
+  //   }
+  // }
 
   isTokenValid(): boolean {
     const decodedToken: any = this.decodeToken();
@@ -125,6 +128,7 @@ export class SessionService {
         })
       );
   }
+
   subscribeToUserTopic(): void {
     const jwtFromLocalStorage = localStorage.getItem("jwt");
     if (!jwtFromLocalStorage) return;
@@ -138,13 +142,13 @@ export class SessionService {
       'Authorization': authorizationHeader
     });
 
-    const eventSource = new EventSourcePolyfill(mercureHubUrl, { withCredentials: true, headers });
+    this.eventSource = new EventSourcePolyfill(mercureHubUrl, {withCredentials: true, headers});
 
-    eventSource.onopen = (event: any) => {
+    this.eventSource.onopen = (event: any) => {
       console.log('Connection to Mercure opened successfully! USER SIDE', event);
     };
 
-    eventSource.onmessage = (event: any) => {
+    this.eventSource.onmessage = (event: any) => {
       const data = JSON.parse(event.data);
       console.log('Received message from Mercure:', data);
     };
@@ -158,17 +162,18 @@ export class SessionService {
     }
   }
 
-  getSetLocalUserToClass(): User | null {
-    const localUser = localStorage.getItem('localUser');
-
-    if (localUser) {
-      const parsedLocalUser = JSON.parse(localUser);
-      const user = new User(parsedLocalUser);
-      return user;
-    }
-
-    return null;
-  }
+  // erreur du passé
+  // getSetLocalUserToClass(): User | null {
+  //   const localUser = localStorage.getItem('localUser');
+  //
+  //   if (localUser) {
+  //     const parsedLocalUser = JSON.parse(localUser);
+  //     const user = new User(parsedLocalUser);
+  //     return user;
+  //   }
+  //
+  //   return null;
+  // }
 
   isUserLoggedIn(): boolean {
     return !!localStorage.getItem('jwt');
@@ -179,6 +184,9 @@ export class SessionService {
     localStorage.removeItem('localUser');
     this.router.navigate(['/']);
     this.userLoggedOut.next();
+    if (this.eventSource) {
+      this.eventSource.close();
+    }
   }
 
 

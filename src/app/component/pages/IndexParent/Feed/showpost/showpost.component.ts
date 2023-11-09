@@ -13,6 +13,8 @@ import {environnement} from "../../../../../../environnement";
 import {TradeService} from "../../../../../services/ChatRelated/trade.service";
 import {CommentSectionComponent} from "./comment-section/comment-section.component";
 import {PostService} from "../../../../../services/post.service";
+import {Store} from "@ngrx/store";
+import {State} from "../../../../../Reducers/app.reducer";
 
 @Component({
   selector: 'app-showpost',
@@ -77,12 +79,13 @@ export class ShowpostComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: { post: IPost, formattedTime: string },
     private dialogRef: MatDialogRef<ShowpostComponent>,
     private el: ElementRef,
+    private store: Store<{ state: State }>,
     private renderer: Renderer2,
     private sessionService: SessionService,
     private toastr: ToastrService,
     private tradeService: TradeService,
     private router: Router,
-    private postService: PostService
+    private postService: PostService,
   ) {
     this.Modalpost = data.post;
     this.formattedTime = data.formattedTime;
@@ -97,17 +100,12 @@ export class ShowpostComponent implements OnInit {
       };
       this.initMap();
     }
-    this.getConnectedUserInformationViaToken()
+    this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
+      this.ConnectedUser = user;
+    });
+
   }
 
-  getConnectedUserInformationViaToken() {
-    const ConnectedUser = this.sessionService.getUserInfo();
-    if (ConnectedUser) {
-      this.ConnectedUser = ConnectedUser;
-    } else {
-      return
-    }
-  }
 
   isUserLoggedIn(): boolean {
     return this.sessionService.isUserLoggedIn();
