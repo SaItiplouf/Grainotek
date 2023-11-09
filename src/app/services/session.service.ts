@@ -85,22 +85,6 @@ export class SessionService {
     return false;
   }
 
-// FROM TOKEN
-  getUserInfo(): IUser | null {
-    const decodedToken: any = this.decodeToken();
-    if (decodedToken) {
-      const user: IUser = new User({
-        id: decodedToken.id,
-        email: decodedToken.email,
-        roles: decodedToken.roles,
-        username: decodedToken.username,
-        pictureUrl: decodedToken.pictureUrl,
-      });
-
-      return user;
-    }
-    return null;
-  }
 
   register(formData: FormData): Observable<any> {
     const headers = new HttpHeaders({
@@ -160,6 +144,23 @@ export class SessionService {
     if (userInfo) {
       this.store.dispatch(setUser({user: userInfo}));
     }
+  }
+
+// FROM TOKEN
+  getUserInfo(): IUser | null {
+    const decodedToken: any = this.decodeToken();
+    if (decodedToken) {
+      const user: IUser = new User({
+        id: decodedToken.id,
+        email: decodedToken.email,
+        roles: decodedToken.roles,
+        username: decodedToken.username,
+        pictureUrl: decodedToken.pictureUrl,
+      });
+
+      return user;
+    }
+    return null;
   }
 
   // erreur du passé

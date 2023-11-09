@@ -52,16 +52,10 @@ export class FeedComponent implements OnInit {
         this.showPosts = true;
       }, 750);
     });
-    this.getConnectedUserInformationViaToken()
-  }
+    this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
+      this.ConnectedUser = user;
+    });
 
-  getConnectedUserInformationViaToken() {
-    const ConnectedUser = this.sessionService.getUserInfo();
-    if (ConnectedUser) {
-      this.ConnectedUser = ConnectedUser;
-    } else {
-      return
-    }
   }
 
   calculateAverageRating(reviews: IUserReview[]): number {

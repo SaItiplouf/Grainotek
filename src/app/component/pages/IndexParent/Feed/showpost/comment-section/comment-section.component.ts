@@ -149,13 +149,11 @@ export class CommentSectionComponent implements OnInit {
 
 
   addComment() {
-    const userFromService = this.sessionService.getUserInfo();
-
-    if (userFromService === null) {
+    if (this.connectedUser === null) {
       this.toastr.error("Vous n'êtes pas connecté");
-    } else if (userFromService && this.newCommentContent.trim()) {
+    } else if (this.connectedUser && this.newCommentContent.trim()) {
       const newComment: IPostPostComment = {
-        user: userFromService,
+        user: this.connectedUser,
         post: this.Modalpost,
         content: this.newCommentContent,
       };

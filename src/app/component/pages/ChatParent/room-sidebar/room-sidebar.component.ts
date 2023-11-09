@@ -18,15 +18,14 @@ import {Subscription} from "rxjs";
   templateUrl: './room-sidebar.component.html',
   styleUrls: ['./room-sidebar.component.scss']
 })
-export class RoomSidebarComponent implements OnInit, OnDestroy{
+export class RoomSidebarComponent implements OnInit, OnDestroy {
   @Input() selectedRoom: IRoom | null = null;
   @Input() currentUser!: User | null;
   @Input() rooms: IRoom[] = [];
+  searchTerm: string = '';
+  @Output() roomSelected: EventEmitter<IRoom> = new EventEmitter<IRoom>();
   private dataToShareSubscription: Subscription | null = null;
   private roomSubscription: Subscription | null = null;
-  searchTerm: string = '';
-
-  @Output() roomSelected: EventEmitter<IRoom> = new EventEmitter<IRoom>();
 
   constructor(
     private store: Store<{ state: State }>,
@@ -37,8 +36,39 @@ export class RoomSidebarComponent implements OnInit, OnDestroy{
     private messageService: MessageService) {
   }
 
+  get filteredRooms(): IRoom[] {
+    if (!this.searchTerm) {
+      // Si le champ de recherche est vide, trie les "rooms" par la date du dernier message
+      return this.rooms.sort((a, b) => {
+        const lastMessageA = a.messages[a.messages.length - 1];
+        const lastMessageB = b.messages[b.messages.length - 1];
+
+        if (!lastMessageA && !lastMessageB) {
+          return 0;
+        } else if (!lastMessageA) {
+          return 1;
+        } else if (!lastMessageB) {
+          return -1;
+        }
+
+        return new Date(lastMessageB.createdAt).getTime() - new Date(lastMessageA.createdAt).getTime();
+      });
+    }
+
+    return this.rooms.filter(room =>
+      room.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+    );
+  }
+
+  get isLoading() {
+    return this.roomService.isLoading;
+  }
+
   ngOnInit() {
-    this.dataToShareSubscription = this.sharedService.dataToShare$.subscribe((data: { user: IUser, targetUser: IUser }) => {
+    this.dataToShareSubscription = this.sharedService.dataToShare$.subscribe((data: {
+      user: IUser,
+      targetUser: IUser
+    }) => {
       if (data && data.user && data.targetUser) {
         this.updateSelectedRoomProfileRedirection(data.user, data.targetUser);
       } else {
@@ -58,37 +88,6 @@ export class RoomSidebarComponent implements OnInit, OnDestroy{
     if (this.roomSubscription) {
       this.roomSubscription.unsubscribe();
     }
-  }
-
-  private updateSelectedRoomProfileRedirection(user: IUser, targetUser: IUser) {
-    console.log("AHDZJHADHAZ NINHO GHRRR", this.rooms, user, targetUser);
-    const room = this.rooms.find((room) => {
-      const hasUser = room.users.some(u => u.id === user.id);
-      const hasTargetUser = room.users.some(u => u.id === targetUser.id);
-      const hasNoITrade = !room.trade;
-
-      if (hasUser && hasTargetUser && hasNoITrade) {
-        console.log('La salle a été trouvée pour l\'utilisateur, l\'utilisateur cible et n\'a pas d\'objet ITRADE :', room);
-      }
-      return hasUser && hasTargetUser && hasNoITrade;
-    });
-    if (room) {
-      this.selectRoom(room);
-      console.log("SELECTED ROOM = ", this.selectedRoom);
-    }
-  }
-  get filteredRooms(): IRoom[] {
-    if (!this.searchTerm) {
-      return this.rooms;
-    }
-
-    return this.rooms.filter(room =>
-      room.name.toLowerCase().includes(this.searchTerm.toLowerCase())
-    );
-  }
-
-  get isLoading() {
-    return this.roomService.isLoading;
   }
 
   selectRoom(room: IRoom): void {
@@ -142,6 +141,24 @@ export class RoomSidebarComponent implements OnInit, OnDestroy{
   handleImageStatus(room: IRoom, status: 'error' | 'load'): void {
     console.log(`Image ${status} for room ${room.id}`);
     this.isLoading[room.id] = false;
+  }
+
+  private updateSelectedRoomProfileRedirection(user: IUser, targetUser: IUser) {
+    console.log("AHDZJHADHAZ NINHO GHRRR", this.rooms, user, targetUser);
+    const room = this.rooms.find((room) => {
+      const hasUser = room.users.some(u => u.id === user.id);
+      const hasTargetUser = room.users.some(u => u.id === targetUser.id);
+      const hasNoITrade = !room.trade;
+
+      if (hasUser && hasTargetUser && hasNoITrade) {
+        console.log('La salle a été trouvée pour l\'utilisateur, l\'utilisateur cible et n\'a pas d\'objet ITRADE :', room);
+      }
+      return hasUser && hasTargetUser && hasNoITrade;
+    });
+    if (room) {
+      this.selectRoom(room);
+      console.log("SELECTED ROOM = ", this.selectedRoom);
+    }
   }
 
   private updateLocalRoomState(updatedRoom: IRoom): void {

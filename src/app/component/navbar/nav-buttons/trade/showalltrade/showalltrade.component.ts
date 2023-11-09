@@ -43,18 +43,12 @@ export class ShowalltradeComponent implements OnInit {
       this.trades = trades;
       console.log(this.trades)
     });
-    this.getConnectedUserInformationViaToken();
-    this.sessionService.checkUserAuthentication()
+    this.sessionService.checkUserAuthentication();
+    this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
+      this.user = user;
+    });
   }
 
-  getConnectedUserInformationViaToken() {
-    const ConnectedUser = this.sessionService.getUserInfo();
-    if (ConnectedUser) {
-      this.user = ConnectedUser;
-    } else {
-      return
-    }
-  }
 
   deleteTrade(trade: ITrade, user: IUser | null) {
     if (user === null) {
