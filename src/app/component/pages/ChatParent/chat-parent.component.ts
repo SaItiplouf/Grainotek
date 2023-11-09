@@ -10,6 +10,7 @@ import {MessageService} from "../../../services/ChatRelated/message.service";
 import {RoomService} from "../../../services/ChatRelated/room.service";
 import {TradeService} from "../../../services/ChatRelated/trade.service";
 import {ActivatedRoute} from "@angular/router";
+import {environnement} from "../../../../environnement";
 
 @Component({
   selector: 'app-chat-parent',
@@ -207,7 +208,7 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
   }
 
   private initializeMercureSubscription(): void {
-    const mercureHubUrl = 'http://mercure-hub-polo.freeboxos.fr:56666/.well-known/mercure?topic=' + `https://polocovoitapi.projets.garage404.com/api/users/${this.currentUser?.id}/rooms`;
+    const mercureHubUrl = environnement.MERCURE_URL + `https://polocovoitapi.projets.garage404.com/api/users/${this.currentUser?.id}/rooms`;
 
     this.eventSource = new EventSource(mercureHubUrl);
 
