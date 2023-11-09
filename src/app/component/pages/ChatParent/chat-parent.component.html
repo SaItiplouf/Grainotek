@@ -1,5 +1,5 @@
 <!--<div *ngIf="hasRooms; else noRoomsContent" class="h-screen bg-gray-100 p-4 flex flex-col md:flex-row">-->
-<div class="relative bg-gray-100 p-4 mb-20 flex flex-col md:flex-row">
+<div class="relative bg-gray-100 p-4 mb-20 flex flex-col md:flex-row min-h-screen">
   <button (click)="toggleSidebar()"
           class="md:hidden mb-4 flex justify-between items-center bg-gray-200 p-4 pb-2 w-full rounded-lg shadow-md hover:bg-gray-300 focus:outline-none focus:ring">
     <span>Liste des conversations</span>
@@ -44,15 +44,15 @@
 
 
     <!-- Zone de saisie -->
-    <div class="p-4 border-t border-gray-200">
-      <div *ngIf="selectedRoom?.trade?.statut !== 'closed'; else tradeClosedContent" class="flex items-center">
+    <div class="p-4 border-t border-gray-200 flex items-center">
+      <div *ngIf="selectedRoom?.trade?.statut !== 'closed'; else tradeClosedContent" class="flex items-center w-full">
         <input (keyup.enter)="!isSending ? sendMessage() : null"
                [(ngModel)]="newMessageContent"
-               class="flex-grow rounded-l border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+               class="flex-grow rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 p-2 mr-2"
                placeholder="Écrivez un message..."
                type="text">
         <button (click)="sendMessage()" [disabled]="isSending"
-                class="bg-blue-500 text-white p-4 rounded-full hover:bg-blue-600 transition-colors"
+                class="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors"
                 color="primary" mat-raised-button>
           Envoyer
         </button>

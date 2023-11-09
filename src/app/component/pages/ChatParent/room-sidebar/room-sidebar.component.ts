@@ -38,8 +38,7 @@ export class RoomSidebarComponent implements OnInit, OnDestroy {
 
   get filteredRooms(): IRoom[] {
     if (!this.searchTerm) {
-      // Si le champ de recherche est vide, trie les "rooms" par la date du dernier message
-      return this.rooms.sort((a, b) => {
+      return this.rooms.slice().sort((a, b) => {
         const lastMessageA = a.messages[a.messages.length - 1];
         const lastMessageB = b.messages[b.messages.length - 1];
 
@@ -78,6 +77,7 @@ export class RoomSidebarComponent implements OnInit, OnDestroy {
 
     this.roomSubscription = this.store.select((state) => state.state.room).subscribe((rooms: IRoom[]) => {
       this.rooms = rooms;
+      console.log("ppl par le state")
     });
   }
 
