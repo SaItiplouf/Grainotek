@@ -21,7 +21,7 @@ import {Subscription} from "rxjs";
 export class RoomSidebarComponent implements OnInit, OnDestroy {
   @Input() selectedRoom: IRoom | null = null;
   @Input() currentUser!: User | null;
-  @Input() rooms: IRoom[] = [];
+  rooms: IRoom[] = [];
   searchTerm: string = '';
   @Output() roomSelected: EventEmitter<IRoom> = new EventEmitter<IRoom>();
   private dataToShareSubscription: Subscription | null = null;

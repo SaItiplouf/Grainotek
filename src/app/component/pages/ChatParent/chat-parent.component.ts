@@ -11,6 +11,7 @@ import {RoomService} from "../../../services/ChatRelated/room.service";
 import {TradeService} from "../../../services/ChatRelated/trade.service";
 import {ActivatedRoute} from "@angular/router";
 import {environnement} from "../../../../environnement";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-chat-parent',
@@ -23,12 +24,12 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
   rooms: IRoom[] = [];
   selector: string = ".main-panel";
   currentPage: number = 1;
-  newMessageContent: string = '';
-  isSending = false;
   isSidebarHidden = true;
   hasRooms: boolean = false;
   private eventSource: EventSource | null = null;
   @ViewChild('messageList') private messageListRef!: ElementRef;
+  private userSubscription?: Subscription;
+  private roomSubscription?: Subscription;
 
   constructor(
     private store: Store<{ state: State }>,
@@ -42,15 +43,17 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
   }
 
   ngOnInit(): void {
-    this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
+    this.sessionService.checkUserAuthentication();
+
+    this.userSubscription = this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
       this.currentUser = user;
     });
-    this.loadRoomsForCurrentUser();
-    this.store.select(state => state.state.room).subscribe(rooms => {
+    this.roomSubscription = this.store.select(state => state.state.room).subscribe(rooms => {
       this.rooms = rooms || [];
       this.hasRooms = this.rooms && this.rooms.length > 0;
     });
-    this.sessionService.checkUserAuthentication();
+    this.loadRoomsForCurrentUser();
+
   }
 
   // scroll to bottom au init
@@ -64,6 +67,13 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
     // Fermez la connexion Mercure
     if (this.eventSource) {
       this.eventSource.close();
+    }
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
+    }
+
+    if (this.roomSubscription) {
+      this.roomSubscription.unsubscribe();
     }
     this.sessionService.userLoggedOut.unsubscribe();
   }
@@ -79,29 +89,7 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
   //     this.currentPage++; // Incrémentez la page actuelle
   //   });
 
-  // Uniquement Requete API et désactivation du boutton pour le spam
-  sendMessage(): void {
-    if (this.newMessageContent.trim() && this.selectedRoom && this.currentUser) {
-      const {id: roomId} = this.selectedRoom;
-      const {id: userId} = this.currentUser;
 
-      // Désactiver le bouton avant d'envoyer la demande à l'API
-      this.isSending = true;
-
-      this.messageService.createMessage(this.newMessageContent, `/api/rooms/${roomId}`, `/api/users/${userId}`)
-        .subscribe(
-          () => {
-            // Réponse reçue avec succès
-            this.newMessageContent = '';
-            this.isSending = false;
-          },
-          error => {
-            console.error('Erreur lors de l\'envoi du message :', error);
-            this.isSending = false;
-          }
-        );
-    }
-  }
 
   updateRoomMessages(updatedRoom: Room): void {
     if (!updatedRoom || !updatedRoom.id) return;
@@ -148,8 +136,6 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
         unreadCount: roomToUpdate.unreadCount
       };
     }
-
-    console.log(this.rooms);
   }
 
   toggleSidebar() {

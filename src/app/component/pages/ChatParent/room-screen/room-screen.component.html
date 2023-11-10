@@ -1,0 +1,23 @@
+<div #messageList class="flex-1 p-4 overflow-auto">
+  <div *ngFor="let message of selectedRoom?.messages">
+    <div [ngClass]="message.user.id === currentUser!.id ? 'justify-end' : 'justify-start'"
+         class="flex items-end mb-4">
+      <!-- Si le message est du destinataire, affichez l'image à gauche -->
+      <div *ngIf="message.user.id !== currentUser!.id" class="flex-none">
+        <img [src]="message.user.pictureUrl || 'https://via.placeholder.com/40'" alt="User Image"
+             class="h-8 w-8 rounded-full shadow-sm">
+      </div>
+
+      <div [ngClass]="message.user.id === currentUser!.id ? 'bg-gray-400 text-white' : 'bg-blue-600 text-white'"
+           class="ml-4 p-3 rounded-lg max-w-full shadow-md hover:bg-opacity-90 transition-all duration-300">
+        {{ message.message }}
+      </div>
+
+      <!-- Si le message est de l'utilisateur actuel, affichez l'image à droite -->
+      <div *ngIf="message.user.id === currentUser!.id" class="flex-none">
+        <img [src]="message.user.pictureUrl || 'https://via.placeholder.com/40'" alt="User Image"
+             class="h-8 w-8 rounded-full shadow-sm">
+      </div>
+    </div>
+  </div>
+</div>

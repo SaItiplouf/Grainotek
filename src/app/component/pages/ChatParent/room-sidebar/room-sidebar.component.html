@@ -13,10 +13,10 @@
       <div *ngIf="isLoading[room.id]" class="absolute inset-0 loader"></div>
 
       <div *ngIf="room.trade">
-        <ng-container *ngIf="room.trade.post.images[0]?.contentUrl; else placeholder">
+        <ng-container *ngIf="room.trade.post.images[0].contentUrl; else placeholder">
           <img (load)="handleImageLoad(room)"
                [hidden]="isLoading[room.id]"
-               [src]="room.trade.post.images[0]?.contentUrl" alt="Trade Image"
+               [src]="room!.trade!.post!.images![0]!.contentUrl" alt="Trade Image"
                class="w-full h-10 rounded-full object-contain">
         </ng-container>
         <ng-template #placeholder>

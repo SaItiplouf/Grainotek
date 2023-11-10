@@ -57,6 +57,8 @@ import {ShowalltradeComponent} from './component/navbar/nav-buttons/trade/showal
 import {BottomNavComponent} from './component/navbar/bottom-nav/bottom-nav.component';
 import {FavorisComponent} from './component/pages/Favoris/favoris.component';
 import {SharedService} from "../ComponentService/sharedata";
+import { RoomInputComponent } from './component/pages/ChatParent/room-input/room-input.component';
+import { RoomScreenComponent } from './component/pages/ChatParent/room-screen/room-screen.component';
 
 
 @NgModule({
@@ -84,6 +86,8 @@ import {SharedService} from "../ComponentService/sharedata";
     ShowalltradeComponent,
     BottomNavComponent,
     FavorisComponent,
+    RoomInputComponent,
+    RoomScreenComponent,
   ],
   imports: [
     BrowserModule,
