@@ -11,4 +11,5 @@ export class RoomScreenComponent {
   @Input() selectedRoom: IRoom | null = null;
   @Input() currentUser!: User | null;
 
+  // on utilise selectedRoom ici attention à la mise à jour des variables car le store est mise à jour mais ceci est une variable
 }

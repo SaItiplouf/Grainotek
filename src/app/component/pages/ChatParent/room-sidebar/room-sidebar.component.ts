@@ -91,7 +91,10 @@ export class RoomSidebarComponent implements OnInit, OnDestroy {
   }
 
   selectRoom(room: IRoom): void {
+    console.log(this.selectedRoom, "before")
     this.selectedRoom = room;
+    console.log(this.selectedRoom, "after")
+
     this.roomSelected.emit(this.selectedRoom);
 
     if (room.messages.some(message => message.readed)) {

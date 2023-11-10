@@ -71,7 +71,7 @@ export class TradeComponent implements OnInit {
     //   data: {room, trade}
     // });
     // passer ce composant en juste une confirmation avant traitement
-    
+
     if (user === null) {
       return;
     }

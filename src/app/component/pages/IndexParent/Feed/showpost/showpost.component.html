@@ -31,18 +31,23 @@
     </div>
     <div class="flex mt-4 flex-col md:flex-row">
       <!-- Carrousel d'images -->
-      <div class="w-full md:w-1/2 mb-4 md:mb-0 md:mr-4">
+      <div class="w-full md:w-1/2 mb-4 md:mb-0 md:mr-4" *ngIf="Modalpost.images.length > 1">
         <owl-carousel-o [options]="customOptions">
           <ng-container *ngFor="let images of Modalpost.images">
             <ng-template carouselSlide>
               <img [alt]="images.id" [src]="images.contentUrl" class="w-full h-48 object-cover rounded">
             </ng-template>
           </ng-container>
-          <ng-template *ngIf="Modalpost.images.length === 0" carouselSlide>
-            <img alt="placeholder" class="w-full h-48 object-cover rounded"
-                 src="../../../../../../assets/placeholderPost.png">
-          </ng-template>
         </owl-carousel-o>
+      </div>
+
+      <div *ngIf="Modalpost.images.length <= 1" class="w-full md:w-1/2 mb-4 md:mb-0 md:mr-4">
+        <ng-container *ngIf="Modalpost.images.length === 1; else noImagesTemplate">
+          <img [alt]="Modalpost.images[0].id" [src]="Modalpost.images[0].contentUrl" class="w-full h-48 object-cover rounded">
+        </ng-container>
+        <ng-template #noImagesTemplate>
+          <img alt="placeholder" class="w-full h-48 object-cover rounded" src="../../../../../../assets/placeholderPost.png">
+        </ng-template>
       </div>
 
       <!-- Contenu du poste -->

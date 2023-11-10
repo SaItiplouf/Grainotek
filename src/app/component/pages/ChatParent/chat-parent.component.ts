@@ -3,7 +3,7 @@ import {State} from "../../../Reducers/app.reducer";
 import {Store} from "@ngrx/store";
 import {AppService} from "../../../services/app.service";
 import {IRoom, Room} from "../../../models/room.model";
-import {roomsLoaded} from "../../../actions/chat.actions";
+import {roomsLoaded, updateRoom} from "../../../actions/chat.actions";
 import {SessionService} from "../../../services/session.service";
 import {IUser, User} from "../../../models/user.model";
 import {MessageService} from "../../../services/ChatRelated/message.service";
@@ -90,32 +90,30 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
   //   });
 
 
-
+// cette fonction attend la réponse de mercure pour mettre à jour la room, le message est envoyé à l'api,
+// l'api va notifier mercure, lui vas notifier le client et cette fonction permet la mise à jour du state de celui ci pour la persistance
   updateRoomMessages(updatedRoom: Room): void {
     if (!updatedRoom || !updatedRoom.id) return;
 
     const roomIndex = this.rooms.findIndex(room => room.id === updatedRoom.id);
     if (roomIndex === -1) return;
 
-    const roomToUpdate = {...this.rooms[roomIndex]};
-
+    const roomToUpdate = { ...this.rooms[roomIndex] };
     // Fusion des messages existants avec les nouveaux
     const currentRoomMessages = roomToUpdate.messages || [];
     const newMessages = updatedRoom.messages.filter(
       updatedMsg => !currentRoomMessages.some(currMsg => currMsg.id === updatedMsg.id)
     );
-
     roomToUpdate.messages = [...currentRoomMessages, ...newMessages];
 
-    // Compter les messages non lus
 
-// Only adjust the unreadCount if it's not the selectedRoom
+    // Adjuster uniquement unreadCount si ce n'est pas la selectedRoom
     if (!(this.selectedRoom && this.selectedRoom.id === updatedRoom.id)) {
       roomToUpdate.unreadCount! += newMessages.reduce((count, message) => {
-        // Check if the message hasn't been read
+        // Vérifiez si le message n'a pas été lu
         const isUnread = message.readed;
 
-        // Check if the message isn't from the current user
+        // Vérifiez si le message n'est pas de l'utilisateur actuel
         const notFromCurrentUser = message.user.id !== this.currentUser?.id;
 
         if (isUnread && notFromCurrentUser) {
@@ -125,8 +123,8 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
       }, 0);
     }
 
-    // Update rooms without direct mutation
-    this.rooms = this.rooms.map((room, index) => index === roomIndex ? roomToUpdate : room);
+    // Dispatch l'action pour mettre à jour la room dans le store
+    this.store.dispatch(updateRoom({ room: roomToUpdate }));
 
     // Mise à jour de la salle sélectionnée si nécessaire
     if (this.selectedRoom && this.selectedRoom.id === updatedRoom.id) {
