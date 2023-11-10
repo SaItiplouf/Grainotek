@@ -12,6 +12,8 @@ import {DeletetradedialogComponent} from "../deletetradedialog/deletetradedialog
 import {ITrade} from "../../../../models/trade.model";
 import {SharedService} from "../../../../../ComponentService/sharedata";
 import {Subscription} from "rxjs";
+import {setUser} from "../../../../actions/post.actions";
+import {selectRoom} from "../../../../actions/chat.actions";
 
 @Component({
   selector: 'app-room-sidebar',
@@ -19,7 +21,7 @@ import {Subscription} from "rxjs";
   styleUrls: ['./room-sidebar.component.scss']
 })
 export class RoomSidebarComponent implements OnInit, OnDestroy {
-  @Input() selectedRoom: IRoom | null = null;
+  selectedRoom!: IRoom;
   @Input() currentUser!: User | null;
   rooms: IRoom[] = [];
   searchTerm: string = '';
@@ -75,6 +77,10 @@ export class RoomSidebarComponent implements OnInit, OnDestroy {
       }
     });
 
+    this.store.select((state: any) => state.state.selectedRoom).subscribe((room: IRoom) => {
+      this.selectedRoom = room
+    });
+
     this.roomSubscription = this.store.select((state) => state.state.room).subscribe((rooms: IRoom[]) => {
       this.rooms = rooms;
       console.log("ppl par le state")
@@ -91,11 +97,7 @@ export class RoomSidebarComponent implements OnInit, OnDestroy {
   }
 
   selectRoom(room: IRoom): void {
-    console.log(this.selectedRoom, "before")
-    this.selectedRoom = room;
-    console.log(this.selectedRoom, "after")
-
-    this.roomSelected.emit(this.selectedRoom);
+   this.store.dispatch(selectRoom({room}))
 
     if (room.messages.some(message => message.readed)) {
       this.messageService.markMessagesAsReadForUser(this.selectedRoom, this.currentUser!).subscribe(

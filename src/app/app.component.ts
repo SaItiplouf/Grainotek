@@ -27,6 +27,7 @@ export class AppComponent implements OnInit {
       if (userJson) {
         let user = User.fromJson(userJson)
         this.store.dispatch(setUser({user}))
+        this.sessionService.loadroomsforuser()
 // Vérification au chargement de la page du setUser, soit il est set au login, soit il est check au chargement pour le set
       }
     }

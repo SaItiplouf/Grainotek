@@ -17,10 +17,6 @@ export class AppService {
   constructor(private http: HttpClient, private store: Store<{ state: State }>) {
   }
 
-  setUserToStorage(User: User) {
-    // setitem to localstorage
-  }
-
   getInformationAboutAUser(decryptedId: string): Observable<void> {
     return this.http.get<void>(environnement.BASE_URL + `api/users/${decryptedId}`, {});
   }

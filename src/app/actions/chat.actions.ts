@@ -12,3 +12,12 @@ export const addLikeToComment = createAction(
   '[Comment] Add Like',
   props<{ commentId: number, like: IPostCommentLike }>()
 );
+
+export const addRoom = createAction(
+  '[Room] Add Room',
+  props<{ room: IRoom }>()
+);
+export const selectRoom = createAction(
+  '[Room] Select Room',
+  props<{ room: IRoom | null }>()
+);

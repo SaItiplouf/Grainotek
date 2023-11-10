@@ -39,7 +39,7 @@ export class RoomInputComponent {
           }
         );
     } else {
-      console.log('Erreur', this.selectedRoom, this.currentUser, this.newMessageContent, this.selectedRoom)
+      console.log('Erreur', this.newMessageContent, this.selectedRoom)
     }
   }
 }

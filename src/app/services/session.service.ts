@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, NgZone, OnDestroy, OnInit} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {map, Observable, Subject} from "rxjs";
 import jwt_decode from 'jwt-decode';
@@ -11,11 +11,15 @@ import {State} from "../Reducers/app.reducer";
 import {ToastrService} from "ngx-toastr";
 import {Router} from "@angular/router";
 import {EventSourcePolyfill} from "ng-event-source";
+import {roomsLoaded, selectRoom, updateRoom} from "../actions/chat.actions";
+import {RoomService} from "./ChatRelated/room.service";
+import {IRoom, Room} from "../models/room.model";
+import {IMessage} from "../models/message.model";
 
 @Injectable({
   providedIn: 'root'
 })
-export class SessionService {
+export class SessionService implements OnInit, OnDestroy{
 
   REGISTER_URL = 'register';
   LOGIN_URL = 'auth';
@@ -23,12 +27,33 @@ export class SessionService {
   userLoggedOut = new Subject<void>();
   userLoggedIn = new Subject<void>();
   private eventSource: EventSourcePolyfill | null = null;
-
-  constructor(private HttpClient: HttpClient, private toastr: ToastrService, private router: Router, private http: HttpClient, private store: Store<{
+  connectedUser!: IUser;
+  private eventSourceAfter: EventSource | null = null;
+  rooms!: IRoom[];
+  selectedRoom!: IRoom;
+  constructor(private HttpClient: HttpClient, private toastr: ToastrService,
+              private router: Router,
+              private http: HttpClient,
+              private ngZone: NgZone,
+              private roomService: RoomService,
+              private store: Store<{
     state: State
   }>) {
   }
 
+  ngOnInit() {
+
+    this.store.select((state: any) => state.state.selectedRoom).subscribe((room: IRoom) => {
+      this.selectedRoom = room
+    });
+
+  }
+  ngOnDestroy(): void {
+    // Fermez la connexion Mercure
+    if (this.eventSource) {
+      this.eventSource.close();
+    }
+  }
   checkUserAuthentication() {
     if (!this.isTokenValid() || localStorage.getItem('jwt') === null) {
       this.router.navigate(['/']);
@@ -112,6 +137,157 @@ export class SessionService {
         })
       );
   }
+  loadroomsforuser() {
+    this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
+      this.connectedUser = user
+      this.roomService.getAllRoomsOfAUser(this.connectedUser).subscribe(rooms => {
+        rooms.forEach(room => {
+          room.unreadCount = room.messages.reduce((count, message) => {
+            const isUnread = message.readed;
+            const notFromCurrentUser = message.user.id !== this.connectedUser.id;
+            if (isUnread && notFromCurrentUser) {
+              return count + 1;
+            }
+            return count;
+          }, 0);
+        });
+        this.store.dispatch(roomsLoaded({ rooms }));
+        this.store.select(state => state.state.room).subscribe(rooms => {
+          this.rooms = rooms || [];
+          this.setrecentroomforuser()
+        });
+      });
+    });
+    };
+
+  setrecentroomforuser() {
+    console.log("coucou")
+    if (this.rooms && this.rooms.length > 0) {
+
+      const recentRoom = this.rooms.reduce((mostRecent: IRoom | null, currentRoom: IRoom) => {
+        const lastMessageMostRecent = mostRecent ? mostRecent.messages[mostRecent.messages.length - 1] : null;
+        const lastMessageCurrent = currentRoom.messages[currentRoom.messages.length - 1];
+
+        if (!lastMessageMostRecent && !lastMessageCurrent) {
+          return null;
+        } else if (!lastMessageMostRecent) {
+          return currentRoom;
+        } else if (!lastMessageCurrent) {
+          return mostRecent;
+        }
+
+        const timeMostRecent = new Date(lastMessageMostRecent.createdAt).getTime();
+        const timeCurrent = new Date(lastMessageCurrent.createdAt).getTime();
+
+        return timeCurrent > timeMostRecent ? currentRoom : mostRecent;
+      }, null);
+
+      // Déclencher l'action selectRoom avec la salle trouvée
+
+      console.log(recentRoom);
+      this.store.dispatch(selectRoom({ room: recentRoom }));
+    } else {
+      console.log("selected vide")
+    }
+
+    this.initializeMercureSubscription();
+  }
+  private initializeMercureSubscription(): void {
+      const mercureHubUrl = environnement.MERCURE_URL + `https://polocovoitapi.projets.garage404.com/api/users/${this.connectedUser?.id}/rooms`;
+
+      this.eventSourceAfter = new EventSource(mercureHubUrl);
+
+      this.eventSourceAfter.onopen = (event) => {
+        console.log('Connection to Mercure opened successfully!', event);
+      };
+
+      this.eventSourceAfter.onmessage = (event) => {
+
+        this.ngZone.run(() => {
+          const data = JSON.parse(event.data);
+          console.log('Parsed data:', data);
+
+          if (data) {
+            // Define the room data adhering to the IRoom interface
+            const dataRoom: IRoom = {
+              unreadCount: 0,
+              id: data.id,
+              name: data.name,
+              trade: data.trade,
+              users: data.users.map((userData: any) => ({
+                id: userData.id,
+                email: userData.email,
+                roles: userData.roles,
+                username: userData.username,
+                pictureUrl: userData.pictureUrl,
+              })),
+              messages: data.messages.map((messageData: any) => ({
+                readed: messageData.readed,
+                id: messageData.id,
+                createdAt: messageData.createdAt,
+                message: messageData.content,
+                user: {
+                  id: messageData.user.id,
+                  email: messageData.user.email,
+                  roles: messageData.user.roles,
+                  username: messageData.user.username,
+                  pictureUrl: messageData.user.pictureUrl,
+                }
+              })),
+            };
+
+            console.log(dataRoom);
+
+            // Update the messages of the appropriate room
+            this.updateRoomMessages(dataRoom);
+          }
+        });
+      };
+    }
+  updateRoomMessages(updatedRoom: Room): void {
+    if (!updatedRoom || !updatedRoom.id) return;
+
+    const roomIndex = this.rooms.findIndex(room => room.id === updatedRoom.id);
+    if (roomIndex === -1) return;
+
+    const roomToUpdate = { ...this.rooms[roomIndex] };
+    // Fusion des messages existants avec les nouveaux
+    const currentRoomMessages = roomToUpdate.messages || [];
+    const newMessages = updatedRoom.messages.filter(
+      updatedMsg => !currentRoomMessages.some(currMsg => currMsg.id === updatedMsg.id)
+    );
+    roomToUpdate.messages = [...currentRoomMessages, ...newMessages];
+
+
+    // Adjuster uniquement unreadCount si ce n'est pas la selectedRoom
+    if (!(this.selectedRoom && this.selectedRoom.id === updatedRoom.id)) {
+      roomToUpdate.unreadCount! += newMessages.reduce((count, message) => {
+        // Vérifiez si le message n'a pas été lu
+        const isUnread = message.readed;
+
+        // Vérifiez si le message n'est pas de l'utilisateur actuel
+        const notFromCurrentUser = message.user.id !== this.connectedUser?.id;
+
+        if (isUnread && notFromCurrentUser) {
+          return count + 1;
+        }
+        return count;
+      }, 0);
+    }
+
+    // Dispatch l'action pour mettre à jour la room dans le store
+    this.store.dispatch(updateRoom({ room: roomToUpdate }));
+
+    // Mise à jour de la salle sélectionnée si nécessaire
+    if (this.selectedRoom && this.selectedRoom.id === updatedRoom.id) {
+      this.selectedRoom = {
+        ...this.selectedRoom,
+        messages: this.rooms[roomIndex].messages,
+        unreadCount: roomToUpdate.unreadCount
+      };
+    }
+  }
+
 
   subscribeToUserTopic(): void {
     const jwtFromLocalStorage = localStorage.getItem("jwt");

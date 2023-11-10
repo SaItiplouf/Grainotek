@@ -2,8 +2,8 @@ import {createReducer, on} from '@ngrx/store';
 import {IPost} from "../models/post.model";
 import {addComment, addPost, loadComments, loadFavorites, postsLoaded, setUser} from "../actions/post.actions";
 import {IUser} from "../models/user.model";
-import {IRoom} from "../models/room.model";
-import {addLikeToComment, roomsLoaded, updateRoom} from "../actions/chat.actions";
+import {IRoom, Room} from "../models/room.model";
+import {addLikeToComment, addRoom, roomsLoaded, selectRoom, updateRoom} from "../actions/chat.actions";
 import {IPostComment} from "../models/postcomment.model";
 import {ITrade} from "../models/trade.model";
 import {deleteTrade, tradesLoaded, updateTrade} from "../actions/trade.actions";
@@ -17,6 +17,7 @@ export interface State {
   comments: IPostComment[];
   trades: ITrade[];
   favorites: IPostCommentLike[];
+  selectedRoom: IRoom | null;
 }
 
 const localStorageUser = localStorage.getItem('localUser');
@@ -30,7 +31,8 @@ export const initialState: State = {
   room: [],
   comments: [],
   trades: [],
-  favorites: []
+  favorites: [],
+  selectedRoom: null
 };
 
 export const reducer = createReducer(
@@ -41,12 +43,18 @@ export const reducer = createReducer(
     localStorage.setItem('localUser', JSON.stringify(user));
     return {...state, user};
   }),
+  on(selectRoom, (state, { room }) => {
+    return { ...state, selectedRoom: room };
+  }),
   on(addPost, (state, {post}) => {
     console.log(state, state.posts);
     return {
       ...state,
       posts: [post, ...state.posts]
     };
+  }),
+  on(addRoom, (state, { room }) => {
+    return { ...state, rooms: [...state.room, room] };
   }),
   on(updateRoom, (state, {room}) => {
     const updatedRooms = state.room.map(existingRoom => {

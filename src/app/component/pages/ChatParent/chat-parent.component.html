@@ -7,16 +7,13 @@
   </button>
   <div [class.overflow-hidden]="isSidebarHidden" [class.w-0]="isSidebarHidden" [class.w-full]="!isSidebarHidden"
        class="md:w-1/4 pb-4 bg-white rounded-lg scrollbar scrollbar-thumb-gray-200 scrollbar-track-gray-100 md:mb-0 transition-all duration-300 ease-in-out overflow-y-scroll">
-    <app-room-sidebar (roomSelected)="onRoomSelected($event)"
-                      [currentUser]="currentUser"
-                      [selectedRoom]="selectedRoom">
-    </app-room-sidebar>
+    <app-room-sidebar [currentUser]="currentUser"></app-room-sidebar>
   </div>
   <!-- Zone de chat -->
   <div class="md:flex-grow w-full md:w-3/4 bg-white rounded-lg flex flex-col shadow-lg pt-4 flex-1 max-h-screen overflow-hidden">
     <!-- Messages -->
     <div #messageList class="flex-1 p-4 overflow-auto">
-    <app-room-screen [currentUser]="currentUser" [selectedRoom]="selectedRoom"></app-room-screen>
+    <app-room-screen [currentUser]="currentUser"></app-room-screen>
     </div>
     <app-room-input [currentUser]="currentUser" [selectedRoom]="selectedRoom"></app-room-input>
   </div>
