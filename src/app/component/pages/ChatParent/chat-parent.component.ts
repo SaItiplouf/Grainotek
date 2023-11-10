@@ -157,6 +157,7 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
         });
         this.store.dispatch(roomsLoaded({rooms}));
         if (!this.selectedRoom) {
+
           this.selectedRoom = rooms[0] || null;
         }
 

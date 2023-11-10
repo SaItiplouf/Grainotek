@@ -1,4 +1,4 @@
-<!--<div *ngIf="hasRooms; else noRoomsContent" class="h-screen bg-gray-100 p-4 flex flex-col md:flex-row">-->
+<div *ngIf="hasRooms">
 <div class="relative bg-gray-100 p-4 mb-20 flex flex-col md:flex-row h-screen">
   <button (click)="toggleSidebar()"
           class="md:hidden mb-4 flex justify-between items-center bg-gray-200 p-4 pb-2 w-full rounded-lg shadow-md hover:bg-gray-300 focus:outline-none focus:ring">
@@ -21,8 +21,7 @@
     <app-room-input [currentUser]="currentUser" [selectedRoom]="selectedRoom"></app-room-input>
   </div>
 </div>
-<!--<ng-template #noRoomsContent>-->
-<!--  <div class="h-screen flex justify-center items-center text-gray-500">-->
-<!--    <p>Vous n'avez pas de salons de discussion.</p>-->
-<!--  </div>-->
-<!--</ng-template>-->
+</div>
+<div *ngIf="!hasRooms" class="h-screen flex justify-center items-center text-gray-500">
+  <p>Vous n'avez pas de salons de discussion.</p>
+</div>

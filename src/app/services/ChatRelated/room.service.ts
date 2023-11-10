@@ -44,6 +44,21 @@ export class RoomService {
       return room;
     });
 
+    mappedRooms.sort((a, b) => {
+      const lastMessageA = a.messages?.length ? Date.parse(a.messages[a.messages.length - 1].createdAt) : null;
+      const lastMessageB = b.messages?.length ? Date.parse(b.messages[b.messages.length - 1].createdAt) : null;
+
+      if (lastMessageA === null && lastMessageB === null) {
+        return 0;
+      } else if (lastMessageA === null) {
+        return 1;
+      } else if (lastMessageB === null) {
+        return -1;
+      }
+
+      return lastMessageB - lastMessageA;
+    });
+
     return mappedRooms;
   }
 }
