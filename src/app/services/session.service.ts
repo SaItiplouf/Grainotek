@@ -128,7 +128,8 @@ export class SessionService implements OnInit, OnDestroy{
             console.log('JWT STORED');
             this.userLoggedIn.next();
             this.setUserFromToken();
-            this.subscribeToUserTopic()
+            this.LoadUserRooms()
+            // this.subscribeToUserTopic()
             return response;
           } else {
             console.log('JWT FAILED');
@@ -137,7 +138,7 @@ export class SessionService implements OnInit, OnDestroy{
         })
       );
   }
-  loadroomsforuser() {
+  LoadUserRooms() {
     this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
       this.connectedUser = user
       this.roomService.getAllRoomsOfAUser(this.connectedUser).subscribe(rooms => {
@@ -154,44 +155,47 @@ export class SessionService implements OnInit, OnDestroy{
         this.store.dispatch(roomsLoaded({ rooms }));
         this.store.select(state => state.state.room).subscribe(rooms => {
           this.rooms = rooms || [];
-          this.setrecentroomforuser()
+          this.SetRecentRooms()
         });
       });
     });
     };
 
-  setrecentroomforuser() {
-    console.log("coucou")
+  SetRecentRooms() {
+    console.log("coucou ET C UN TOUR DE MANAGE ENCORE NSM");
     if (this.rooms && this.rooms.length > 0) {
-
-      const recentRoom = this.rooms.reduce((mostRecent: IRoom | null, currentRoom: IRoom) => {
-        const lastMessageMostRecent = mostRecent ? mostRecent.messages[mostRecent.messages.length - 1] : null;
-        const lastMessageCurrent = currentRoom.messages[currentRoom.messages.length - 1];
-
-        if (!lastMessageMostRecent && !lastMessageCurrent) {
-          return null;
-        } else if (!lastMessageMostRecent) {
-          return currentRoom;
-        } else if (!lastMessageCurrent) {
-          return mostRecent;
-        }
-
-        const timeMostRecent = new Date(lastMessageMostRecent.createdAt).getTime();
-        const timeCurrent = new Date(lastMessageCurrent.createdAt).getTime();
-
-        return timeCurrent > timeMostRecent ? currentRoom : mostRecent;
-      }, null);
-
-      // Déclencher l'action selectRoom avec la salle trouvée
-
-      console.log(recentRoom);
-      this.store.dispatch(selectRoom({ room: recentRoom }));
+      const recentRoom = this.findMostRecentRoom();
+      if (recentRoom) {
+        console.log(recentRoom);
+        this.store.dispatch(selectRoom({ room: recentRoom }));
+      }
     } else {
-      console.log("selected vide")
+      console.log("selected vide");
     }
 
     this.initializeMercureSubscription();
   }
+
+  findMostRecentRoom(): IRoom | null {
+    return this.rooms.reduce((mostRecent: IRoom | null, currentRoom: IRoom) => {
+      const lastMessageMostRecent = mostRecent ? mostRecent.messages[mostRecent.messages.length - 1] : null;
+      const lastMessageCurrent = currentRoom.messages[currentRoom.messages.length - 1];
+
+      if (!lastMessageMostRecent && !lastMessageCurrent) {
+        return null;
+      } else if (!lastMessageMostRecent) {
+        return currentRoom;
+      } else if (!lastMessageCurrent) {
+        return mostRecent;
+      }
+
+      const timeMostRecent = new Date(lastMessageMostRecent.createdAt).getTime();
+      const timeCurrent = new Date(lastMessageCurrent.createdAt).getTime();
+
+      return timeCurrent > timeMostRecent ? currentRoom : mostRecent;
+    }, null);
+  }
+
   private initializeMercureSubscription(): void {
       const mercureHubUrl = environnement.MERCURE_URL + `https://polocovoitapi.projets.garage404.com/api/users/${this.connectedUser?.id}/rooms`;
 
@@ -247,21 +251,26 @@ export class SessionService implements OnInit, OnDestroy{
   updateRoomMessages(updatedRoom: Room): void {
     if (!updatedRoom || !updatedRoom.id) return;
 
-    const roomIndex = this.rooms.findIndex(room => room.id === updatedRoom.id);
-    if (roomIndex === -1) return;
+    // Recherche de la salle par ID
+    const roomToUpdate = this.rooms.find(room => room.id === updatedRoom.id);
 
-    const roomToUpdate = { ...this.rooms[roomIndex] };
+    if (!roomToUpdate) return; // S'il n'y a pas de salle avec cet ID, sortir de la fonction
+
+    // Copie de la salle à mettre à jour pour éviter les modifications directes
+    const roomToUpdateCopy = { ...roomToUpdate };
+
+
     // Fusion des messages existants avec les nouveaux
-    const currentRoomMessages = roomToUpdate.messages || [];
+    const currentRoomMessages = roomToUpdateCopy.messages || [];
     const newMessages = updatedRoom.messages.filter(
       updatedMsg => !currentRoomMessages.some(currMsg => currMsg.id === updatedMsg.id)
     );
-    roomToUpdate.messages = [...currentRoomMessages, ...newMessages];
+    roomToUpdateCopy.messages = [...currentRoomMessages, ...newMessages];
 
 
     // Adjuster uniquement unreadCount si ce n'est pas la selectedRoom
     if (!(this.selectedRoom && this.selectedRoom.id === updatedRoom.id)) {
-      roomToUpdate.unreadCount! += newMessages.reduce((count, message) => {
+      roomToUpdateCopy.unreadCount! += newMessages.reduce((count, message) => {
         // Vérifiez si le message n'a pas été lu
         const isUnread = message.readed;
 
@@ -275,15 +284,16 @@ export class SessionService implements OnInit, OnDestroy{
       }, 0);
     }
 
+
     // Dispatch l'action pour mettre à jour la room dans le store
-    this.store.dispatch(updateRoom({ room: roomToUpdate }));
+    this.store.dispatch(updateRoom({ room: roomToUpdateCopy }));
 
     // Mise à jour de la salle sélectionnée si nécessaire
     if (this.selectedRoom && this.selectedRoom.id === updatedRoom.id) {
       this.selectedRoom = {
         ...this.selectedRoom,
-        messages: this.rooms[roomIndex].messages,
-        unreadCount: roomToUpdate.unreadCount
+        messages: roomToUpdateCopy.messages,
+        unreadCount: roomToUpdateCopy.unreadCount
       };
     }
   }

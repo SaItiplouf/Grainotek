@@ -1,7 +1,9 @@
 import {Component, Input} from '@angular/core';
 import {IRoom} from "../../../../models/room.model";
-import {User} from "../../../../models/user.model";
+import {IUser, User} from "../../../../models/user.model";
 import {MessageService} from "../../../../services/ChatRelated/message.service";
+import {Store} from "@ngrx/store";
+import {State} from "../../../../Reducers/app.reducer";
 
 @Component({
   selector: 'app-room-input',
@@ -10,13 +12,22 @@ import {MessageService} from "../../../../services/ChatRelated/message.service";
 })
 export class RoomInputComponent {
   newMessageContent: string = '';
-  @Input() selectedRoom: IRoom | null = null;
-  @Input() currentUser!: User | null;
+  selectedRoom: IRoom | null = null;
+  currentUser!: User | null;
   isSending = false;
 
-  constructor(private messageService: MessageService) {
+  constructor(private store: Store<{ state: State }>,
+              private messageService: MessageService) {
   }
 
+  ngOnInit() {
+    this.store.select((state: any) => state.state.selectedRoom).subscribe((room: IRoom) => {
+      this.selectedRoom = room
+    });
+    this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
+      this.currentUser = user
+    });
+  }
   // Uniquement Requete API et désactivation du boutton pour le spam
   sendMessage(): void {
     if (this.newMessageContent.trim() && this.selectedRoom && this.currentUser) {

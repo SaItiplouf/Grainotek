@@ -27,27 +27,22 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
   isSidebarHidden = true;
   hasRooms: boolean = false;
   @ViewChild('messageList') private messageListRef!: ElementRef;
-  private userSubscription?: Subscription;
-  private roomSubscription?: Subscription;
 
   constructor(
     private store: Store<{ state: State }>,
     private tradeService: TradeService,
     private ngZone: NgZone,
     private appService: AppService,
-    private sessionService: SessionService,
-    private messageService: MessageService,
-    private route: ActivatedRoute,
-    private roomService: RoomService) {
+    private sessionService: SessionService,) {
   }
 
   ngOnInit(): void {
     this.sessionService.checkUserAuthentication();
 
-    this.userSubscription = this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
+    this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
       this.currentUser = user;
     });
-    this.roomSubscription = this.store.select(state => state.state.room).subscribe(rooms => {
+    this.store.select(state => state.state.room).subscribe(rooms => {
       this.rooms = rooms || [];
       this.hasRooms = this.rooms && this.rooms.length > 0;
     });
@@ -66,21 +61,13 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
 
   // détruit la souscription à mercure pour l'opti
   ngOnDestroy(): void {
-
-    if (this.userSubscription) {
-      this.userSubscription.unsubscribe();
-    }
-
-    if (this.roomSubscription) {
-      this.roomSubscription.unsubscribe();
-    }
     this.sessionService.userLoggedOut.unsubscribe();
   }
 
-  // Reception de l'output du composant enfant
-  onRoomSelected(room: IRoom): void {
-    this.selectedRoom = room;
-  }
+  // // Reception de l'output du composant enfant
+  // onRoomSelected(room: IRoom): void {
+  //   this.selectedRoom = room;
+  // }
 
   // onScroll() {
   //   this.TradeService.getAllRoomsOfAUser(this.currentPage + 1).subscribe(newRooms => {

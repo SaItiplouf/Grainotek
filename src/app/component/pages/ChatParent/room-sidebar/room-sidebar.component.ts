@@ -22,7 +22,7 @@ import {selectRoom} from "../../../../actions/chat.actions";
 })
 export class RoomSidebarComponent implements OnInit, OnDestroy {
   selectedRoom!: IRoom;
-  @Input() currentUser!: User | null;
+  currentUser!: IUser;
   rooms: IRoom[] = [];
   searchTerm: string = '';
   @Output() roomSelected: EventEmitter<IRoom> = new EventEmitter<IRoom>();
@@ -40,20 +40,21 @@ export class RoomSidebarComponent implements OnInit, OnDestroy {
 
   get filteredRooms(): IRoom[] {
     if (!this.searchTerm) {
-      return this.rooms.slice().sort((a, b) => {
-        const lastMessageA = a.messages[a.messages.length - 1];
-        const lastMessageB = b.messages[b.messages.length - 1];
-
-        if (!lastMessageA && !lastMessageB) {
-          return 0;
-        } else if (!lastMessageA) {
-          return 1;
-        } else if (!lastMessageB) {
-          return -1;
-        }
-
-        return new Date(lastMessageB.createdAt).getTime() - new Date(lastMessageA.createdAt).getTime();
-      });
+      return this.rooms
+      // return this.rooms.slice().sort((a, b) => {
+      //   const lastMessageA = a.messages[a.messages.length - 1];
+      //   const lastMessageB = b.messages[b.messages.length - 1];
+      //
+      //   if (!lastMessageA && !lastMessageB) {
+      //     return 0;
+      //   } else if (!lastMessageA) {
+      //     return 1;
+      //   } else if (!lastMessageB) {
+      //     return -1;
+      //   }
+      //
+      //   return new Date(lastMessageB.createdAt).getTime() - new Date(lastMessageA.createdAt).getTime();
+      // });
     }
 
     return this.rooms.filter(room =>
@@ -80,7 +81,9 @@ export class RoomSidebarComponent implements OnInit, OnDestroy {
     this.store.select((state: any) => state.state.selectedRoom).subscribe((room: IRoom) => {
       this.selectedRoom = room
     });
-
+    this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
+      this.currentUser = user
+    });
     this.roomSubscription = this.store.select((state) => state.state.room).subscribe((rooms: IRoom[]) => {
       this.rooms = rooms;
       console.log("ppl par le state")

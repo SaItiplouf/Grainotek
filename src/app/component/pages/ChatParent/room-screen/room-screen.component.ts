@@ -1,6 +1,6 @@
 import {Component, Input, NgZone, OnInit} from '@angular/core';
 import {IRoom} from "../../../../models/room.model";
-import {User} from "../../../../models/user.model";
+import {IUser, User} from "../../../../models/user.model";
 import {ToastrService} from "ngx-toastr";
 import {Router} from "@angular/router";
 import {RoomService} from "../../../../services/ChatRelated/room.service";
@@ -14,13 +14,16 @@ import {State} from "../../../../Reducers/app.reducer";
 })
 export class RoomScreenComponent implements OnInit{
   selectedRoom!: IRoom;
-  @Input() currentUser!: User | null;
+  currentUser!: User;
 
   constructor(private store: Store<{ state: State }>) {}
 
   ngOnInit() {
     this.store.select((state: any) => state.state.selectedRoom).subscribe((room: IRoom) => {
       this.selectedRoom = room
+    });
+    this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
+      this.currentUser = user
     });
   }
 
