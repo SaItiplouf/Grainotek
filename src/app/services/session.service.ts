@@ -28,13 +28,11 @@ export class SessionService implements OnInit, OnDestroy{
   userLoggedIn = new Subject<void>();
   private eventSource: EventSourcePolyfill | null = null;
   connectedUser!: IUser;
-  private eventSourceAfter: EventSource | null = null;
   rooms!: IRoom[];
   selectedRoom!: IRoom;
   constructor(private HttpClient: HttpClient, private toastr: ToastrService,
               private router: Router,
               private http: HttpClient,
-              private ngZone: NgZone,
               private roomService: RoomService,
               private store: Store<{
     state: State
@@ -42,7 +40,9 @@ export class SessionService implements OnInit, OnDestroy{
   }
 
   ngOnInit() {
-
+    this.store.select(state => state.state.room).subscribe(rooms => {
+      this.rooms = rooms || [];
+    });
     this.store.select((state: any) => state.state.selectedRoom).subscribe((room: IRoom) => {
       this.selectedRoom = room
     });
@@ -142,161 +142,12 @@ export class SessionService implements OnInit, OnDestroy{
     this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
       this.connectedUser = user
       this.roomService.getAllRoomsOfAUser(this.connectedUser).subscribe(rooms => {
-        rooms.forEach(room => {
-          room.unreadCount = room.messages.reduce((count, message) => {
-            const isUnread = message.readed;
-            const notFromCurrentUser = message.user.id !== this.connectedUser.id;
-            if (isUnread && notFromCurrentUser) {
-              return count + 1;
-            }
-            return count;
-          }, 0);
-        });
-        this.store.dispatch(roomsLoaded({ rooms }));
-        this.store.select(state => state.state.room).subscribe(rooms => {
-          this.rooms = rooms || [];
-          this.SetRecentRooms()
-        });
+        console.log("Checked normalement")
       });
     });
     };
 
-  SetRecentRooms() {
-    console.log("coucou ET C UN TOUR DE MANAGE ENCORE NSM");
-    if (this.rooms && this.rooms.length > 0) {
-      const recentRoom = this.findMostRecentRoom();
-      if (recentRoom) {
-        console.log(recentRoom);
-        this.store.dispatch(selectRoom({ room: recentRoom }));
-      }
-    } else {
-      console.log("selected vide");
-    }
 
-    this.initializeMercureSubscription();
-  }
-
-  findMostRecentRoom(): IRoom | null {
-    return this.rooms.reduce((mostRecent: IRoom | null, currentRoom: IRoom) => {
-      const lastMessageMostRecent = mostRecent ? mostRecent.messages[mostRecent.messages.length - 1] : null;
-      const lastMessageCurrent = currentRoom.messages[currentRoom.messages.length - 1];
-
-      if (!lastMessageMostRecent && !lastMessageCurrent) {
-        return null;
-      } else if (!lastMessageMostRecent) {
-        return currentRoom;
-      } else if (!lastMessageCurrent) {
-        return mostRecent;
-      }
-
-      const timeMostRecent = new Date(lastMessageMostRecent.createdAt).getTime();
-      const timeCurrent = new Date(lastMessageCurrent.createdAt).getTime();
-
-      return timeCurrent > timeMostRecent ? currentRoom : mostRecent;
-    }, null);
-  }
-
-  private initializeMercureSubscription(): void {
-      const mercureHubUrl = environnement.MERCURE_URL + `https://polocovoitapi.projets.garage404.com/api/users/${this.connectedUser?.id}/rooms`;
-
-      this.eventSourceAfter = new EventSource(mercureHubUrl);
-
-      this.eventSourceAfter.onopen = (event) => {
-        console.log('Connection to Mercure opened successfully!', event);
-      };
-
-      this.eventSourceAfter.onmessage = (event) => {
-
-        this.ngZone.run(() => {
-          const data = JSON.parse(event.data);
-          console.log('Parsed data:', data);
-
-          if (data) {
-            // Define the room data adhering to the IRoom interface
-            const dataRoom: IRoom = {
-              unreadCount: 0,
-              id: data.id,
-              name: data.name,
-              trade: data.trade,
-              users: data.users.map((userData: any) => ({
-                id: userData.id,
-                email: userData.email,
-                roles: userData.roles,
-                username: userData.username,
-                pictureUrl: userData.pictureUrl,
-              })),
-              messages: data.messages.map((messageData: any) => ({
-                readed: messageData.readed,
-                id: messageData.id,
-                createdAt: messageData.createdAt,
-                message: messageData.content,
-                user: {
-                  id: messageData.user.id,
-                  email: messageData.user.email,
-                  roles: messageData.user.roles,
-                  username: messageData.user.username,
-                  pictureUrl: messageData.user.pictureUrl,
-                }
-              })),
-            };
-
-            console.log(dataRoom);
-
-            // Update the messages of the appropriate room
-            this.updateRoomMessages(dataRoom);
-          }
-        });
-      };
-    }
-  updateRoomMessages(updatedRoom: Room): void {
-    if (!updatedRoom || !updatedRoom.id) return;
-
-    // Recherche de la salle par ID
-    const roomToUpdate = this.rooms.find(room => room.id === updatedRoom.id);
-
-    if (!roomToUpdate) return; // S'il n'y a pas de salle avec cet ID, sortir de la fonction
-
-    // Copie de la salle à mettre à jour pour éviter les modifications directes
-    const roomToUpdateCopy = { ...roomToUpdate };
-
-
-    // Fusion des messages existants avec les nouveaux
-    const currentRoomMessages = roomToUpdateCopy.messages || [];
-    const newMessages = updatedRoom.messages.filter(
-      updatedMsg => !currentRoomMessages.some(currMsg => currMsg.id === updatedMsg.id)
-    );
-    roomToUpdateCopy.messages = [...currentRoomMessages, ...newMessages];
-
-
-    // Adjuster uniquement unreadCount si ce n'est pas la selectedRoom
-    if (!(this.selectedRoom && this.selectedRoom.id === updatedRoom.id)) {
-      roomToUpdateCopy.unreadCount! += newMessages.reduce((count, message) => {
-        // Vérifiez si le message n'a pas été lu
-        const isUnread = message.readed;
-
-        // Vérifiez si le message n'est pas de l'utilisateur actuel
-        const notFromCurrentUser = message.user.id !== this.connectedUser?.id;
-
-        if (isUnread && notFromCurrentUser) {
-          return count + 1;
-        }
-        return count;
-      }, 0);
-    }
-
-
-    // Dispatch l'action pour mettre à jour la room dans le store
-    this.store.dispatch(updateRoom({ room: roomToUpdateCopy }));
-
-    // Mise à jour de la salle sélectionnée si nécessaire
-    if (this.selectedRoom && this.selectedRoom.id === updatedRoom.id) {
-      this.selectedRoom = {
-        ...this.selectedRoom,
-        messages: roomToUpdateCopy.messages,
-        unreadCount: roomToUpdateCopy.unreadCount
-      };
-    }
-  }
 
 
   subscribeToUserTopic(): void {

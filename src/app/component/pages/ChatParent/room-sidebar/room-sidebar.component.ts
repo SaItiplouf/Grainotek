@@ -86,7 +86,6 @@ export class RoomSidebarComponent implements OnInit, OnDestroy {
     });
     this.roomSubscription = this.store.select((state) => state.state.room).subscribe((rooms: IRoom[]) => {
       this.rooms = rooms;
-      console.log("ppl par le state")
     });
   }
 
