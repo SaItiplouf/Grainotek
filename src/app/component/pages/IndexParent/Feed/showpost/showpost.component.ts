@@ -1,4 +1,4 @@
-import {Component, ElementRef, Inject, Input, OnInit, Renderer2, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Inject, Input, OnInit, Renderer2, ViewChild} from '@angular/core';
 import {IPost} from "../../../../../models/post.model";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {animate, keyframes, state, style, transition, trigger} from '@angular/animations';
@@ -39,7 +39,7 @@ import {State} from "../../../../../Reducers/app.reducer";
     ])
   ]
 })
-export class ShowpostComponent implements OnInit {
+export class ShowpostComponent implements OnInit, AfterViewInit {
   iconState = 'inactive';
   @Input() Modalpost: IPost;
   public location: { lat: number; lng: number } | undefined;
@@ -92,6 +92,11 @@ export class ShowpostComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
+      this.ConnectedUser = user;
+    });
+  }
+  ngAfterViewInit(): void {
     if (this.Modalpost.location) {
       const [latStr, lngStr] = this.Modalpost.location.split(',');
       this.location = {
@@ -100,12 +105,7 @@ export class ShowpostComponent implements OnInit {
       };
       this.initMap();
     }
-    this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
-      this.ConnectedUser = user;
-    });
-
   }
-
 
   isUserLoggedIn(): boolean {
     return this.sessionService.isUserLoggedIn();
@@ -181,7 +181,7 @@ export class ShowpostComponent implements OnInit {
   async initMap(): Promise<void> {
     const mapElement = document.getElementById('map');
     if (mapElement && this.location) {
-
+      console.log("INIIT MAP")
       const loader = new Loader({
         apiKey: environnement.GOOGLE_API_KEY,
         version: 'weekly'
@@ -199,6 +199,8 @@ export class ShowpostComponent implements OnInit {
         map: map,
         title: 'Emplacement du poste'
       });
+    } else {
+      console.log(mapElement, this.location)
     }
   }
 

@@ -1,8 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {initFlowbite} from 'flowbite';
 import {SessionService} from "./services/session.service";
-import {User} from "./models/user.model";
-import {setUser} from "./actions/post.actions";
 import {Store} from "@ngrx/store";
 
 @Component({
