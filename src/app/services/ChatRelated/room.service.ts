@@ -5,22 +5,17 @@ import {IPostRoom, IRoom, Room} from "../../models/room.model";
 import {environnement} from "../../../environnement";
 import {IUser} from "../../models/user.model";
 import {roomsLoaded, selectRoom, updateRoom} from "../../actions/chat.actions";
-import {ToastrService} from "ngx-toastr";
-import {Router} from "@angular/router";
 import {Store} from "@ngrx/store";
 import {State} from "../../Reducers/app.reducer";
-import {logos} from "@igniteui/material-icons-extended";
 import {tap} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
 })
-export class RoomService implements OnInit{
+export class RoomService {
   isLoading: { [roomId: number]: boolean } = {};
   private eventSource: EventSource | null = null;
-  selectedRoom!: IRoom;
   rooms!: IRoom[];
-  currentUser!: IUser;
 
   constructor(private http: HttpClient,
               private ngZone: NgZone,
@@ -28,21 +23,6 @@ export class RoomService implements OnInit{
   ) {
   }
 
-  ngOnInit() {
-    this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
-      this.currentUser = user
-      console.log("ppl state user service room", user)
-    });
-    this.store.select((state: any) => state.state.selectedRoom).subscribe((room: IRoom) => {
-      this.selectedRoom = room
-      console.log("ppl state rooms service room", room)
-
-    });
-    this.store.select(state => state.state.room).subscribe(rooms => {
-      this.rooms = rooms || [];
-    });
-
-  }
 
   createRoom(data: IPostRoom): Observable<any> {
     return this.http.post<any>(environnement.BASE_URL + `api/rooms`, data);
@@ -53,25 +33,24 @@ export class RoomService implements OnInit{
 
   getAllRoomsOfAUser(user: IUser): Observable<IRoom[]> {
     return this.http.get<any>(environnement.BASE_URL + `api/users/${user.id}/rooms`).pipe(
-      map(response => this.mapToIRoom(response)),
-      tap(rooms => this.processRooms(rooms, user))
+      map(response => this.mapToIRoom(response, user)),
+      tap(rooms => this.processRooms(user))
     );
   }
 
-  private processRooms(rooms: Room[], user: IUser): void {
-    console.log("coucou ET C UN TOUR DE MANAGE ENCORE NSM", rooms);
+  private processRooms(user: IUser): void {
+    console.log("coucou ET C UN TOUR DE MANAGE ENCORE NSM", this.rooms);
 
-    if (rooms && rooms.length > 0) {
-      const recentRoom = this.findMostRecentRoom(rooms);
+    if (this.rooms && this.rooms.length > 0) {
+      const recentRoom = this.findMostRecentRoom(this.rooms);
       if (recentRoom) {
-        console.log(recentRoom);
+        console.log("REEEECENT ROOM FREROOO", recentRoom);
         this.store.dispatch(selectRoom({room: recentRoom}));
       } else {
         console.log("selected vide");
       }
-      this.store.dispatch(roomsLoaded({rooms}));
+      this.store.dispatch(roomsLoaded({rooms: this.rooms}));
 
-      // Assurez-vous que this.currentUser est défini avant d'appeler initializeMercureSubscription
       if (user) {
         this.initializeMercureSubscription(user);
       } else {
@@ -79,7 +58,7 @@ export class RoomService implements OnInit{
       }
     }
   }
-  private mapToIRoom(data: any[]): Room[] {
+  private mapToIRoom(data: any[], user: IUser): Room[] {
     console.log('Attempting to map to IRoom with data:', data);
     if (!data) {
       console.error('Data is undefined!');
@@ -94,7 +73,7 @@ export class RoomService implements OnInit{
       // Ajouter le code pour mettre à jour unreadCount
       room.unreadCount = room.messages.reduce((count, message) => {
         const isUnread = message && message.readed;
-        const notFromCurrentUser = message && message.user && message.user.id !== this.currentUser?.id;
+        const notFromCurrentUser = message && message.user && message.user.id !== user.id;
 
         if (isUnread && notFromCurrentUser) {
           return count + 1;
@@ -120,7 +99,9 @@ export class RoomService implements OnInit{
       return lastMessageB - lastMessageA;
     });
 
-    return mappedRooms;
+    this.rooms = mappedRooms;
+
+    return this.rooms
   }
 
   private findMostRecentRoom(rooms: Room[]): Room | null {
@@ -190,12 +171,12 @@ export class RoomService implements OnInit{
           console.log(dataRoom);
 
           // Update the messages of the appropriate room
-          this.updateRoomMessages(dataRoom);
+          this.updateRoomMessages(dataRoom, user);
         }
       });
     };
   }
-  updateRoomMessages(updatedRoom: Room): void {
+  updateRoomMessages(updatedRoom: Room, user: IUser): void {
     if (!updatedRoom || !updatedRoom.id) return;
 
     // Recherche de la salle par ID
@@ -214,36 +195,22 @@ export class RoomService implements OnInit{
     );
     roomToUpdateCopy.messages = [...currentRoomMessages, ...newMessages];
 
-
-    // Adjuster uniquement unreadCount si ce n'est pas la selectedRoom
-    if (!(this.selectedRoom && this.selectedRoom.id === updatedRoom.id)) {
       roomToUpdateCopy.unreadCount! += newMessages.reduce((count, message) => {
         // Vérifiez si le message n'a pas été lu
         const isUnread = message.readed;
 
         // Vérifiez si le message n'est pas de l'utilisateur actuel
-        const notFromCurrentUser = message.user.id !== this.currentUser?.id;
+        const notFromCurrentUser = message.user.id !== user.id;
 
         if (isUnread && notFromCurrentUser) {
           return count + 1;
         }
         return count;
       }, 0);
-    }
 
 
     // Dispatch l'action pour mettre à jour la room dans le store
     this.store.dispatch(updateRoom({ room: roomToUpdateCopy }));
 
-    // Mise à jour de la salle sélectionnée si nécessaire
-    if (this.selectedRoom && this.selectedRoom.id === updatedRoom.id) {
-      this.selectedRoom = {
-        ...this.selectedRoom,
-        messages: roomToUpdateCopy.messages,
-        unreadCount: roomToUpdateCopy.unreadCount
-      };
-    }
   }
-
-
 }

@@ -26,6 +26,4 @@ export class RoomScreenComponent implements OnInit{
       this.currentUser = user
     });
   }
-
-  // on utilise selectedRoom ici attention à la mise à jour des variables car le store est mise à jour mais ceci est une variable
 }

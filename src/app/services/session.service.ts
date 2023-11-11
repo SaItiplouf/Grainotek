@@ -1,4 +1,4 @@
-import {Injectable, NgZone, OnDestroy, OnInit} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {map, Observable, Subject} from "rxjs";
 import jwt_decode from 'jwt-decode';
@@ -11,15 +11,12 @@ import {State} from "../Reducers/app.reducer";
 import {ToastrService} from "ngx-toastr";
 import {Router} from "@angular/router";
 import {EventSourcePolyfill} from "ng-event-source";
-import {roomsLoaded, selectRoom, updateRoom} from "../actions/chat.actions";
 import {RoomService} from "./ChatRelated/room.service";
-import {IRoom, Room} from "../models/room.model";
-import {IMessage} from "../models/message.model";
 
 @Injectable({
   providedIn: 'root'
 })
-export class SessionService implements OnInit, OnDestroy{
+export class SessionService {
 
   REGISTER_URL = 'register';
   LOGIN_URL = 'auth';
@@ -28,8 +25,6 @@ export class SessionService implements OnInit, OnDestroy{
   userLoggedIn = new Subject<void>();
   private eventSource: EventSourcePolyfill | null = null;
   connectedUser!: IUser;
-  rooms!: IRoom[];
-  selectedRoom!: IRoom;
   constructor(private HttpClient: HttpClient, private toastr: ToastrService,
               private router: Router,
               private http: HttpClient,
@@ -39,21 +34,6 @@ export class SessionService implements OnInit, OnDestroy{
   }>) {
   }
 
-  ngOnInit() {
-    this.store.select(state => state.state.room).subscribe(rooms => {
-      this.rooms = rooms || [];
-    });
-    this.store.select((state: any) => state.state.selectedRoom).subscribe((room: IRoom) => {
-      this.selectedRoom = room
-    });
-
-  }
-  ngOnDestroy(): void {
-    // Fermez la connexion Mercure
-    if (this.eventSource) {
-      this.eventSource.close();
-    }
-  }
   checkUserAuthentication() {
     if (!this.isTokenValid() || localStorage.getItem('jwt') === null) {
       this.router.navigate(['/']);
@@ -127,7 +107,6 @@ export class SessionService implements OnInit, OnDestroy{
             localStorage.setItem('jwt', JSON.stringify(response));
             console.log('JWT STORED');
             this.userLoggedIn.next();
-            this.setUserFromToken();
             this.LoadUserRooms()
             // this.subscribeToUserTopic()
             return response;
@@ -139,12 +118,10 @@ export class SessionService implements OnInit, OnDestroy{
       );
   }
   LoadUserRooms() {
-    this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
-      this.connectedUser = user
+    this.setUserFromToken();
       this.roomService.getAllRoomsOfAUser(this.connectedUser).subscribe(rooms => {
         console.log("Checked normalement")
       });
-    });
     };
 
 
@@ -179,6 +156,7 @@ export class SessionService implements OnInit, OnDestroy{
 // Au login enregistrement dans le store
     const userInfo = this.getUserInfo();
     if (userInfo) {
+      this.connectedUser = userInfo
       this.store.dispatch(setUser({user: userInfo}));
     }
   }
