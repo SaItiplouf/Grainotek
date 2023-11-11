@@ -1,4 +1,4 @@
-import {Injectable, NgZone, OnInit} from '@angular/core';
+import {Injectable, NgZone} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {map, Observable} from "rxjs";
 import {IPostRoom, IRoom, Room} from "../../models/room.model";
@@ -211,6 +211,7 @@ export class RoomService {
 
     // Dispatch l'action pour mettre à jour la room dans le store
     this.store.dispatch(updateRoom({ room: roomToUpdateCopy }));
+    this.store.dispatch(selectRoom({room : roomToUpdateCopy}))
 
   }
 }
