@@ -60,7 +60,6 @@ import {SharedService} from "../ComponentService/sharedata";
 import { RoomInputComponent } from './component/pages/ChatParent/room-input/room-input.component';
 import { RoomScreenComponent } from './component/pages/ChatParent/room-screen/room-screen.component';
 
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -102,7 +101,18 @@ import { RoomScreenComponent } from './component/pages/ChatParent/room-screen/ro
     InfiniteScrollModule,
     MatButtonModule,
     FormsModule,
-    ToastrModule.forRoot(),
+    ToastrModule.forRoot({
+      timeOut: 10000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+      progressBar: true,
+      iconClasses : {
+        error: 'toast-error',
+        info: 'toast-info',
+        success: 'toast-success',
+        warning: 'toast-warning',
+      }
+    }),
     MatIconModule,
     MatCardModule,
     DragDropModule,

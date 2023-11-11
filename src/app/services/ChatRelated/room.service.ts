@@ -8,6 +8,7 @@ import {roomsLoaded, selectRoom, updateRoom} from "../../actions/chat.actions";
 import {Store} from "@ngrx/store";
 import {State} from "../../Reducers/app.reducer";
 import {tap} from "rxjs/operators";
+import {ToastrService} from "ngx-toastr";
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +17,10 @@ export class RoomService {
   isLoading: { [roomId: number]: boolean } = {};
   private eventSource: EventSource | null = null;
   rooms!: IRoom[];
-
+  recentRoom!: IRoom;
   constructor(private http: HttpClient,
               private ngZone: NgZone,
+              private toastr: ToastrService,
               private store: Store<{ state: State }>
   ) {
   }
@@ -44,6 +46,7 @@ export class RoomService {
     if (this.rooms && this.rooms.length > 0) {
       const recentRoom = this.findMostRecentRoom(this.rooms);
       if (recentRoom) {
+        this.recentRoom = recentRoom;
         console.log("REEEECENT ROOM FREROOO", recentRoom);
         this.store.dispatch(selectRoom({room: recentRoom}));
       } else {
@@ -203,6 +206,19 @@ export class RoomService {
         const notFromCurrentUser = message.user.id !== user.id;
 
         if (isUnread && notFromCurrentUser) {
+          const roomPictureUrl = this.getRoomPictureUrl(roomToUpdateCopy, user)
+          if (roomPictureUrl) {
+            this.toastr.info(
+              `<div class="flex items-center">
+       <img class="rounded-full" src="${roomPictureUrl}" alt="Room Image" width="50" height="50"/>
+       <span>Nouveau message dans ${roomToUpdateCopy.name}</span>
+     </div>`,
+              'Notification',
+              {
+                enableHtml: true,
+              }
+            );
+          }
           return count + 1;
         }
         return count;
@@ -211,7 +227,20 @@ export class RoomService {
 
     // Dispatch l'action pour mettre à jour la room dans le store
     this.store.dispatch(updateRoom({ room: roomToUpdateCopy }));
-    this.store.dispatch(selectRoom({room : roomToUpdateCopy}))
+
+    if (this.recentRoom.id && this.recentRoom.id === roomToUpdateCopy.id) {
+      this.store.dispatch(selectRoom({room : roomToUpdateCopy}))
+    }
 
   }
+  private getRoomPictureUrl(room: IRoom, currentUser: IUser) {
+    if(room.trade) {
+      return room.trade.post.images[0].contentUrl;
+    } else {
+      const recipient = room.users.find(user => user.id !== currentUser?.id);
+      return recipient ? recipient.pictureUrl : null;
+    }
+
+  }
+
 }
