@@ -190,7 +190,6 @@ export class RoomService {
     // Copie de la salle à mettre à jour pour éviter les modifications directes
     const roomToUpdateCopy = { ...roomToUpdate };
 
-
     // Fusion des messages existants avec les nouveaux
     const currentRoomMessages = roomToUpdateCopy.messages || [];
     const newMessages = updatedRoom.messages.filter(
@@ -198,40 +197,44 @@ export class RoomService {
     );
     roomToUpdateCopy.messages = [...currentRoomMessages, ...newMessages];
 
-      roomToUpdateCopy.unreadCount! += newMessages.reduce((count, message) => {
-        // Vérifiez si le message n'a pas été lu
-        const isUnread = message.readed;
+    roomToUpdateCopy.unreadCount! += newMessages.reduce((count, message) => {
+      // Vérifiez si le message n'a pas été lu
+      const isUnread = message.readed;
 
-        // Vérifiez si le message n'est pas de l'utilisateur actuel
-        const notFromCurrentUser = message.user.id !== user.id;
+      // Vérifiez si le message n'est pas de l'utilisateur actuel
+      const notFromCurrentUser = message.user.id !== user.id;
 
-        if (isUnread && notFromCurrentUser) {
-          const roomPictureUrl = this.getRoomPictureUrl(roomToUpdateCopy, user)
-          if (roomPictureUrl) {
-            this.toastr.info(
-              `<div class="flex items-center">
-       <img class="rounded-full" src="${roomPictureUrl}" alt="Room Image" width="50" height="50"/>
-       <span>Nouveau message dans ${roomToUpdateCopy.name}</span>
-     </div>`,
-              'Notification',
-              {
-                enableHtml: true,
-              }
-            );
-          }
-          return count + 1;
+      if (isUnread && notFromCurrentUser) {
+        const roomPictureUrl = this.getRoomPictureUrl(roomToUpdateCopy, user)
+        if (roomPictureUrl) {
+          this.toastr.info(
+            `<div class="flex items-center">
+            <img class="rounded-full" src="${roomPictureUrl}" alt="Room Image" width="50" height="50"/>
+            <span>Nouveau message dans ${roomToUpdateCopy.name}</span>
+          </div>`,
+            'Notification',
+            {
+              enableHtml: true,
+            }
+          );
         }
-        return count;
-      }, 0);
-
+        return count + 1;
+      }
+      return count;
+    }, 0);
 
     // Dispatch l'action pour mettre à jour la room dans le store
     this.store.dispatch(updateRoom({ room: roomToUpdateCopy }));
+    console.log("JE TE LOG LE UNREAD COUNT", roomToUpdateCopy.unreadCount)
 
-    if (this.recentRoom.id && this.recentRoom.id === roomToUpdateCopy.id) {
-      this.store.dispatch(selectRoom({room : roomToUpdateCopy}))
+    // Check if the last message user is the same as the current user
+    const isLastMessageFromCurrentUser = roomToUpdateCopy.messages.length > 0 &&
+      roomToUpdateCopy.messages[roomToUpdateCopy.messages.length - 1].user.id === user.id;
+
+    // Dispatch selectRoom only if the last message is from the current user
+    if (isLastMessageFromCurrentUser && this.recentRoom.id && this.recentRoom.id === roomToUpdateCopy.id) {
+      this.store.dispatch(selectRoom({ room: roomToUpdateCopy }));
     }
-
   }
   private getRoomPictureUrl(room: IRoom, currentUser: IUser) {
     if(room.trade) {

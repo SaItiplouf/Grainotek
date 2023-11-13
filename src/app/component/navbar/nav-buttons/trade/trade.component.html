@@ -5,6 +5,7 @@
 
 <mat-menu #tradesMenu="matMenu">
   <ng-container *ngFor="let trade of lastThreeTrades.reverse()">
+    <div class="">
     <button [matMenuTriggerFor]="tradeOptions" mat-menu-item>
       <!-- Image utilisateur -->
       <img [src]="trade.applicant.pictureUrl" alt="Image de l'utilisateur"
@@ -72,6 +73,7 @@
     </span>
       </ng-container>
     </mat-menu>
+    </div>
   </ng-container>
 
   <!-- Affiche le bouton "Voir plus" si userPostTrades.length est supérieur à 3 -->
@@ -86,5 +88,6 @@
       <mat-icon>info</mat-icon>
       <span class="text-gray-800">Aucun trade disponible</span>
     </button>
+
   </ng-container>
 </mat-menu>

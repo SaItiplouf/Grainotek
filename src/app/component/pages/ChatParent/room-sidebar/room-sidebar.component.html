@@ -4,14 +4,13 @@
 </div>
 
 <div (click)="selectRoom(room)" *ngFor="let room of filteredRooms"
-     [ngClass]="{'bg-gray-200 cursor-not-allowed': selectedRoom?.id === room.id, 'unread-room': room.unreadCount && room.unreadCount > 0 }"
+     [ngClass]="{'bg-gray-200 cursor-not-allowed': selectedRoom && selectedRoom.id === room.id, 'unread-room': room.unreadCount && room.unreadCount > 0 }"
      class="max-h-screen p-4 cursor-pointer hover:bg-gray-100 flex flex-col md:flex-row justify-between space-y-4 md:space-y-0 relative">
   <div class="flex items-start space-x-4 w-full ">
 
     <!-- Room Image/Loader -->
     <div class="relative h-10 w-10 mb-2 md:mb-0">
       <div *ngIf="isLoading[room.id]" class="absolute inset-0 loader"></div>
-
       <div *ngIf="room.trade">
         <ng-container *ngIf="room.trade && room.trade.post && room.trade.post.images && room.trade.post.images[0]?.contentUrl; else placeholder">
           <img (load)="handleImageLoad(room)"
@@ -34,16 +33,24 @@
 
     <!-- Room Details -->
     <div class="flex-grow flex flex-col justify-between">
-      <div>
+      <div class="flex items-start space-x-4 w-full ">
         <h4 class="text-lg md:text-xl truncate">{{ room.name }}</h4>
-        <div *ngIf="room.trade" class="text-xs text-gray-400 mt-1 mb-2">
-          {{ room.trade.post.name }}
+
+        <!-- Unread Count Box -->
+        <div *ngIf="room.unreadCount && room.unreadCount > 0" class="flex-none ml-2">
+          <div class="bg-red-500 text-white rounded-full h-6 w-6 flex items-center justify-center text-xs">
+            {{ room.unreadCount }}
+          </div>
         </div>
-        <p class="text-sm md:text-base text-gray-500 truncate">{{ getLastMessage(room)?.message }}</p>
       </div>
+      <div *ngIf="room.trade" class="text-xs text-gray-400 mt-1 mb-2">
+        {{ room.trade.post.name }}
+      </div>
+      <p class="text-sm md:text-base text-gray-500 truncate">{{ getLastMessage(room)?.message }}</p>
     </div>
 
-  </div>
+
+</div>
 
   <!-- Close the trade option -->
   <div *ngIf="room.trade && room.trade.statut !== 'closed'" class="flex-none mt-2 md:mt-0">

@@ -126,7 +126,6 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
     this.isSidebarHidden = !this.isSidebarHidden;
   }
 
-
   // private loadRoomsForCurrentUser(): void {
   //   if (this.currentUser) {
   //
