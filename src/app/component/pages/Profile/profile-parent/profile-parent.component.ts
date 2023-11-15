@@ -105,7 +105,7 @@ export class ProfileParentComponent implements OnInit, OnDestroy {
             this.roomService.chatWithUser(this.currentUser!, targetUser).subscribe((response) => {
               console.log("Réponse reçue :", response);
               this.store.dispatch(addRoom({ room: response }));
-              console.log(this.rooms)
+              console.log(response)
               this.store.dispatch(selectRoom({room: response}));
               this.router.navigate(['pm']);
             });

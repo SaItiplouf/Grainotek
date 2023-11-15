@@ -61,7 +61,7 @@ export class PostService {
       'Authorization': `Bearer ${jwt}`
     });
 
-    return this.http.delete(environnement.BASE_URL + "api/posts/" + post.id, {headers});
+    return this.http.delete(`${environnement.BASE_URL}api/posts/${post.id}`);
   }
 
 

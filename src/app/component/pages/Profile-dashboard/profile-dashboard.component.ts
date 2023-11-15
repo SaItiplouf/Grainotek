@@ -130,14 +130,20 @@ export class ProfileDashboardComponent implements OnInit, OnDestroy {
       if (Object.keys(updatedFields).length > 0) {
         // Envoyez la requête PATCH uniquement si des champs ont été modifiés
         this.appService.updateUserInfo(this.userInfo.id, updatedFields)
-          .subscribe(response => {
-            console.log('Informations utilisateur mises à jour avec succès');
-            this.toastr.success('Update des champs du profil réussie!', 'Succès');  // Alerte de succès
-            // Mettre à jour les données du profil et rafraîchir l'affichage
-            this.userInfo = {...this.userInfo, ...updatedFields}; // Mettre à jour avec les nouvelles données
-            this.updatedUsername = null;
-            this.updatedEmail = null;
-          });
+          .subscribe(
+            response => {
+              console.log('Informations utilisateur mises à jour avec succès');
+              this.toastr.success('Update des champs du profil réussie!', 'Succès');  // Alerte de succès
+              // Mettre à jour les données du profil et rafraîchir l'affichage
+              this.userInfo = {...this.userInfo, ...updatedFields}; // Mettre à jour avec les nouvelles données
+              this.updatedUsername = null;
+              this.updatedEmail = null;
+            },
+            error => {
+              console.error('Erreur lors de la mise à jour du profil', error);
+              this.toastr.error(error.error.detail, 'Erreur');
+            }
+          );
       } else {
         console.log('Aucun champ à mettre à jour');
       }

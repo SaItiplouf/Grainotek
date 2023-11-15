@@ -15,3 +15,4 @@ export const addComment = createAction('[Post] Add Comment', props<{ comment: IP
 
 export const loadFavorites = createAction('[Favorite] Load Favorites', props<{ favorites: IPostCommentLike[] }>());
 
+export const deletePost = createAction('[Post] Delete Post', props<{ postId: number }>());

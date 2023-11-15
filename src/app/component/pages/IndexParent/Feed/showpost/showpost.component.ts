@@ -15,6 +15,7 @@ import {CommentSectionComponent} from "./comment-section/comment-section.compone
 import {PostService} from "../../../../../services/post.service";
 import {Store} from "@ngrx/store";
 import {State} from "../../../../../Reducers/app.reducer";
+import {deletePost} from "../../../../../actions/post.actions";
 
 @Component({
   selector: 'app-showpost',
@@ -132,6 +133,8 @@ export class ShowpostComponent implements OnInit, AfterViewInit {
     this.postService.deletePost(this.Modalpost, jwt).subscribe(
       response => {
         console.log('Post supprimé avec succès.');
+        this.store.dispatch(deletePost({ postId: this.Modalpost.id }));
+        this.close(); // Appel à votre fonction pour fermer la modal
       },
       error => {
         console.error('Erreur lors de la suppression du post:', error);
@@ -184,7 +187,8 @@ export class ShowpostComponent implements OnInit, AfterViewInit {
       console.log("INIIT MAP")
       const loader = new Loader({
         apiKey: environnement.GOOGLE_API_KEY,
-        version: 'weekly'
+        version: 'weekly',
+        libraries: ['places']
       });
 
       await loader.load();

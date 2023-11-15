@@ -1,6 +1,14 @@
 import {createReducer, on} from '@ngrx/store';
 import {IPost} from "../models/post.model";
-import {addComment, addPost, loadComments, loadFavorites, postsLoaded, setUser} from "../actions/post.actions";
+import {
+  addComment,
+  addPost,
+  deletePost,
+  loadComments,
+  loadFavorites,
+  postsLoaded,
+  setUser
+} from "../actions/post.actions";
 import {IUser} from "../models/user.model";
 import {IRoom, Room} from "../models/room.model";
 import {addLikeToComment, addRoom, roomsLoaded, selectRoom, updateRoom} from "../actions/chat.actions";
@@ -54,7 +62,7 @@ export const reducer = createReducer(
     };
   }),
   on(addRoom, (state, { room }) => {
-    return { ...state, rooms: [...state.room, room] };
+    return { ...state, room: [...state.room, room] };
   }),
   on(updateRoom, (state, {room}) => {
     const updatedRooms = state.room.map(existingRoom => {
@@ -64,6 +72,10 @@ export const reducer = createReducer(
       return existingRoom;
     });
     return {...state, room: updatedRooms};
+  }),
+  on(deletePost, (state, { postId }) => {
+    const updatedPosts = state.posts.filter(existingPost => existingPost.id !== postId);
+    return { ...state, posts: updatedPosts };
   }),
   on(addLikeToComment, (state, {commentId, like}) => {
     return {

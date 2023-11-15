@@ -6,7 +6,7 @@
         <img (click)="redirectToProfile(Modalpost.user.id)" alt="Profile Image"
              class="effectOnHover w-10 h-10 rounded-full mr-2" src="{{ Modalpost.user.pictureUrl }}">
         <div>
-          <p class="text-xs md:text-sm font-semibold">{{ Modalpost.user.email }}</p>
+          <p class="text-xs md:text-sm font-semibold">{{ Modalpost.user.username }}</p>
           <p class="text-xs text-gray-500 mt-n1">{{ formattedTime }}</p>
         </div>
       </div>
