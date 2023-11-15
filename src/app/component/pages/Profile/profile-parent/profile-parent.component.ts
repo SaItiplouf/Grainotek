@@ -12,7 +12,7 @@ import {RoomService} from "../../../../services/ChatRelated/room.service";
 import {SessionService} from "../../../../services/session.service";
 import {SharedService} from "../../../../../ComponentService/sharedata";
 import {IRoom} from "../../../../models/room.model";
-import {addRoom, updateRoom} from "../../../../actions/chat.actions";
+import {addRoom, selectRoom, updateRoom} from "../../../../actions/chat.actions";
 
 @Component({
   selector: 'app-profile-parent',
@@ -99,16 +99,16 @@ export class ProfileParentComponent implements OnInit, OnDestroy {
           });
           if (existingRoom) {
             console.log("La room existe déjà dans le front.");
-            this.sharedService.shareData({ user: this.currentUser, targetUser: targetUser });
+            this.store.dispatch(selectRoom({ room: existingRoom }));
             this.router.navigate(['pm']);
-          } else {
+          }else {
             console.log("CA VAAAA OUUUUUUUUUUUUUU")
             // Si la "room" n'existe pas, faites la requête au service
             this.roomService.chatWithUser(this.currentUser!, targetUser).subscribe((response) => {
               console.log("Réponse reçue :", response);
               this.store.dispatch(addRoom({ room: response }));
               console.log(this.rooms)
-              this.sharedService.shareData({ user: this.currentUser, targetUser: targetUser });
+              this.store.dispatch(selectRoom({room: response}));
               this.router.navigate(['pm']);
             });
           }

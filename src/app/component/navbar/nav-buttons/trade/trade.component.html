@@ -3,76 +3,76 @@
   <mat-icon class="text-gray-200">inbox</mat-icon>
 </button>
 
-<mat-menu #tradesMenu="matMenu">
+<mat-menu #tradesMenu="matMenu" class="shadow-lg w-48">
   <ng-container *ngFor="let trade of lastThreeTrades.reverse()">
-    <div class="">
-    <button [matMenuTriggerFor]="tradeOptions" mat-menu-item>
-      <!-- Image utilisateur -->
-      <img [src]="trade.applicant.pictureUrl" alt="Image de l'utilisateur"
-           class="w-12 h-12 rounded-full shadow-lg">
+    <div class="bg-white rounded-lg">
+      <button [matMenuTriggerFor]="tradeOptions" mat-menu-item class="flex items-center space-x-4">
+        <!-- Image utilisateur -->
+        <img [src]="trade.applicant.pictureUrl" alt="Image de l'utilisateur"
+             class="w-12 h-12 rounded-full shadow-lg">
 
-      <!-- Détails utilisateur et trade -->
-      <div class="flex-grow ml-4">
-        <div>
-          <span class="text-gray-500 font-semibold">{{trade.applicant.email}}</span>
+        <!-- Détails utilisateur et trade -->
+        <div class="flex-grow">
+          <div>
+            <span class="text-gray-500 font-semibold">{{trade.applicant.email}}</span>
+          </div>
+          <div class="text-sm text-gray-400">{{trade.post.name}}</div>
         </div>
-        <div class="text-sm text-gray-400">{{trade.post.name}}</div>
-      </div>
-    </button>
-
-    <!-- Sous-menu avec les options pour chaque trade -->
-    <mat-menu #tradeOptions="matMenu">
-
-      <button (click)="openPostDialog(trade.post)" class="text-blue-600 hover:bg-blue-100 p-2 rounded-full"
-              mat-menu-item matTooltip="Voir le poste">
-        <mat-icon>visibility</mat-icon>
-        Voir le poste
       </button>
 
-      <ng-container *ngIf="trade.statut === 'pending'">
-        <button (click)="acceptTrade(trade, 'accepted')" class="text-green-600 hover:bg-green-100 p-2 rounded-full"
-                mat-menu-item matTooltip="Accepter">
-          <mat-icon>check_circle</mat-icon>
-          Accepter
-        </button>
-        <button (click)="updateTrade(trade, 'closed')" class="text-red-600 hover:bg-red-100 p-2 rounded-full"
-                mat-menu-item matTooltip="Refuser">
-          <mat-icon>cancel</mat-icon>
-          Refuser
-        </button>
-      </ng-container>
+      <!-- Sous-menu avec les options pour chaque trade -->
+      <mat-menu #tradeOptions="matMenu" xPosition="after" yPosition="above" class="bg-white rounded-lg shadow-lg">
 
-      <!-- Display container and options when the trade has the status "accepted" -->
-      <ng-container *ngIf="trade.statut === 'accepted'">
-        <button (click)="updateTrade(trade, 'closed')" class="text-red-600 hover:bg-red-100 p-2 rounded-full"
-                mat-menu-item matTooltip="Clore le trade">
-          <mat-icon>close</mat-icon>
-          Clore le trade
+        <button (click)="openPostDialog(trade.post)" class="text-blue-600 hover:bg-blue-100 p-2 rounded-full"
+                mat-menu-item matTooltip="Voir le poste">
+          <mat-icon>visibility</mat-icon>
+          Voir le poste
         </button>
-        <span class="text-gray-600 p-2 rounded-full opacity-50 cursor-not-allowed" mat-menu-item>
+
+        <ng-container *ngIf="trade.statut === 'pending'">
+          <button (click)="acceptTrade(trade, 'accepted')" class="text-green-600 hover:bg-green-100 p-2 rounded-full"
+                  mat-menu-item matTooltip="Accepter">
+            <mat-icon>check_circle</mat-icon>
+            Accepter
+          </button>
+          <button (click)="updateTrade(trade, 'closed')" class="text-red-600 hover:bg-red-100 p-2 rounded-full"
+                  mat-menu-item matTooltip="Refuser">
+            <mat-icon>cancel</mat-icon>
+            Refuser
+          </button>
+        </ng-container>
+
+        <!-- Display container and options when the trade has the status "accepted" -->
+        <ng-container *ngIf="trade.statut === 'accepted'">
+          <button (click)="updateTrade(trade, 'closed')" class="text-red-600 hover:bg-red-100 p-2 rounded-full"
+                  mat-menu-item matTooltip="Clore le trade">
+            <mat-icon>close</mat-icon>
+            Clore le trade
+          </button>
+          <span class="text-gray-600 p-2 rounded-full opacity-50 cursor-not-allowed" mat-menu-item>
       <mat-icon>check_circle</mat-icon>
       Trade accepté
     </span>
-      </ng-container>
+        </ng-container>
 
-      <ng-container *ngIf="trade.statut === 'closed'">
-        <button (click)="deleteTrade(trade, user)" class="text-red-600 hover:bg-red-100 p-2 rounded-full" mat-menu-item
-                matTooltip="Supprimer le trade">
-          <mat-icon>delete</mat-icon>
-          Supprimer le trade
-        </button>
-        <button (click)="leaveRating(trade)" class="text-yellow-600 hover:bg-yellow-100 p-2 rounded-full"
-                mat-menu-item matTooltip="Laisser une note">
-          <mat-icon>star</mat-icon>
-          Laisser une note
-        </button>
-        <span [ngClass]="{'text-gray-600 p-2 rounded-full opacity-50 cursor-not-allowed': trade.statut === 'closed'}"
-              mat-menu-item>
+        <ng-container *ngIf="trade.statut === 'closed'">
+          <button (click)="deleteTrade(trade, user)" class="text-red-600 hover:bg-red-100 p-2 rounded-full" mat-menu-item
+                  matTooltip="Supprimer le trade">
+            <mat-icon>delete</mat-icon>
+            Supprimer le trade
+          </button>
+          <button (click)="leaveRating(trade)" class="text-yellow-600 hover:bg-yellow-100 p-2 rounded-full"
+                  mat-menu-item matTooltip="Laisser une note">
+            <mat-icon>star</mat-icon>
+            Laisser une note
+          </button>
+          <span [ngClass]="{'text-gray-600 p-2 rounded-full opacity-50 cursor-not-allowed': trade.statut === 'closed'}"
+                mat-menu-item>
       <mat-icon>lock</mat-icon>
       Trade fermé
     </span>
-      </ng-container>
-    </mat-menu>
+        </ng-container>
+      </mat-menu>
     </div>
   </ng-container>
 

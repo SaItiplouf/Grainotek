@@ -65,16 +65,16 @@ export class RoomSidebarComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.dataToShareSubscription = this.sharedService.dataToShare$.subscribe((data: {
-      user: IUser,
-      targetUser: IUser
-    }) => {
-      if (data && data.user && data.targetUser) {
-        this.updateSelectedRoomProfileRedirection(data.user, data.targetUser);
-      } else {
-        console.log("Aucune donnée disponible.");
-      }
-    });
+    // this.dataToShareSubscription = this.sharedService.dataToShare$.subscribe((data: {
+    //   user: IUser,
+    //   targetUser: IUser
+    // }) => {
+    //   if (data && data.user && data.targetUser) {
+    //     this.updateSelectedRoomProfileRedirection(data.user, data.targetUser);
+    //   } else {
+    //     console.log("Aucune donnée disponible.", data.user, data.targetUser);
+    //   }
+    // });
 
     this.store.select((state: any) => state.state.selectedRoom).subscribe((room: IRoom) => {
       this.selectedRoom = room
@@ -90,9 +90,6 @@ export class RoomSidebarComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.dataToShareSubscription) {
-      this.dataToShareSubscription.unsubscribe();
-    }
     if (this.roomSubscription) {
       this.roomSubscription.unsubscribe();
     }
@@ -120,23 +117,24 @@ export class RoomSidebarComponent implements OnInit, OnDestroy {
     }
   }
 
-  private updateSelectedRoomProfileRedirection(user: IUser, targetUser: IUser) {
-    console.log("AHDZJHADHAZ NINHO GHRRR", this.rooms, user, targetUser);
-    const room = this.rooms.find((room) => {
-      const hasUser = room.users.some(u => u.id === user.id);
-      const hasTargetUser = room.users.some(u => u.id === targetUser.id);
-      const hasNoITrade = !room.trade;
-
-      if (hasUser && hasTargetUser && hasNoITrade) {
-        console.log('La salle a été trouvée pour l\'utilisateur, l\'utilisateur cible et n\'a pas d\'objet ITRADE :', room);
-      }
-      return hasUser && hasTargetUser && hasNoITrade;
-    });
-    if (room) {
-      this.selectRoom(room);
-      console.log("SELECTED ROOM = ", this.selectedRoom);
-    }
-  }
+  // POURQUOI??
+  // private updateSelectedRoomProfileRedirection(user: IUser, targetUser: IUser) {
+  //   console.log("AHDZJHADHAZ", this.rooms, user, targetUser);
+  //   const room = this.rooms.find((room) => {
+  //     const hasUser = room.users.some(u => u.id === user.id);
+  //     const hasTargetUser = room.users.some(u => u.id === targetUser.id);
+  //     const hasNoITrade = !room.trade;
+  //
+  //     if (hasUser && hasTargetUser && hasNoITrade) {
+  //       console.log('La salle a été trouvée pour l\'utilisateur, l\'utilisateur cible et n\'a pas d\'objet ITRADE :', room);
+  //     }
+  //     return hasUser && hasTargetUser && hasNoITrade;
+  //   });
+  //   if (room) {
+  //     this.selectRoom(room);
+  //     console.log("SELECTED ROOM = ", this.selectedRoom);
+  //   }
+  // }
   private updateLocalRoomState(updatedRoom: IRoom): void {
     const roomIndex = this.rooms.findIndex(room => room.id === updatedRoom.id);
     if (roomIndex === -1) return;
