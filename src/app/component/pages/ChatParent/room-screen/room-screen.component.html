@@ -1,4 +1,4 @@
-<div #messageList class="flex-1 p-4 overflow-auto">
+<div class="flex-1 p-4 overflow-hidden min-h-screen">
   <div *ngFor="let message of selectedRoom?.messages">
     <div [ngClass]="message.user.id === currentUser!.id ? 'justify-end' : 'justify-start'"
          class="flex items-end mb-4">

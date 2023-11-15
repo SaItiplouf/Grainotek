@@ -1,4 +1,4 @@
-import {Component, Input, NgZone, OnInit} from '@angular/core';
+import {AfterViewChecked, AfterViewInit, Component, ElementRef, Input, NgZone, OnInit, ViewChild} from '@angular/core';
 import {IRoom} from "../../../../models/room.model";
 import {IUser, User} from "../../../../models/user.model";
 import {ToastrService} from "ngx-toastr";
@@ -12,11 +12,11 @@ import {State} from "../../../../Reducers/app.reducer";
   templateUrl: './room-screen.component.html',
   styleUrls: ['./room-screen.component.scss']
 })
-export class RoomScreenComponent implements OnInit{
+export class RoomScreenComponent implements OnInit {
   selectedRoom!: IRoom;
   currentUser!: User;
-
-  constructor(private store: Store<{ state: State }>) {}
+  constructor(private store: Store<{ state: State }>) {
+  }
 
   ngOnInit() {
     this.store.select((state: any) => state.state.selectedRoom).subscribe((room: IRoom) => {
@@ -26,4 +26,6 @@ export class RoomScreenComponent implements OnInit{
       this.currentUser = user
     });
   }
+
+
 }

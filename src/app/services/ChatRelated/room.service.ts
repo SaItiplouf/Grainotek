@@ -1,6 +1,6 @@
 import {Injectable, NgZone} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {map, Observable} from "rxjs";
+import {map, Observable, take} from "rxjs";
 import {IPostRoom, IRoom, Room} from "../../models/room.model";
 import {environnement} from "../../../environnement";
 import {IUser} from "../../models/user.model";
@@ -203,6 +203,9 @@ export class RoomService {
 
       // Vérifiez si le message n'est pas de l'utilisateur actuel
       const notFromCurrentUser = message.user.id !== user.id;
+      // Check if the last message user is the same as the current user
+      const isLastMessageFromCurrentUser = roomToUpdateCopy.messages.length > 0 &&
+        roomToUpdateCopy.messages[roomToUpdateCopy.messages.length - 1].user.id === user.id;
 
       if (isUnread && notFromCurrentUser) {
         const roomPictureUrl = this.getRoomPictureUrl(roomToUpdateCopy, user)
@@ -218,6 +221,8 @@ export class RoomService {
             }
           );
         }
+      }
+      if (isUnread && notFromCurrentUser) {
         return count + 1;
       }
       return count;
@@ -227,15 +232,19 @@ export class RoomService {
     this.store.dispatch(updateRoom({ room: roomToUpdateCopy }));
     console.log("JE TE LOG LE UNREAD COUNT", roomToUpdateCopy.unreadCount)
 
-    // Check if the last message user is the same as the current user
-    const isLastMessageFromCurrentUser = roomToUpdateCopy.messages.length > 0 &&
-      roomToUpdateCopy.messages[roomToUpdateCopy.messages.length - 1].user.id === user.id;
 
-    // Dispatch selectRoom only if the last message is from the current user
-    if (isLastMessageFromCurrentUser && this.recentRoom.id && this.recentRoom.id === roomToUpdateCopy.id) {
-      this.store.dispatch(selectRoom({ room: roomToUpdateCopy }));
-    }
+
+    const selectedRoom$ = this.store.select((state: any) => state.state.selectedRoom);
+
+    selectedRoom$.pipe(
+      take(1)
+    ).subscribe(selectedRoom => {
+      if (selectedRoom && selectedRoom.id === roomToUpdateCopy.id) {
+        this.store.dispatch(selectRoom({ room: roomToUpdateCopy }));
+      }
+    });
   }
+
   private getRoomPictureUrl(room: IRoom, currentUser: IUser) {
     if(room.trade) {
       return room.trade.post.images[0].contentUrl;

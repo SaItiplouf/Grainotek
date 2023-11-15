@@ -51,7 +51,7 @@ export class LoginDialogComponent {
         },
         (error: any) => {
           console.log('ERREUR LOGIN DIALOG:', error);
-          this.toastr.error('Les identifiants sont probablement invalides.', 'Erreur');  // Alerte d'erreur
+          this.toastr.error(error.error.message, 'Erreur');
           this.isLoading = false; // Définissez isLoading sur false lorsque la requête est terminée
         }
       );

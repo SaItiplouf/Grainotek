@@ -53,8 +53,8 @@ export class RegisterDialogComponent {
           this.isLoading = false;
         },
         (error: any) => {
-          console.log('ERREUR REGISTER DIALOG:', error);
-          this.toastr.error('Erreur lors de l\'inscription.', 'Erreur');  // Alerte d'erreur
+          console.log('ERREUR REGISTER DIALOG:', error.error.detail);
+          this.toastr.error(error.error.detail, 'Erreur');  // Alerte d'erreur
           this.isLoading = false;
         }
       );
