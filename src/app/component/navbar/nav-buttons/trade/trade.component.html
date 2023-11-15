@@ -3,9 +3,9 @@
   <mat-icon class="text-gray-200">inbox</mat-icon>
 </button>
 
-<mat-menu #tradesMenu="matMenu" class="shadow-lg w-48">
+<mat-menu #tradesMenu="matMenu" class="shadow-lg">
   <ng-container *ngFor="let trade of lastThreeTrades.reverse()">
-    <div class="bg-white rounded-lg">
+    <div class="bg-white rounded-lg mb-2">
       <button [matMenuTriggerFor]="tradeOptions" mat-menu-item class="flex items-center space-x-4">
         <!-- Image utilisateur -->
         <img [src]="trade.applicant.pictureUrl" alt="Image de l'utilisateur"

@@ -6,6 +6,8 @@ import {IRoom} from "../../../../models/room.model";
 import {ITrade} from "../../../../models/trade.model";
 import {Store} from "@ngrx/store";
 import {State} from "../../../../Reducers/app.reducer";
+import {updateRoom} from "../../../../actions/chat.actions";
+import {updateTrade} from "../../../../actions/trade.actions";
 
 @Component({
   selector: 'app-deletetradedialog',
@@ -36,8 +38,13 @@ export class DeletetradedialogComponent implements OnInit {
     this.tradeService.updateTrade(this.data.trade, "closed").subscribe(
       response => {
         console.log("Réponse de la mise à jour du commerce :", response);
-        console.log(this.data.room)
-        // this.store.dispatch(updateRoom({room: this.data.room}));
+
+        // Créer une nouvelle instance de la room avec le statut mis à jour
+        const updatedRoom = { ...this.data.room, trade: { ...this.data.room.trade, statut: "closed" } };
+
+        // Dispatch de l'action updateRoom avec la nouvelle instance
+        this.store.dispatch(updateRoom({ room: updatedRoom }));
+        this.store.dispatch(updateTrade({ trade: response}));
         this.dialogRef.close();
       },
       error => {
