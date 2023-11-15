@@ -10,7 +10,6 @@ import {MessageService} from "../../../../services/ChatRelated/message.service";
 import {MatDialog} from "@angular/material/dialog";
 import {DeletetradedialogComponent} from "../deletetradedialog/deletetradedialog.component";
 import {ITrade} from "../../../../models/trade.model";
-import {SharedService} from "../../../../../ComponentService/sharedata";
 import {Subscription} from "rxjs";
 import {selectRoom} from "../../../../actions/chat.actions";
 
@@ -32,7 +31,6 @@ export class RoomSidebarComponent implements OnInit, OnDestroy {
     private tradeService: TradeService,
     private roomService: RoomService,
     private dialog: MatDialog,
-    private sharedService: SharedService,
     private messageService: MessageService) {
   }
 

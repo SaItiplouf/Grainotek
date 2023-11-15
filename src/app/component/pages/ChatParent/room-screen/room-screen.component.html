@@ -1,23 +1,28 @@
-<div class="flex-1 p-4 overflow-hidden min-h-screen">
-  <div *ngFor="let message of selectedRoom?.messages">
-    <div [ngClass]="message.user.id === currentUser!.id ? 'justify-end' : 'justify-start'"
-         class="flex items-end mb-4">
-      <!-- Si le message est du destinataire, affichez l'image à gauche -->
-      <div *ngIf="message.user.id !== currentUser!.id" class="flex-none">
-        <img [src]="message.user.pictureUrl || 'https://via.placeholder.com/40'" alt="User Image"
-             class="h-8 w-8 rounded-full shadow-sm">
-      </div>
+<div class="flex-grow p-2 flex flex-col relative">
+  <div #messageList class="mb-4 p-4 flex-1 overflow-y-auto scrollbar scrollbar-thumb-gray-300 scrollbar-track-gray-100 relative">
+    <div *ngFor="let message of selectedRoom?.messages">
+      <div [ngClass]="message.user.id === currentUser!.id ? 'justify-end' : 'justify-start'"
+           class="flex items-end mb-4">
+        <!-- Si le message est du destinataire, affichez l'image à gauche -->
+        <div *ngIf="message.user.id !== currentUser!.id" class="flex-none">
+          <img [src]="message.user.pictureUrl || 'https://via.placeholder.com/40'" alt="User Image"
+               class="h-8 w-8 rounded-full shadow-sm">
+        </div>
 
-      <div [ngClass]="message.user.id === currentUser!.id ? 'bg-gray-400 text-white' : 'bg-blue-600 text-white'"
-           class="ml-4 p-3 rounded-lg max-w-full shadow-md hover:bg-opacity-90 transition-all duration-300">
-        {{ message.message }}
-      </div>
+        <div [ngClass]="message.user.id === currentUser!.id ? 'bg-gray-400 text-white' : 'bg-blue-600 text-white'"
+             class="ml-4 p-3 rounded-lg max-w-full shadow-md hover:bg-opacity-90 transition-all duration-300">
+          {{ message.message }}
+        </div>
 
-      <!-- Si le message est de l'utilisateur actuel, affichez l'image à droite -->
-      <div *ngIf="message.user.id === currentUser!.id" class="flex-none">
-        <img [src]="message.user.pictureUrl || 'https://via.placeholder.com/40'" alt="User Image"
-             class="h-8 w-8 rounded-full shadow-sm">
+        <!-- Si le message est de l'utilisateur actuel, affichez l'image à droite -->
+        <div *ngIf="message.user.id === currentUser!.id" class="flex-none">
+          <img [src]="message.user.pictureUrl || 'https://via.placeholder.com/40'" alt="User Image"
+               class="h-8 w-8 rounded-full shadow-sm">
+        </div>
       </div>
     </div>
+  </div>
+  <div class="sticky bottom-0">
+    <app-room-input></app-room-input>
   </div>
 </div>

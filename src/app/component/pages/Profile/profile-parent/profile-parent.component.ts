@@ -10,7 +10,6 @@ import {Store} from "@ngrx/store";
 import {State} from "../../../../Reducers/app.reducer";
 import {RoomService} from "../../../../services/ChatRelated/room.service";
 import {SessionService} from "../../../../services/session.service";
-import {SharedService} from "../../../../../ComponentService/sharedata";
 import {IRoom} from "../../../../models/room.model";
 import {addRoom, selectRoom, updateRoom} from "../../../../actions/chat.actions";
 
@@ -32,7 +31,6 @@ export class ProfileParentComponent implements OnInit, OnDestroy {
               private roomService: RoomService,
               private sessionService: SessionService,
               private router: Router,
-              private sharedService: SharedService,
               private store: Store<{
                 state: State
               }>) {

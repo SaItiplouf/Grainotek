@@ -18,7 +18,7 @@ import {Subscription} from "rxjs";
   templateUrl: './chat-parent.component.html',
   styleUrls: ['./chat-parent.component.scss']
 })
-export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked {
+export class ChatParentComponent implements OnInit, OnDestroy {
   selectedRoom!: IRoom;
   @Input() currentUser!: User | null;
   rooms: IRoom[] = [];
@@ -26,7 +26,6 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
   currentPage: number = 1;
   isSidebarHidden = true;
   hasRooms: boolean = false;
-  @ViewChild('messageList') private messageListRef!: ElementRef;
 
   constructor(
     private store: Store<{ state: State }>,
@@ -51,13 +50,6 @@ export class ChatParentComponent implements OnInit, OnDestroy, AfterViewChecked 
     });
   }
 
-  // scroll to bottom au init
-  ngAfterViewChecked() {
-    if (this.messageListRef) {
-      const messageList: HTMLDivElement = this.messageListRef.nativeElement;
-      messageList.scrollTop = messageList.scrollHeight;
-    }
-  }
 
   // détruit la souscription à mercure pour l'opti
   ngOnDestroy(): void {

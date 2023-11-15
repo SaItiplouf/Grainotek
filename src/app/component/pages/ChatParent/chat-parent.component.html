@@ -6,17 +6,16 @@
       <mat-icon>arrow_drop_down</mat-icon>
     </button>
     <div [class.hidden]="isSidebarHidden" [class.md:block]="isSidebarHidden" [class.w-0]="isSidebarHidden" [class.w-full]="!isSidebarHidden"
-         class="md:w-1/5 lg:w-1/4 pb-4 bg-white rounded-lg overflow-y-auto overflow-x-hidden scrollbar scrollbar-thumb-gray-200 scrollbar-track-gray-100 md:mb-0 transition-all duration-300 ease-in-out">
+         class="md:w-1/5 lg:w-1/4 pb-4 bg-white rounded-lg overflow-y-auto overflow-x-hidden scrollbar scrollbar-thumb-gray-300 scrollbar-track-gray-100 md:mb-0 transition-all duration-300 ease-in-out">
       <app-room-sidebar></app-room-sidebar>
     </div>
 
     <!-- Zone de chat -->
-    <div class="flex-grow md:w-2/3 lg:w-3/4 bg-white rounded-lg flex flex-col shadow-lg pt-4 flex-1 max-h-screen overflow-hidden space-y-4 mb-16 md:mb-0">
+    <div class="flex-grow md:w-2/3 lg:w-3/4 bg-white rounded-lg flex flex-col shadow-lg pt-4 flex-1 overflow-hidden space-y-4 mb-16 md:mb-0">
       <!-- Messages -->
-      <div #messageList class="p-4 overflow-y-auto scrollbar scrollbar-thumb-gray-200 scrollbar-track-gray-100">
+      <div class="flex-1 overflow-y-auto scrollbar scrollbar-thumb-gray-300 scrollbar-track-gray-100 relative">
         <app-room-screen></app-room-screen>
       </div>
-      <app-room-input></app-room-input>
     </div>
   </div>
 </div>

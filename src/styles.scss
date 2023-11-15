@@ -49,6 +49,14 @@ body {
   pointer-events: auto;
 }
 
+.messagelist {
+  @media (min-width: 768px) {
+    max-height: 29rem;
+  }
+  @media (min-width: 1400px) {
+    max-height: 49rem;
+  }
+}
 
 
 

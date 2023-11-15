@@ -12,9 +12,11 @@ import {State} from "../../../../Reducers/app.reducer";
   templateUrl: './room-screen.component.html',
   styleUrls: ['./room-screen.component.scss']
 })
-export class RoomScreenComponent implements OnInit {
+export class RoomScreenComponent implements OnInit, AfterViewChecked{
   selectedRoom!: IRoom;
   currentUser!: User;
+  @ViewChild('messageList') private messageListRef!: ElementRef;
+
   constructor(private store: Store<{ state: State }>) {
   }
 
@@ -27,5 +29,12 @@ export class RoomScreenComponent implements OnInit {
     });
   }
 
+  // scroll to bottom au init
+  ngAfterViewChecked() {
+    if (this.messageListRef) {
+      const messageList: HTMLDivElement = this.messageListRef.nativeElement;
+      messageList.scrollTop = messageList.scrollHeight;
+    }
+  }
 
 }

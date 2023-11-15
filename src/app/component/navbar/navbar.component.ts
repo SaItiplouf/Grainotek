@@ -34,7 +34,7 @@ export class NavbarComponent implements OnInit {
     this.store.select((state: any) => state.state.user).subscribe((user: IUser) => {
       this.userInfo = user;
     });
-
+    this.menuOpen = false;
   }
 
   toggleMenu() {
@@ -73,8 +73,8 @@ export class NavbarComponent implements OnInit {
   }
 
   forgetToken() {
-    this.sessionService.forgetToken()
     this.toggleMenu();
+    this.sessionService.forgetToken()
     console.log("Token deleted")
   }
 

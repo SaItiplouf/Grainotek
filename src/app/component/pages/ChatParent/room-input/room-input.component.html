@@ -1,12 +1,12 @@
-<div class="p-4 border-t border-gray-200 flex items-center md:relative w-full fixed bottom-16 md:bottom-0 lg:bottom-0 z-10 bg-white pr-4">
-  <div *ngIf="selectedRoom?.trade?.statut !== 'closed'; else tradeClosedContent" class="flex items-center justify-between w-full">
+<div class="p-4 border-t border-gray-200 flex items-center md:relative w-full md:bottom-0 lg:bottom-0 z-10 bg-white pr-4">
+  <div *ngIf="selectedRoom?.trade?.statut !== 'closed'; else tradeClosedContent" class="flex flex-col md:flex-row items-center justify-between w-full px-2"> <!-- Ajout de px-2 ici -->
     <input (keyup.enter)="!isSending ? sendMessage() : null"
            [(ngModel)]="newMessageContent"
-           class="flex-grow sm:flex-grow rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 p-2 sm:p-2 mr-2"
+           class="flex-grow rounded-md w-full sm:w-2/3 md:w-1/3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 p-2 sm:p-2 mb-2 md:mb-0"
            placeholder="Écrivez un message..."
            type="text">
     <button (click)="sendMessage()" [disabled]="isSending"
-            class="flex-shrink-0 bg-blue-500 text-white p-2 sm:p-2 rounded-full hover:bg-blue-600 transition-colors"
+            class="flex-shrink-0 bg-blue-500 text-white p-2 sm:p-2 rounded-full hover:bg-blue-600 transition-colors sm:w-2/3 md:w-1/3 lg:w-1/5 w-full"
             color="primary" mat-raised-button>
       Envoyer
     </button>

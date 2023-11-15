@@ -43,6 +43,9 @@ export class BottomNavComponent implements OnInit {
   }
 
   openDialog() {
+    if (this.menuOpen === true) {
+      this.toggleMenu();
+    }
     window.scrollTo(0, 0);
     this.dialog.open(CreatePostComponent, {
       autoFocus: false,
@@ -54,20 +57,26 @@ export class BottomNavComponent implements OnInit {
     this.router.navigate(['']).then(() => {
       console.log("Navigate Success")
     });
-    this.toggleMenu();
+    if (this.menuOpen === true) {
+      this.toggleMenu();
+    }
   }
 
   navigateToTrade() {
     this.router.navigate(['trade']).then(() => {
       console.log("Navigate Success")
     });
-    this.toggleMenu();
+    if (this.menuOpen === true) {
+      this.toggleMenu();
+    }
   }
 
   navigateToChat() {
     this.router.navigate(['pm']).then(() => {
       console.log("Navigate Success")
     });
-    this.toggleMenu();
+    if (this.menuOpen === true) {
+      this.toggleMenu();
+    }
   }
 }

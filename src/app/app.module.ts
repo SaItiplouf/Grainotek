@@ -56,7 +56,6 @@ import {RatingComponent} from './component/navbar/nav-buttons/trade/rating/ratin
 import {ShowalltradeComponent} from './component/navbar/nav-buttons/trade/showalltrade/showalltrade.component';
 import {BottomNavComponent} from './component/navbar/bottom-nav/bottom-nav.component';
 import {FavorisComponent} from './component/pages/Favoris/favoris.component';
-import {SharedService} from "../ComponentService/sharedata";
 import { RoomInputComponent } from './component/pages/ChatParent/room-input/room-input.component';
 import { RoomScreenComponent } from './component/pages/ChatParent/room-screen/room-screen.component';
 
@@ -129,7 +128,6 @@ import { RoomScreenComponent } from './component/pages/ChatParent/room-screen/ro
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptorInterceptor, multi: true},
-    SharedService
   ],
   bootstrap: [AppComponent],
 })
